@@ -73,7 +73,9 @@ public:
         std::chrono::time_point<std::chrono::system_clock> t = std::chrono::system_clock::now();
         if (ele.timeout < t){
           ENVOY_LOG(warn, "should resume request");
-          ele.callbacks->continueDecoding();
+          ele.callbacks->dispatcher().post([=]() {
+            ele.callbacks->continueDecoding();
+          });
           queue_.pop();
           ENVOY_LOG(warn, "resume request");
         }else{

@@ -39,9 +39,9 @@ FilterStatus LocalRateLimit::onMessageDecoded(MetadataSharedPtr metadata, Mutati
   return FilterStatus::ContinueIteration;
 }
 
-// void LocalRateLimit::setEncoderFilterCallbacks(EncoderFilterCallbacks& callbacks) {
-//   encoder_callbacks_ = &callbacks;
-// }
+void LocalRateLimit::setEncoderFilterCallbacks(EncoderFilterCallbacks& callbacks) {
+  encoder_callbacks_ = &callbacks;
+}
 
 // FilterStatus LocalRateLimit::onMessageEncoded(MetadataSharedPtr metadata, MutationSharedPtr) {
 //   ENVOY_STREAM_LOG(warn, "LocalRateLimit::onMessageEncoded {}", *encoder_callbacks_, metadata->getRequestId());

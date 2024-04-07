@@ -39,7 +39,6 @@ private:
 class LocalRateLimit : public CodecFilter, Logger::Loggable<Logger::Id::filter> {
 public:
   LocalRateLimit(std::shared_ptr<FilterConfig> filter_config) : filter_config_(filter_config){
-    ENVOY_LOG(warn, "LocalRateLimit Constructor");
     has_buffered = false;
   };
   ~LocalRateLimit() override = default;

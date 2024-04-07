@@ -18,7 +18,7 @@ FilterConfig::FilterConfig(const LocalRateLimitConfig& cfg, Stats::Scope& scope,
               PROTOBUF_GET_MS_OR_DEFAULT(cfg.token_bucket(), fill_interval, 0)),
           cfg.token_bucket().max_tokens(), dispatcher,
           cfg)) {
-            ENVOY_LOG(warn, "FilterConfig Constructor");
+            // ENVOY_LOG(warn, "FilterConfig Constructor");
           }
 
 void LocalRateLimit::onDestroy() { cleanup(); }

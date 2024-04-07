@@ -54,12 +54,12 @@ public:
         last_timeout = std::chrono::system_clock::now();
         QueueElement ele = {callbacks, std::chrono::time_point(last_timeout)};
         queue_.push(ele);
-        ENVOY_STREAM_LOG(warn, "Push a request to empty queue", *callbacks);
+        ENVOY_STREAM_LOG(warn, "Push a request to empty queue");
       }else{
         last_timeout += delay;
         QueueElement ele = {callbacks, std::chrono::time_point(last_timeout)};
         queue_.push(ele);
-        ENVOY_STREAM_LOG(warn, "Push a request to a non empty queue", *callbacks, queue_.size());
+        ENVOY_STREAM_LOG(warn, std::format("Push a request to a non empty queue, size {}", queue_.size()));
       }
     }
   

@@ -54,12 +54,12 @@ public:
         last_timeout = std::chrono::system_clock::now();
         QueueElement ele = {callbacks, std::chrono::time_point(last_timeout)};
         queue_.push(ele);
-        ENVOY_LOG(warn, "Push a request to empty queue");
+        // ENVOY_LOG(warn, "Push a request to empty queue");
       }else{
         last_timeout += delay;
         QueueElement ele = {callbacks, std::chrono::time_point(last_timeout)};
         queue_.push(ele);
-        ENVOY_LOG(warn, "Push a request to a non empty queue, size {}", queue_.size());
+        // ENVOY_LOG(warn, "Push a request to a non empty queue, size {}", queue_.size());
       }
     }
   
@@ -72,12 +72,12 @@ public:
         QueueElement ele = queue_.front();
         std::chrono::time_point<std::chrono::system_clock> t = std::chrono::system_clock::now();
         if (ele.timeout < t){
-          ENVOY_LOG(warn, "should resume request");
+          // ENVOY_LOG(warn, "should resume request");
           ele.callbacks->dispatcher().post([=]() {
             ele.callbacks->continueDecoding();
           });
           queue_.pop();
-          ENVOY_LOG(warn, "resume request");
+          // ENVOY_LOG(warn, "resume request");
         }else{
           break;
         }

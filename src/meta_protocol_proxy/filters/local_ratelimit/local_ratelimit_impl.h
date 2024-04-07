@@ -59,7 +59,7 @@ public:
         last_timeout += delay;
         QueueElement ele = {callbacks, std::chrono::time_point(last_timeout)};
         queue_.push(ele);
-        ENVOY_LOG(warn, std::format("Push a request to a non empty queue, size {}", queue_.size()));
+        ENVOY_LOG(warn, fmt::format("Push a request to a non empty queue, size {}", queue_.size()));
       }
     }
   

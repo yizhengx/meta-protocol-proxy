@@ -36,17 +36,17 @@ FilterStatus LocalRateLimit::onMessageDecoded(MetadataSharedPtr metadata, Mutati
   has_buffered = true;
   filter_config_->rateLimiter().bufferRequest(callbacks_);
   return FilterStatus::PauseIteration;
-  return FilterStatus::ContinueIteration;
+  // return FilterStatus::ContinueIteration;
 }
 
 void LocalRateLimit::setEncoderFilterCallbacks(EncoderFilterCallbacks& callbacks) {
   encoder_callbacks_ = &callbacks;
 }
 
-// FilterStatus LocalRateLimit::onMessageEncoded(MetadataSharedPtr metadata, MutationSharedPtr) {
-//   ENVOY_STREAM_LOG(warn, "LocalRateLimit::onMessageEncoded {}", *encoder_callbacks_, metadata->getRequestId());
-//   return FilterStatus::ContinueIteration;
-// }
+FilterStatus LocalRateLimit::onMessageEncoded(MetadataSharedPtr metadata, MutationSharedPtr) {
+  // ENVOY_STREAM_LOG(warn, "LocalRateLimit::onMessageEncoded {}", *encoder_callbacks_, metadata->getRequestId());
+  return FilterStatus::ContinueIteration;
+}
 
 void LocalRateLimit::cleanup() {}
 

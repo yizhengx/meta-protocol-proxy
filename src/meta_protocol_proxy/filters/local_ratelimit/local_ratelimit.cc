@@ -43,7 +43,7 @@ void LocalRateLimit::setEncoderFilterCallbacks(EncoderFilterCallbacks& callbacks
   encoder_callbacks_ = &callbacks;
 }
 
-FilterStatus LocalRateLimit::onMessageEncoded(MetadataSharedPtr metadata, MutationSharedPtr) {
+FilterStatus LocalRateLimit::onMessageEncoded(MetadataSharedPtr, MutationSharedPtr) {
   // ENVOY_STREAM_LOG(warn, "LocalRateLimit::onMessageEncoded {}", *encoder_callbacks_, metadata->getRequestId());
   return FilterStatus::ContinueIteration;
 }

@@ -226,13 +226,13 @@ void ActiveMessageEncoderFilter::continueEncoding() {
   auto state = ActiveMessage::FilterIterationStartState::AlwaysStartFromNext;
   if (0 != activeMessage_.metadata()->originMessage().length()) {
     state = ActiveMessage::FilterIterationStartState::CanStartFromCurrent;
-    // ENVOY_LOG(warn, "The original message data is not consumed, triggering the encoder filter from "
-    //                 "the current location");
+    ENVOY_LOG(warn, "The original message data is not consumed, triggering the encoder filter from "
+                    "the current location");
   }
   const FilterStatus status = activeMessage_.applyEncoderFilters(this, state);
-  // if (FilterStatus::ContinueIteration == status) {
-  //   // ENVOY_LOG(debug, "All encoding filters have been executed");
-  // }
+  if (FilterStatus::ContinueIteration == status) {
+    ENVOY_LOG(debug, "All encoding filters have been executed");
+  }
 }
 
 // class ActiveMessage

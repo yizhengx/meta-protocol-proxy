@@ -14,14 +14,11 @@ LocalRateLimiterImpl::LocalRateLimiterImpl(
     Event::Dispatcher& dispatcher, const LocalRateLimitConfig& cfg)
     : fill_timer_(dispatcher.createTimer([this] { onFillTimer(); })),
       time_source_(dispatcher.timeSource()), timer_duration_(fill_interval),
-      config_(cfg), queue(TSQueue(std::chrono::microseconds(max_tokens))){
-        ENVOY_LOG(warn, "LocalRateLimiterImpl Constructor");
-        
+      config_(cfg), queue(TSQueue(std::chrono::microseconds(max_tokens)))
+{
+  ENVOY_LOG(warn, "LocalRateLimiterImpl Constructor");
   timer_duration_ = fill_interval;
-  if (timer_duration_ < std::chrono::milliseconds(50)) {
-    throw EnvoyException("local rate limit token bucket fill timer must be >= 50ms");
-  }
-  fill_timer_->enableTimer(timer_duration_);
+  fill_timer_->enableTimer(std::chrono::milliseconds(1));
 }
 
 LocalRateLimiterImpl::~LocalRateLimiterImpl() {

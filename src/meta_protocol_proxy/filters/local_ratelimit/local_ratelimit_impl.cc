@@ -17,6 +17,8 @@ LocalRateLimiterImpl::LocalRateLimiterImpl(
       config_(cfg), queue(TSQueue(std::chrono::microseconds(max_tokens)))
 {
   ENVOY_LOG(warn, "LocalRateLimiterImpl Constructor");
+  ENVOY_LOG(warn, cfg.token_bucket().max_tokens());
+  ENVOY_LOG(warn, cfg.token_bucket().tokens_per_fill());
   timer_duration_ = fill_interval;
   fill_timer_->enableTimer(std::chrono::milliseconds(1));
 }

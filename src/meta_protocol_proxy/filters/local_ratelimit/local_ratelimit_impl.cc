@@ -28,7 +28,6 @@ LocalRateLimiterImpl::~LocalRateLimiterImpl() {
 }
 
 void LocalRateLimiterImpl::bufferRequest(DecoderFilterCallbacks* callbacks){
-  ENVOY_LOG(warn, "LocalRateLimiterImpl::bufferRequest");
   queue.push(callbacks);
 }
 

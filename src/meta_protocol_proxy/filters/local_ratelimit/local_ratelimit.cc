@@ -28,14 +28,15 @@ void LocalRateLimit::setDecoderFilterCallbacks(DecoderFilterCallbacks& callbacks
 }
 
 FilterStatus LocalRateLimit::onMessageDecoded(MetadataSharedPtr metadata, MutationSharedPtr) {
-  if (has_buffered) {
-    ENVOY_STREAM_LOG(warn, "meta protocol local rate limit: onMessageDecoded, resumeIteration {}", *callbacks_, metadata->getRequestId());
-    return FilterStatus::ContinueIteration;
-  }
+  // if (has_buffered) {
+  //   ENVOY_STREAM_LOG(warn, "meta protocol local rate limit: onMessageDecoded, resumeIteration {}", *callbacks_, metadata->getRequestId());
+  //   return FilterStatus::ContinueIteration;
+  // }
   ENVOY_STREAM_LOG(warn, "meta protocol local rate limit: onMessageDecoded, pauseIteration {}", *callbacks_, metadata->getRequestId());
-  has_buffered = true;
-  filter_config_->rateLimiter().bufferRequest(callbacks_);
-  return FilterStatus::PauseIteration;
+  // has_buffered = true;
+  // filter_config_->rateLimiter().bufferRequest(callbacks_);
+  // return FilterStatus::PauseIteration;
+  return FilterStatus::ContinueIteration;
 }
 
 void LocalRateLimit::setEncoderFilterCallbacks(EncoderFilterCallbacks& callbacks) {

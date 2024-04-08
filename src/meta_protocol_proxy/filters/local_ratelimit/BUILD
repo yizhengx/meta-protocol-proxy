@@ -24,9 +24,9 @@ envoy_cc_library(
     name = "local_ratelimit",
     repository = "@envoy",
     srcs = ["local_ratelimit.cc"],
-    hdrs = ["local_ratelimit.h","local_ratelimit_impl.h"],
+    hdrs = ["local_ratelimit.h"],
     deps = [
-        # ":local_ratelimit_impl",
+        ":local_ratelimit_impl",
         "//api/meta_protocol_proxy/filters/local_ratelimit/v1alpha:pkg_cc_proto",
         "//api/meta_protocol_proxy/v1alpha:pkg_cc_proto",
         "//src/meta_protocol_proxy:app_exception_lib",
@@ -55,7 +55,5 @@ envoy_cc_library(
         "@envoy//envoy/ratelimit:ratelimit_interface",
         "@envoy//source/common/protobuf:protobuf",
         "@envoy//source/common/http:header_utility_lib",
-        "//src/meta_protocol_proxy/filters:filter_interface",
-        "@envoy//source/common/common:logger_lib",
     ],
 )

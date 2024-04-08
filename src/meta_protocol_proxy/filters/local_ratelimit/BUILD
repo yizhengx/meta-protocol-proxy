@@ -24,7 +24,7 @@ envoy_cc_library(
     name = "local_ratelimit",
     repository = "@envoy",
     srcs = ["local_ratelimit.cc"],
-    hdrs = ["local_ratelimit.h"],
+    hdrs = ["local_ratelimit.h", "stats.h"],
     deps = [
         # ":local_ratelimit_manager",
         ":local_ratelimit_impl",
@@ -35,7 +35,7 @@ envoy_cc_library(
         "@envoy//source/common/common:logger_lib",
         "@envoy_api//envoy/extensions/filters/network/local_ratelimit/v3:pkg_cc_proto",
         "@envoy//envoy/network:filter_interface",
-        "@envoy//envoy/ratelimit:ratelimit_interface",
+        "@envoy//envoy/ratelimit:ratelimit_interface"
     ],
 )
 

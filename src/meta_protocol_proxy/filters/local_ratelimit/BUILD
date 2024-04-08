@@ -60,7 +60,6 @@ envoy_cc_library(
     ],
 )
 
-
 envoy_cc_library(
     name = "local_ratelimit_impl",
     repository = "@envoy",

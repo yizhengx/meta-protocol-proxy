@@ -10,10 +10,9 @@ namespace NetworkFilters {
 namespace MetaProtocolProxy {
 namespace LocalRateLimit {
 
-FilterConfig::FilterConfig(const LocalRateLimitConfig& cfg, Stats::Scope& scope,
+FilterConfig::FilterConfig(const LocalRateLimitConfig& cfg, Stats::Scope&,
                            Event::Dispatcher& dispatcher)
-    : stats_(LocalRateLimitStats::generateStats(cfg.stat_prefix(), scope)),
-      rate_limiter_(LocalRateLimiterImpl(
+    : rate_limiter_(LocalRateLimiterImpl(
           std::chrono::milliseconds(
               PROTOBUF_GET_MS_OR_DEFAULT(cfg.token_bucket(), fill_interval, 0)),
           cfg.token_bucket().max_tokens(), dispatcher,

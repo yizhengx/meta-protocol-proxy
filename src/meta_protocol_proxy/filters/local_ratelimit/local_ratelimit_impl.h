@@ -51,7 +51,7 @@ public:
     {
       std::lock_guard<std::mutex> lock(mutex_);
       if (queue_.empty()){
-        last_timeout = std::chrono::system_clock::now();
+        last_timeout = std::chrono::system_clock::now() + delay;
         QueueElement ele = {callbacks, std::chrono::time_point(last_timeout)};
         queue_.push(ele);
         // ENVOY_LOG(warn, "Push a request to empty queue");

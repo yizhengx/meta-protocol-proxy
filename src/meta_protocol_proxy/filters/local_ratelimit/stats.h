@@ -1,15 +1,15 @@
-// #pragma once
+#pragma once
 
-// #include <string>
+#include <string>
 
-// #include "envoy/stats/scope.h"
-// #include "envoy/stats/stats_macros.h"
+#include "envoy/stats/scope.h"
+#include "envoy/stats/stats_macros.h"
 
-// namespace Envoy {
-// namespace Extensions {
-// namespace NetworkFilters {
-// namespace MetaProtocolProxy {
-// namespace LocalRateLimit {
+namespace Envoy {
+namespace Extensions {
+namespace NetworkFilters {
+namespace MetaProtocolProxy {
+namespace LocalRateLimit {
 
 // /**
 //  * All local rate limit stats. @see stats_macros.h
@@ -30,8 +30,8 @@
 //   }
 // };
 
-// } // namespace LocalRateLimit
-// } // namespace MetaProtocolProxy
-// } // namespace NetworkFilters
-// } // namespace Extensions
-// } // namespace Envoy
+} // namespace LocalRateLimit
+} // namespace MetaProtocolProxy
+} // namespace NetworkFilters
+} // namespace Extensions
+} // namespace Envoy

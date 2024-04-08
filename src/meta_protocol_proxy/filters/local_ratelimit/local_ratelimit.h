@@ -15,7 +15,7 @@
 #include "src/meta_protocol_proxy/filters/filter.h"
 
 #include "src/meta_protocol_proxy/filters/local_ratelimit/local_ratelimit_impl.h"
-// #include "src/meta_protocol_proxy/filters/local_ratelimit/stats.h"
+#include "src/meta_protocol_proxy/filters/local_ratelimit/stats.h"
 
 namespace Envoy {
 namespace Extensions {

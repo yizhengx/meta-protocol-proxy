@@ -58,5 +58,7 @@ envoy_cc_library(
         "@envoy//envoy/ratelimit:ratelimit_interface",
         "@envoy//source/common/protobuf:protobuf",
         "@envoy//source/common/http:header_utility_lib",
+        "//src/meta_protocol_proxy/filters:filter_interface",
+        "@envoy//source/common/common:logger_lib",
     ],
 )

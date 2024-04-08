@@ -10,7 +10,7 @@ namespace NetworkFilters {
 namespace MetaProtocolProxy {
 namespace LocalRateLimit {
 
-FilterConfig::FilterConfig(const LocalRateLimitConfig& cfg, Stats::Scope& scope,
+FilterConfig::FilterConfig(const LocalRateLimitConfig& cfg, Stats::Scope&,
                            Event::Dispatcher& dispatcher)
     : rate_limiter_(LocalRateLimiterImpl(
           std::chrono::milliseconds(

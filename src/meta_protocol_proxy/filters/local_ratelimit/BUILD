@@ -24,7 +24,7 @@ envoy_cc_library(
     name = "local_ratelimit",
     repository = "@envoy",
     srcs = ["local_ratelimit.cc"],
-    hdrs = ["local_ratelimit.h"],
+    hdrs = ["local_ratelimit.h","local_ratelimit_impl.h"],
     deps = [
         # ":local_ratelimit_impl",
         "//api/meta_protocol_proxy/filters/local_ratelimit/v1alpha:pkg_cc_proto",

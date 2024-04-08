@@ -33,6 +33,7 @@ struct QueueElement{
 };
 
 class TSQueue: public Logger::Loggable<Logger::Id::filter>{
+// class TSQueue{
 private:
     // Underlying queue
     std::queue<QueueElement> queue_;

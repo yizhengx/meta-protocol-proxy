@@ -15,7 +15,7 @@
 #include "src/meta_protocol_proxy/filters/filter.h"
 
 #include "src/meta_protocol_proxy/filters/local_ratelimit/local_ratelimit_impl.h"
-#include "src/meta_protocol_proxy/filters/local_ratelimit/stats.h"
+// #include "src/meta_protocol_proxy/filters/local_ratelimit/stats.h"
 
 namespace Envoy {
 namespace Extensions {
@@ -28,11 +28,9 @@ public:
   FilterConfig(const LocalRateLimitConfig& cfg, Stats::Scope& scope, Event::Dispatcher& dispatcher);
   ~FilterConfig() = default;
 
-  LocalRateLimitStats& stats() { return stats_; }
   LocalRateLimiterImpl& rateLimiter() { return rate_limiter_; }
 
 private:
-  LocalRateLimitStats stats_;
   LocalRateLimiterImpl rate_limiter_;
 };
 

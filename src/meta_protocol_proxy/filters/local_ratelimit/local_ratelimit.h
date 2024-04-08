@@ -28,9 +28,11 @@ public:
   FilterConfig(const LocalRateLimitConfig& cfg, Stats::Scope& scope, Event::Dispatcher& dispatcher);
   ~FilterConfig() = default;
 
+  LocalRateLimitStats& stats() { return stats_; }
   LocalRateLimiterImpl& rateLimiter() { return rate_limiter_; }
 
 private:
+  LocalRateLimitStats stats_;
   LocalRateLimiterImpl rate_limiter_;
 };
 

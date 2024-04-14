@@ -101,7 +101,7 @@ private:
 
   const Event::TimerPtr fill_timer_;
   TimeSource& time_source_;
-  std::chrono::milliseconds timer_duration_;
+  std::chrono::microseconds timer_duration_;
 
   LocalRateLimitConfig config_;
   TSQueue queue;

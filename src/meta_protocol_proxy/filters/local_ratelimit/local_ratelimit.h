@@ -23,22 +23,22 @@ namespace NetworkFilters {
 namespace MetaProtocolProxy {
 namespace LocalRateLimit {
 
-class FilterConfig {
+class FilterConfig : public Logger::Loggable<Logger::Id::filter> {
 public:
   FilterConfig(const LocalRateLimitConfig& cfg, Stats::Scope& scope, Event::Dispatcher& dispatcher);
   ~FilterConfig() = default;
 
-  LocalRateLimitStats& stats() { return stats_; }
   LocalRateLimiterImpl& rateLimiter() { return rate_limiter_; }
 
 private:
-  LocalRateLimitStats stats_;
   LocalRateLimiterImpl rate_limiter_;
 };
 
 class LocalRateLimit : public CodecFilter, Logger::Loggable<Logger::Id::filter> {
 public:
-  LocalRateLimit(std::shared_ptr<FilterConfig> filter_config) : filter_config_(filter_config){};
+  LocalRateLimit(std::shared_ptr<FilterConfig> filter_config) : filter_config_(filter_config){
+    has_buffered = false;
+  };
   ~LocalRateLimit() override = default;
 
   void onDestroy() override;
@@ -53,12 +53,11 @@ public:
 private:
   void cleanup();
 
-  bool shouldRateLimit(MetadataSharedPtr metadata);
-
   DecoderFilterCallbacks* callbacks_{};
   EncoderFilterCallbacks* encoder_callbacks_{};
 
   std::shared_ptr<FilterConfig> filter_config_;
+  bool has_buffered;
 };
 
 } // namespace LocalRateLimit

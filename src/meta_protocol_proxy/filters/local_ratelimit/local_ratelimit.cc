@@ -10,15 +10,15 @@ namespace NetworkFilters {
 namespace MetaProtocolProxy {
 namespace LocalRateLimit {
 
-FilterConfig::FilterConfig(const LocalRateLimitConfig& cfg, Stats::Scope& scope,
+FilterConfig::FilterConfig(const LocalRateLimitConfig& cfg, Stats::Scope&,
                            Event::Dispatcher& dispatcher)
-    : stats_(LocalRateLimitStats::generateStats(cfg.stat_prefix(), scope)),
-      rate_limiter_(LocalRateLimiterImpl(
+    : rate_limiter_(LocalRateLimiterImpl(
           std::chrono::milliseconds(
               PROTOBUF_GET_MS_OR_DEFAULT(cfg.token_bucket(), fill_interval, 0)),
-          cfg.token_bucket().max_tokens(),
-          PROTOBUF_GET_WRAPPED_OR_DEFAULT(cfg.token_bucket(), tokens_per_fill, 1), dispatcher,
-          cfg.conditions(), cfg)) {}
+          cfg.token_bucket().max_tokens(), dispatcher,
+          cfg)) {
+            // ENVOY_LOG(warn, "FilterConfig Constructor");
+          }
 
 void LocalRateLimit::onDestroy() { cleanup(); }
 
@@ -26,22 +26,16 @@ void LocalRateLimit::setDecoderFilterCallbacks(DecoderFilterCallbacks& callbacks
   callbacks_ = &callbacks;
 }
 
-FilterStatus LocalRateLimit::onMessageDecoded(MetadataSharedPtr metadata, MutationSharedPtr) {
-
-  if (shouldRateLimit(metadata)) {
-    ENVOY_STREAM_LOG(debug, "meta protocol local rate limit:  '{}'", *callbacks_,
-                     metadata->getRequestId());
-    callbacks_->sendLocalReply(
-        AppException(
-            Error{ErrorType::OverLimit,
-                  fmt::format("meta protocol local rate limit: request '{}' has been rate limited",
-                              metadata->getRequestId())}),
-        false);
-    return FilterStatus::AbortIteration;
+FilterStatus LocalRateLimit::onMessageDecoded(MetadataSharedPtr, MutationSharedPtr) {
+  if (has_buffered) {
+    // ENVOY_STREAM_LOG(warn, "meta protocol local rate limit: onMessageDecoded, resumeIteration {}", *callbacks_, metadata->getRequestId());
+    return FilterStatus::ContinueIteration;
   }
-
-  ENVOY_STREAM_LOG(debug, "meta protocol local rate limit: onMessageDecoded", *callbacks_);
-  return FilterStatus::ContinueIteration;
+  // ENVOY_STREAM_LOG(warn, "meta protocol local rate limit: onMessageDecoded, pauseIteration {}", *callbacks_, metadata->getRequestId());
+  has_buffered = true;
+  filter_config_->rateLimiter().bufferRequest(callbacks_);
+  return FilterStatus::PauseIteration;
+  // return FilterStatus::ContinueIteration;
 }
 
 void LocalRateLimit::setEncoderFilterCallbacks(EncoderFilterCallbacks& callbacks) {
@@ -49,19 +43,11 @@ void LocalRateLimit::setEncoderFilterCallbacks(EncoderFilterCallbacks& callbacks
 }
 
 FilterStatus LocalRateLimit::onMessageEncoded(MetadataSharedPtr, MutationSharedPtr) {
+  // ENVOY_STREAM_LOG(warn, "LocalRateLimit::onMessageEncoded {}", *encoder_callbacks_, metadata->getRequestId());
   return FilterStatus::ContinueIteration;
 }
 
 void LocalRateLimit::cleanup() {}
-
-bool LocalRateLimit::shouldRateLimit(MetadataSharedPtr metadata) {
-  if (filter_config_->rateLimiter().requestAllowed(metadata)) {
-    filter_config_->stats().ok_.inc();
-    return false;
-  }
-  filter_config_->stats().rate_limited_.inc();
-  return true;
-};
 
 } // namespace LocalRateLimit
 } // namespace MetaProtocolProxy

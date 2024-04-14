@@ -145,17 +145,17 @@ ActiveMessageDecoderFilter::ActiveMessageDecoderFilter(ActiveMessage& parent,
 
 void ActiveMessageDecoderFilter::continueDecoding() {
   ASSERT(activeMessage_.metadata());
-  ENVOY_LOG(debug, "meta protocol: continueDecoding, id is {}",
-            activeMessage_.metadata()->getRequestId());
+  // ENVOY_LOG(debug, "meta protocol: continueDecoding, id is {}",
+  //           activeMessage_.metadata()->getRequestId());
   auto state = ActiveMessage::FilterIterationStartState::AlwaysStartFromNext;
   if (0 != activeMessage_.metadata()->originMessage().length()) {
     state = ActiveMessage::FilterIterationStartState::CanStartFromCurrent;
-    ENVOY_LOG(warn, "The original message data is not consumed, triggering the decoder filter from "
-                    "the current location");
+    // ENVOY_LOG(warn, "The original message data is not consumed, triggering the decoder filter from "
+    //                 "the current location");
   }
   const FilterStatus status = activeMessage_.applyDecoderFilters(this, state);
   if (status == FilterStatus::ContinueIteration) {
-    ENVOY_LOG(debug, "meta protocol response: start upstream");
+    // ENVOY_LOG(debug, "meta protocol response: start upstream");
     // All filters have been executed for the current decoder state.
     if (activeMessage_.pendingStreamDecoded()) {
       // If the filter stack was paused during messageEnd, handle end-of-request details.

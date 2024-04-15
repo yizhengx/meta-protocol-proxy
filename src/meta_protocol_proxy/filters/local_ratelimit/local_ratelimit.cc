@@ -18,7 +18,7 @@ FilterConfig::FilterConfig(const LocalRateLimitConfig& cfg, Stats::Scope&,
           cfg.token_bucket().max_tokens(), dispatcher,
           cfg)) {
             // ENVOY_LOG(warn, "FilterConfig Constructor");
-            dispatcher = dispatcher;
+            dispatcher_ = dispatcher;
           }
 
 void LocalRateLimit::onDestroy() { cleanup(); }
@@ -33,11 +33,11 @@ FilterStatus LocalRateLimit::onMessageDecoded(MetadataSharedPtr, MutationSharedP
     return FilterStatus::ContinueIteration;
   }
   // ENVOY_STREAM_LOG(warn, "meta protocol local rate limit: onMessageDecoded, pauseIteration {}", *callbacks_, metadata->getRequestId());
-  std::chrono::time_point<std::chrono::system_clock> now = std::chrono::system_clock::now()
+  std::chrono::time_point<std::chrono::system_clock> now = std::chrono::system_clock::now();
   std::chrono::time_point<std::chrono::system_clock> timeout = 
     filter_config_->rateLimiter().getTimeout(now);
-  fill_timer_ = filter_config_->dispatcher.createTimer([this] { onFillTimer(); })
-  fill_timer_.enableHRTimer(std::chrono::duration_cast<std::chrono::microseconds>(timeout - now));
+  fill_timer_ = filter_config_->dispatcher_.createTimer([this] { onFillTimer(); });
+  fill_timer_->enableHRTimer(std::chrono::duration_cast<std::chrono::microseconds>(timeout - now));
   has_buffered = true;
   return FilterStatus::PauseIteration;
   // return FilterStatus::ContinueIteration;

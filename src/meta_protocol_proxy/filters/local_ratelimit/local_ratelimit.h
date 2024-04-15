@@ -30,7 +30,7 @@ public:
 
   LocalRateLimiterImpl& rateLimiter() { return rate_limiter_; }
 
-  Event::Dispatcher& dispatcher;
+  Event::Dispatcher& dispatcher_;
 
 private:
   LocalRateLimiterImpl rate_limiter_;

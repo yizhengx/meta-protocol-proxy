@@ -30,6 +30,8 @@ public:
 
   LocalRateLimiterImpl& rateLimiter() { return rate_limiter_; }
 
+  Event::Dispatcher& dispatcher;
+
 private:
   LocalRateLimiterImpl rate_limiter_;
 };
@@ -50,8 +52,12 @@ public:
   void setEncoderFilterCallbacks(EncoderFilterCallbacks& callbacks) override;
   FilterStatus onMessageEncoded(MetadataSharedPtr, MutationSharedPtr) override;
 
+  void onFillTimer();
+
 private:
   void cleanup();
+
+  Event::TimerPtr fill_timer_;
 
   DecoderFilterCallbacks* callbacks_{};
   EncoderFilterCallbacks* encoder_callbacks_{};

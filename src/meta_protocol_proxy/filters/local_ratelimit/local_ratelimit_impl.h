@@ -30,60 +30,7 @@ aeraki::meta_protocol_proxy::filters::local_ratelimit::v1alpha::LocalRateLimit;
 struct QueueElement{
   DecoderFilterCallbacks* callbacks;
   std::chrono::time_point<std::chrono::system_clock> timeout;
-};
 
-class TSQueue: public Logger::Loggable<Logger::Id::filter>{
-private:
-    // Underlying queue
-    std::queue<QueueElement> queue_;
-    // mutex for thread synchronization
-    mutable std::mutex mutex_;
-    std::chrono::time_point<std::chrono::system_clock> last_timeout;
-    std::chrono::microseconds delay;
-  
-public:
-    TSQueue(std::chrono::microseconds delay_){
-      delay = delay_;
-    }
-
-    // Pushes an element to the queue
-    void push(DecoderFilterCallbacks* callbacks)
-    {
-      std::lock_guard<std::mutex> lock(mutex_);
-      if (queue_.empty()){
-        last_timeout = std::chrono::system_clock::now() + delay;
-        QueueElement ele = {callbacks, std::chrono::time_point(last_timeout)};
-        queue_.push(ele);
-        // ENVOY_LOG(warn, "Push a request to empty queue");
-      }else{
-        last_timeout += delay;
-        QueueElement ele = {callbacks, std::chrono::time_point(last_timeout)};
-        queue_.push(ele);
-        // ENVOY_LOG(warn, "Push a request to a non empty queue, size {}", queue_.size());
-      }
-    }
-  
-    // Pops an element off the queue
-    void pop()
-    {
-      std::lock_guard<std::mutex> lock(mutex_);
-      while (!queue_.empty())
-      {
-        QueueElement ele = queue_.front();
-        std::chrono::time_point<std::chrono::system_clock> t = std::chrono::system_clock::now();
-        if (ele.timeout < t){
-          // ENVOY_LOG(warn, "should resume request");
-          ele.callbacks->dispatcher().post([=]() {
-            ele.callbacks->continueDecoding();
-          });
-          queue_.pop();
-          // ENVOY_LOG(warn, "resume request");
-        }else{
-          break;
-        }
-      }
-    }
-};
 
 class LocalRateLimiterImpl: public Logger::Loggable<Logger::Id::filter> {
 public:
@@ -93,18 +40,13 @@ public:
   ~LocalRateLimiterImpl();
 
   // Custom Logic
-  void bufferRequest(DecoderFilterCallbacks* callbacks);
+  std::chrono::time_point<std::chrono::system_clock> getTimeout(std::chrono::time_point<std::chrono::system_clock> cur_time);
 
 private:
-  void onFillTimer();
-  void onFillTimerCostomHelper();
-
-  const Event::TimerPtr fill_timer_;
-  TimeSource& time_source_;
-  std::chrono::microseconds timer_duration_;
-
+  std::chrono::microseconds delay;
+  std::chrono::time_point<std::chrono::system_clock> last_timeout;
   LocalRateLimitConfig config_;
-  TSQueue queue;
+  mutable std::mutex mutex_;
 };
 
 } // namespace LocalRateLimit

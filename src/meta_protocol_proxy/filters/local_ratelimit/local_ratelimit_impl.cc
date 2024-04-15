@@ -12,31 +12,23 @@ namespace LocalRateLimit {
 LocalRateLimiterImpl::LocalRateLimiterImpl(
     const std::chrono::milliseconds fill_interval, const uint32_t max_tokens, 
     Event::Dispatcher& dispatcher, const LocalRateLimitConfig& cfg)
-    : fill_timer_(dispatcher.createTimer([this] { onFillTimer(); })),
-      time_source_(dispatcher.timeSource()), timer_duration_(fill_interval),
-      config_(cfg), queue(TSQueue(std::chrono::microseconds(max_tokens)))
+    : config_(cfg)
 {
   ENVOY_LOG(warn, "LocalRateLimiterImpl Constructor");
-  ENVOY_LOG(warn, cfg.token_bucket().max_tokens());
-  ENVOY_LOG(warn, PROTOBUF_GET_WRAPPED_OR_DEFAULT(cfg.token_bucket(), tokens_per_fill, 1));
-  timer_duration_ = std::chrono::microseconds(1);
-  fill_timer_->enableHRTimer(timer_duration_);
+  ENVOY_LOG(warn, max_tokens);
+  delay = std::chrono::microseconds(max_tokens);
+  last_timeout = std::chrono::system_clock::now();
+}
+
+std::chrono::time_point<std::chrono::system_clock> LocalRateLimiterImpl::getTimeout(std::chrono::time_point<std::chrono::system_clock> cur_time){
+  std::lock_guard<std::mutex> lock(mutex_);
+  last_timeout = max(last_timeout, cur_time) + delay;
+  return last_timeout;
 }
 
 LocalRateLimiterImpl::~LocalRateLimiterImpl() {
   fill_timer_->disableTimer();
 }
-
-void LocalRateLimiterImpl::bufferRequest(DecoderFilterCallbacks* callbacks){
-  queue.push(callbacks);
-}
-
-void LocalRateLimiterImpl::onFillTimer() {
-  // ENVOY_LOG(warn, "LocalRateLimiterImpl::onFillTimer");
-  fill_timer_->enableHRTimer(timer_duration_);
-  queue.pop();
-}
-
 
 } // namespace LocalRateLimit
 } // namespace MetaProtocolProxy

@@ -35,11 +35,11 @@ FilterStatus LocalRateLimit::onMessageDecoded(MetadataSharedPtr, MutationSharedP
   auto it = filter_config_->rateLimiter().getTimeout();
   std::chrono::time_point<std::chrono::system_clock> now = std::chrono::system_clock::now();
   std::chrono::time_point<std::chrono::system_clock> last_timeout = std::get<0>(it);
-  std::chrono::time_point<std::chrono::system_clock> timeout = max(last_timeout, now) + filter_config_->delay;
+  std::chrono::time_point<std::chrono::system_clock> timeout = max(last_timeout, now) + filter_config_->rateLimiter().delay;
   while (!filter_config_->rateLimiter().setTimeout(timeout, std::get<1>(it))){
     it = filter_config_->rateLimiter().getTimeout();
     last_timeout = std::get<0>(it);
-    timeout = max(last_timeout, now) + filter_config_->delay;
+    timeout = max(last_timeout, now) + filter_config_->rateLimiter().delay;
   }
   fill_timer_ = filter_config_->dispatcher_.createTimer([this] { onFillTimer(); });
   fill_timer_->enableHRTimer(std::chrono::duration_cast<std::chrono::microseconds>(timeout - now));

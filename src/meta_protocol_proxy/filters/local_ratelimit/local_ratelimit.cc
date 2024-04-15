@@ -16,9 +16,8 @@ FilterConfig::FilterConfig(const LocalRateLimitConfig& cfg, Stats::Scope&,
           std::chrono::milliseconds(
               PROTOBUF_GET_MS_OR_DEFAULT(cfg.token_bucket(), fill_interval, 0)),
           cfg.token_bucket().max_tokens(), dispatcher,
-          cfg)) {
+          cfg)), dispatcher_(dispatcher){
             // ENVOY_LOG(warn, "FilterConfig Constructor");
-            dispatcher_ = dispatcher;
           }
 
 void LocalRateLimit::onDestroy() { cleanup(); }

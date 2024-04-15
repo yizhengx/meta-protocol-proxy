@@ -27,11 +27,6 @@ namespace LocalRateLimit {
 using LocalRateLimitConfig =
 aeraki::meta_protocol_proxy::filters::local_ratelimit::v1alpha::LocalRateLimit;
 
-struct QueueElement{
-  DecoderFilterCallbacks* callbacks;
-  std::chrono::time_point<std::chrono::system_clock> timeout;
-
-
 class LocalRateLimiterImpl: public Logger::Loggable<Logger::Id::filter> {
 public:
   LocalRateLimiterImpl(

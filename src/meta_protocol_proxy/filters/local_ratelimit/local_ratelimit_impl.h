@@ -36,12 +36,13 @@ public:
 
   // Custom Logic
   std::chrono::time_point<std::chrono::system_clock> getTimeout(std::chrono::time_point<std::chrono::system_clock> cur_time);
+  std::chrono::microseconds delay;
 
 private:
-  std::chrono::microseconds delay;
   std::chrono::time_point<std::chrono::system_clock> last_timeout;
   LocalRateLimitConfig config_;
-  mutable std::mutex mutex_;
+  // mutable std::mutex mutex_;
+  uint64_t cas;
 };
 
 } // namespace LocalRateLimit

@@ -20,10 +20,19 @@ LocalRateLimiterImpl::LocalRateLimiterImpl(
   last_timeout = std::chrono::system_clock::now();
 }
 
-std::chrono::time_point<std::chrono::system_clock> LocalRateLimiterImpl::getTimeout(std::chrono::time_point<std::chrono::system_clock> cur_time){
-  std::lock_guard<std::mutex> lock(mutex_);
-  last_timeout = max(last_timeout, cur_time) + delay;
-  return last_timeout;
+std::pair<std::chrono::time_point<std::chrono::system_clock>, uint64_t> LocalRateLimiterImpl::getTimeout(std::chrono::time_point<std::chrono::system_clock> cur_time){
+  // std::lock_guard<std::mutex> lock(mutex_);
+  return std::make_pair<last_timeout, cas>;
+}
+
+bool LocalRateLimiterImpl::setTimeout(std::chrono::time_point<std::chrono::system_clock> timeout, uint64_t cas_){
+  // std::lock_guard<std::mutex> lock(mutex_);
+  if (cas_ == cas){
+    last_timeout = timeout;
+    cas += 1;
+    return true;
+  }
+  return false
 }
 
 LocalRateLimiterImpl::~LocalRateLimiterImpl() {

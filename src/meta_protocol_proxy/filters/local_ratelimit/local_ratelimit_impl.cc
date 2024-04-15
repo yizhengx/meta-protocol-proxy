@@ -10,8 +10,8 @@ namespace MetaProtocolProxy {
 namespace LocalRateLimit {
 
 LocalRateLimiterImpl::LocalRateLimiterImpl(
-    const std::chrono::milliseconds fill_interval, const uint32_t max_tokens, 
-    Event::Dispatcher& dispatcher, const LocalRateLimitConfig& cfg)
+    const std::chrono::milliseconds, const uint32_t max_tokens, 
+    Event::Dispatcher&, const LocalRateLimitConfig& cfg)
     : config_(cfg)
 {
   ENVOY_LOG(warn, "LocalRateLimiterImpl Constructor");
@@ -27,7 +27,6 @@ std::chrono::time_point<std::chrono::system_clock> LocalRateLimiterImpl::getTime
 }
 
 LocalRateLimiterImpl::~LocalRateLimiterImpl() {
-  fill_timer_->disableTimer();
 }
 
 } // namespace LocalRateLimit

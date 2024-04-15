@@ -35,7 +35,8 @@ public:
   ~LocalRateLimiterImpl();
 
   // Custom Logic
-  std::chrono::time_point<std::chrono::system_clock> getTimeout(std::chrono::time_point<std::chrono::system_clock> cur_time);
+  std::pair<std::chrono::time_point<std::chrono::system_clock>, uint64_t> getTimeout();
+  bool setTimeout(std::chrono::time_point<std::chrono::system_clock> timeout, uint64_t cas_);
   std::chrono::microseconds delay;
 
 private:

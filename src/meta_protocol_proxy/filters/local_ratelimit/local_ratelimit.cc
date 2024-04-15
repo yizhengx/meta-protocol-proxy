@@ -43,7 +43,9 @@ FilterStatus LocalRateLimit::onMessageDecoded(MetadataSharedPtr, MutationSharedP
 }
 
 void LocalRateLimit::onFillTimer(){
-  callbacks_->continueDecoding();
+  callbacks_->dispatcher().post([=]() {
+    callbacks_->continueDecoding();
+  });
 }
 
 void LocalRateLimit::setEncoderFilterCallbacks(EncoderFilterCallbacks& callbacks) {

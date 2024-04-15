@@ -33,8 +33,8 @@ void LocalRateLimiterImpl::bufferRequest(DecoderFilterCallbacks* callbacks){
 
 void LocalRateLimiterImpl::onFillTimer() {
   // ENVOY_LOG(warn, "LocalRateLimiterImpl::onFillTimer");
-  queue.pop();
   fill_timer_->enableHRTimer(timer_duration_);
+  queue.pop();
 }
 
 

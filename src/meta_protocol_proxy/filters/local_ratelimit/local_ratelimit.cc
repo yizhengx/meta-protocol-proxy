@@ -12,11 +12,11 @@ namespace LocalRateLimit {
 
 FilterConfig::FilterConfig(const LocalRateLimitConfig& cfg, Stats::Scope&,
                            Event::Dispatcher& dispatcher)
-    : rate_limiter_(LocalRateLimiterImpl(
+    :  dispatcher_(dispatcher), rate_limiter_(LocalRateLimiterImpl(
           std::chrono::milliseconds(
               PROTOBUF_GET_MS_OR_DEFAULT(cfg.token_bucket(), fill_interval, 0)),
           cfg.token_bucket().max_tokens(), dispatcher,
-          cfg)), dispatcher_(dispatcher){
+          cfg)){
             // ENVOY_LOG(warn, "FilterConfig Constructor");
           }
 

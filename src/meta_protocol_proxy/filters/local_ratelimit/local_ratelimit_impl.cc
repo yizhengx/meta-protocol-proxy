@@ -23,7 +23,7 @@ LocalRateLimiterImpl::LocalRateLimiterImpl(
 
 std::pair<std::chrono::time_point<std::chrono::system_clock>, uint64_t> LocalRateLimiterImpl::getTimeout(){
   // std::lock_guard<std::mutex> lock(mutex_);
-  return std::make_pair<last_timeout, cas>;
+  return std::make_pair(last_timeout, cas);
 }
 
 bool LocalRateLimiterImpl::setTimeout(std::chrono::time_point<std::chrono::system_clock> timeout, uint64_t cas_){

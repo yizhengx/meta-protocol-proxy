@@ -28,10 +28,10 @@ void LocalRateLimit::setDecoderFilterCallbacks(DecoderFilterCallbacks& callbacks
 }
 
 FilterStatus LocalRateLimit::onMessageDecoded(MetadataSharedPtr, MutationSharedPtr) {
-  if (has_buffered) {
-    // ENVOY_STREAM_LOG(warn, "meta protocol local rate limit: onMessageDecoded, resumeIteration {}", *callbacks_, metadata->getRequestId());
-    return FilterStatus::ContinueIteration;
-  }
+  // if (has_buffered) {
+  //   // ENVOY_STREAM_LOG(warn, "meta protocol local rate limit: onMessageDecoded, resumeIteration {}", *callbacks_, metadata->getRequestId());
+  //   return FilterStatus::ContinueIteration;
+  // }
   // ENVOY_STREAM_LOG(warn, "meta protocol local rate limit: onMessageDecoded, pauseIteration {}", *callbacks_, metadata->getRequestId());
   auto it = filter_config_->rateLimiter().getTimeout();
   std::chrono::time_point<std::chrono::system_clock> now = std::chrono::system_clock::now();
@@ -45,9 +45,11 @@ FilterStatus LocalRateLimit::onMessageDecoded(MetadataSharedPtr, MutationSharedP
   fill_timer_ = filter_config_->dispatcher_.createTimer([this] { onFillTimer(); });
   ENVOY_LOG(warn, "onMessageDecoded -> Schedule at " + std::to_string(std::chrono::time_point_cast<std::chrono::microseconds>(timeout).time_since_epoch().count()));
   // ENVOY_LOG(warn, "onMessageDecoded -> Setting HRTimer " + std::to_string(std::chrono::duration_cast<std::chrono::microseconds>(timeout - std::chrono::system_clock::now()).count()));
-  fill_timer_->enableHRTimer(std::chrono::duration_cast<std::chrono::microseconds>(timeout - std::chrono::system_clock::now()));
-  has_buffered = true;
-  return FilterStatus::PauseIteration;
+  // fill_timer_->enableHRTimer(std::chrono::duration_cast<std::chrono::microseconds>(timeout - std::chrono::system_clock::now()));
+  std::this_thread::sleep_for(std::chrono::duration_cast<std::chrono::microseconds>(timeout - std::chrono::system_clock::now()));
+  return FilterStatus::ContinueIteration;
+  // has_buffered = true;
+  // return FilterStatus::PauseIteration;
   // return FilterStatus::ContinueIteration;
 }
 

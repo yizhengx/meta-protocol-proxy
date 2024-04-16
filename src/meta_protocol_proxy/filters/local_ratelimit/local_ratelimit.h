@@ -2,6 +2,7 @@
 
 #include <memory>
 #include <string>
+#include <thread>
 
 #include "envoy/network/filter.h"
 #include "envoy/stats/scope.h"

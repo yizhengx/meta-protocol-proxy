@@ -78,7 +78,7 @@ FilterStatus LocalRateLimit::onMessageDecoded(MetadataSharedPtr, MutationSharedP
   return FilterStatus::PauseIteration;
 }
 
-static void LocalRateLimit::releaseRequest(std::chrono::microseconds duration, DecoderFilterCallbacks* callbacs){
+void LocalRateLimit::releaseRequest(std::chrono::microseconds duration, DecoderFilterCallbacks* callbacs){
   std::this_thread::sleep_for(duration);
   ENVOY_LOG(warn, "onFillTimer "+std::to_string(std::chrono::time_point_cast<std::chrono::microseconds>(std::chrono::system_clock::now()).time_since_epoch().count())) ;
   callbacs->dispatcher().post([=]() {

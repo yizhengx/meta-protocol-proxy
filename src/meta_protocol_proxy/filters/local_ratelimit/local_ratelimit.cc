@@ -51,8 +51,8 @@ FilterStatus LocalRateLimit::onMessageDecoded(MetadataSharedPtr, MutationSharedP
 }
 
 void LocalRateLimit::onFillTimer(){
-  ENVOY_LOG(warn, std::chrono::time_point_cast<std::chrono::microseconds>(std::chrono::system_clock::now()).time_since_epoch().count());
   callbacks_->dispatcher().post([=]() {
+    ENVOY_LOG(warn, std::chrono::time_point_cast<std::chrono::microseconds>(std::chrono::system_clock::now()).time_since_epoch().count());
     callbacks_->continueDecoding();
   });
 }

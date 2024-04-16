@@ -28,7 +28,7 @@ std::pair<std::chrono::time_point<std::chrono::system_clock>, uint64_t> LocalRat
 
 bool LocalRateLimiterImpl::setTimeout(std::chrono::time_point<std::chrono::system_clock> timeout, uint64_t cas_){
   // std::lock_guard<std::mutex> lock(mutex_);
-  ENVOY_LOG(warn, "CAS Critical Section");
+  // ENVOY_LOG(warn, "CAS Critical Section");
   if (cas_ == cas){
     last_timeout = timeout;
     cas += 1;

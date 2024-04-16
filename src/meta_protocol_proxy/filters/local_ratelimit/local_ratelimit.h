@@ -54,7 +54,7 @@ public:
   FilterStatus onMessageEncoded(MetadataSharedPtr, MutationSharedPtr) override;
 
 
-  void LocalRateLimit::releaseRequest(std::chrono::microseconds, DecoderFilterCallbacks*);
+  void releaseRequest(std::chrono::microseconds, DecoderFilterCallbacks*);
 
   void onFillTimer();
 

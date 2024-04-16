@@ -54,7 +54,7 @@ public:
   FilterStatus onMessageEncoded(MetadataSharedPtr, MutationSharedPtr) override;
 
 
-  void releaseRequest(std::chrono::microseconds, DecoderFilterCallbacks*);
+  static void releaseRequest(std::chrono::microseconds, DecoderFilterCallbacks*);
 
   void onFillTimer();
 

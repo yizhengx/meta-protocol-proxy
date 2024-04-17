@@ -100,7 +100,7 @@ FilterStatus LocalRateLimit::onMessageDecoded(MetadataSharedPtr, MutationSharedP
   std::chrono::time_point<std::chrono::system_clock> last_timeout = filter_config_->rateLimiter().getTimeout();
   std::chrono::time_point<std::chrono::system_clock> timeout = max(last_timeout, now) + filter_config_->rateLimiter().delay;
   while (!filter_config_->rateLimiter().setTimeout(last_timeout, timeout)){
-    // ENVOY_LOG(warn, "Failed, retry");
+    ENVOY_LOG(warn, "Failed, retry");
     last_timeout = filter_config_->rateLimiter().getTimeout();
     timeout = max(last_timeout, now) + filter_config_->rateLimiter().delay;
   }

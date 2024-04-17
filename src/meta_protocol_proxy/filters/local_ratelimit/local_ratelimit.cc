@@ -108,7 +108,7 @@ FilterStatus LocalRateLimit::onMessageDecoded(MetadataSharedPtr, MutationSharedP
   }
   fill_timer_ = callbacks_->dispatcher().createTimer([this] { onFillTimer(); });
   ENVOY_LOG(warn, "onMessageDecoded -> Schedule at " + std::to_string(std::chrono::time_point_cast<std::chrono::microseconds>(timeout).time_since_epoch().count()));
-  fill_timer_->enableHRTimer(std::chrono::duration_cast<std::chrono::microseconds>(timeout - std::chrono::system_clock::now()));
+  fill_timer_->enableTimer(std::chrono::duration_cast<std::chrono::milliseconds>(timeout - std::chrono::system_clock::now()));
   has_buffered = true;
   return FilterStatus::PauseIteration;
 }

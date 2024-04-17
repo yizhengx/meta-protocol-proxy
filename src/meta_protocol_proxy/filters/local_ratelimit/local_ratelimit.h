@@ -41,7 +41,7 @@ class LocalRateLimit : public CodecFilter, Logger::Loggable<Logger::Id::filter> 
 public:
   LocalRateLimit(std::shared_ptr<FilterConfig> filter_config) : filter_config_(filter_config){
     has_buffered = false;
-    ENVOY_LOG(warn, "onLocalRateLimit Constructor " + std::to_string(std::chrono::time_point_cast<std::chrono::microseconds>(timeout).time_since_epoch().count()));
+    ENVOY_LOG(warn, "onLocalRateLimit Constructor " + std::to_string(std::chrono::time_point_cast<std::chrono::microseconds>(std::chrono::system_clock::now()).time_since_epoch().count()));
 
   };
   ~LocalRateLimit() override = default;

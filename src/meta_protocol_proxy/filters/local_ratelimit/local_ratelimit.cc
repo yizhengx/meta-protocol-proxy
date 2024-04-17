@@ -96,7 +96,7 @@ FilterStatus LocalRateLimit::onMessageDecoded(MetadataSharedPtr, MutationSharedP
     return FilterStatus::ContinueIteration;
   }
   filter_config_->rateLimiter().incoming_counter ++;
-  ENVOY_LOG(warn, "onMessageDecoded -> Counter" + std::to_string(filter_config_->rateLimiter().incoming_counter)) + " && " + std::to_string(std::chrono::time_point_cast<std::chrono::microseconds>(std::chrono::system_clock::now()).time_since_epoch().count());
+  ENVOY_LOG(warn, "onMessageDecoded -> Counter" + std::to_string(filter_config_->rateLimiter().incoming_counter) + " && " + std::to_string(std::chrono::time_point_cast<std::chrono::microseconds>(std::chrono::system_clock::now()).time_since_epoch().count()));
   // ENVOY_STREAM_LOG(warn, "meta protocol local rate limit: onMessageDecoded, pauseIteration {}", *callbacks_, metadata->getRequestId());
   std::chrono::time_point<std::chrono::system_clock> now = std::chrono::system_clock::now();
   std::chrono::time_point<std::chrono::system_clock> last_timeout = filter_config_->rateLimiter().getTimeout();

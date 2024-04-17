@@ -101,13 +101,13 @@ FilterStatus LocalRateLimit::onMessageDecoded(MetadataSharedPtr, MutationSharedP
   std::chrono::time_point<std::chrono::system_clock> last_timeout = std::get<0>(it);
   std::chrono::time_point<std::chrono::system_clock> timeout = max(last_timeout, now) + filter_config_->rateLimiter().delay;
   while (!filter_config_->rateLimiter().setTimeout(timeout, std::get<1>(it))){
-    ENVOY_LOG(warn, "Failed, retry");
+    // ENVOY_LOG(warn, "Failed, retry");
     it = filter_config_->rateLimiter().getTimeout();
     last_timeout = std::get<0>(it);
     timeout = max(last_timeout, now) + filter_config_->rateLimiter().delay;
   }
   fill_timer_ = callbacks_->dispatcher().createTimer([this] { onFillTimer(); });
-  ENVOY_LOG(warn, "onMessageDecoded -> Schedule at " + std::to_string(std::chrono::time_point_cast<std::chrono::microseconds>(timeout).time_since_epoch().count()));
+  // ENVOY_LOG(warn, "onMessageDecoded -> Schedule at " + std::to_string(std::chrono::time_point_cast<std::chrono::microseconds>(timeout).time_since_epoch().count()));
   fill_timer_->enableHRTimer(std::chrono::duration_cast<std::chrono::microseconds>(timeout - std::chrono::system_clock::now()));
   has_buffered = true;
   return FilterStatus::PauseIteration;
@@ -129,7 +129,7 @@ void LocalRateLimit::onFillTimer(){
   //   callbacks_->continueDecoding();
   // });
 
-  ENVOY_LOG(warn, "continueDecoding "+std::to_string(std::chrono::time_point_cast<std::chrono::microseconds>(std::chrono::system_clock::now()).time_since_epoch().count()));
+  // ENVOY_LOG(warn, "continueDecoding "+std::to_string(std::chrono::time_point_cast<std::chrono::microseconds>(std::chrono::system_clock::now()).time_since_epoch().count()));
   callbacks_->continueDecoding();
 }
 

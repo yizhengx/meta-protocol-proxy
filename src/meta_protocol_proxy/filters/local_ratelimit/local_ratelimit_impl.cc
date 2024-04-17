@@ -17,7 +17,7 @@ LocalRateLimiterImpl::LocalRateLimiterImpl(
   ENVOY_LOG(warn, "LocalRateLimiterImpl Constructor");
   ENVOY_LOG(warn, max_tokens);
   delay = std::chrono::microseconds(max_tokens);
-  last_timeout.store(std::chrono::system_clock::now());
+  // last_timeout.store(std::chrono::system_clock::now());
   // cas = 0;
 }
 

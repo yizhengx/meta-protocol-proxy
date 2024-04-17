@@ -136,7 +136,7 @@ void LocalRateLimit::setEncoderFilterCallbacks(EncoderFilterCallbacks& callbacks
 }
 
 FilterStatus LocalRateLimit::onMessageEncoded(MetadataSharedPtr, MutationSharedPtr) {
-  // ENVOY_STREAM_LOG(warn, "LocalRateLimit::onMessageEncoded {}", *encoder_callbacks_, metadata->getRequestId());
+  ENVOY_LOG(warn, "onMessageEncoded "+std::to_string(std::chrono::time_point_cast<std::chrono::microseconds>(std::chrono::system_clock::now()).time_since_epoch().count()));
   return FilterStatus::ContinueIteration;
 }
 

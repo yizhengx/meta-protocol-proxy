@@ -41,7 +41,7 @@ public:
   std::chrono::microseconds delay;
 
 private:
-  std::atomic<std::chrono::system_clock> last_timeout(std::chrono::system_clock::now());
+  std::atomic<std::chrono::time_point<std::chrono::system_clock>> last_timeout();
   LocalRateLimitConfig config_;
   // mutable std::mutex mutex_;
   // uint64_t cas;

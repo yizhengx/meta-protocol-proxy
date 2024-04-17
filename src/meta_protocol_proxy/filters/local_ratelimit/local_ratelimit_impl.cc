@@ -21,20 +21,14 @@ LocalRateLimiterImpl::LocalRateLimiterImpl(
   cas = 0;
 }
 
-std::pair<std::chrono::time_point<std::chrono::system_clock>, uint64_t> LocalRateLimiterImpl::getTimeout(){
+std::chrono::time_point<std::chrono::system_clock> LocalRateLimiterImpl::getTimeout(){
   // std::lock_guard<std::mutex> lock(mutex_);
-  return std::make_pair(last_timeout, cas);
+  return last_timeout.load();
 }
 
-bool LocalRateLimiterImpl::setTimeout(std::chrono::time_point<std::chrono::system_clock> timeout, uint64_t cas_){
+bool LocalRateLimiterImpl::setTimeout(std::chrono::time_point<std::chrono::system_clock> old_timeout, std::chrono::time_point<std::chrono::system_clock> new_timeout){
   // std::lock_guard<std::mutex> lock(mutex_);
-  // ENVOY_LOG(warn, "CAS Critical Section");
-  if (cas_ == cas){
-    last_timeout = timeout;
-    cas += 1;
-    return true;
-  }
-  return false;
+  return last_timeout.compare_exchange_weak(old_timeout, new_timeout);
 }
 
 LocalRateLimiterImpl::~LocalRateLimiterImpl() {

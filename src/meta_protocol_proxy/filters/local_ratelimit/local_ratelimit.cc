@@ -96,14 +96,12 @@ FilterStatus LocalRateLimit::onMessageDecoded(MetadataSharedPtr, MutationSharedP
     return FilterStatus::ContinueIteration;
   }
   // ENVOY_STREAM_LOG(warn, "meta protocol local rate limit: onMessageDecoded, pauseIteration {}", *callbacks_, metadata->getRequestId());
-  auto it = filter_config_->rateLimiter().getTimeout();
   std::chrono::time_point<std::chrono::system_clock> now = std::chrono::system_clock::now();
-  std::chrono::time_point<std::chrono::system_clock> last_timeout = std::get<0>(it);
+  std::chrono::time_point<std::chrono::system_clock> last_timeout = filter_config_->rateLimiter().getTimeout();
   std::chrono::time_point<std::chrono::system_clock> timeout = max(last_timeout, now) + filter_config_->rateLimiter().delay;
-  while (!filter_config_->rateLimiter().setTimeout(timeout, std::get<1>(it))){
+  while (!filter_config_->rateLimiter().setTimeout(last_timeout, timeout)){
     // ENVOY_LOG(warn, "Failed, retry");
-    it = filter_config_->rateLimiter().getTimeout();
-    last_timeout = std::get<0>(it);
+    last_timeout = filter_config_->rateLimiter().getTimeout();
     timeout = max(last_timeout, now) + filter_config_->rateLimiter().delay;
   }
   fill_timer_ = callbacks_->dispatcher().createTimer([this] { onFillTimer(); });

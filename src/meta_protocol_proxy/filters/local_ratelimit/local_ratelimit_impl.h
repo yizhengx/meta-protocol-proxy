@@ -3,6 +3,7 @@
 #include <chrono>
 #include <queue>
 #include <mutex>
+#include <atomic>
 
 #include "envoy/event/dispatcher.h"
 #include "envoy/event/timer.h"
@@ -35,15 +36,15 @@ public:
   ~LocalRateLimiterImpl();
 
   // Custom Logic
-  std::pair<std::chrono::time_point<std::chrono::system_clock>, uint64_t> getTimeout();
-  bool setTimeout(std::chrono::time_point<std::chrono::system_clock> timeout, uint64_t cas_);
+  std::chrono::time_point<std::chrono::system_clock> getTimeout();
+  bool setTimeout(std::chrono::time_point<std::chrono::system_clock>, std::chrono::time_point<std::chrono::system_clock> );
   std::chrono::microseconds delay;
 
 private:
-  std::chrono::time_point<std::chrono::system_clock> last_timeout;
+  std::atomic<std::chrono::system_clock> last_timeout;
   LocalRateLimitConfig config_;
   // mutable std::mutex mutex_;
-  uint64_t cas;
+  // uint64_t cas;
 };
 
 } // namespace LocalRateLimit

@@ -39,7 +39,7 @@ public:
   std::chrono::time_point<std::chrono::system_clock> getTimeout();
   bool setTimeout(std::chrono::time_point<std::chrono::system_clock>, std::chrono::time_point<std::chrono::system_clock> );
   std::chrono::microseconds delay;
-  int incoming_counter;
+  // int incoming_counter;
 
 private:
   std::atomic<std::chrono::time_point<std::chrono::system_clock>> last_timeout;

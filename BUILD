@@ -14,7 +14,6 @@ envoy_cc_binary(
         "//src/application_protocols/thrift:config",
         "//src/application_protocols/brpc:config",
         "//src/application_protocols/trpc:config",
-        "//src/application_protocols/mongodb:config",
         "@io_istio_proxy//extensions/access_log_policy:access_log_policy_lib",
         "@io_istio_proxy//extensions/metadata_exchange:metadata_exchange_lib",
         "@io_istio_proxy//extensions/stackdriver:stackdriver_plugin",

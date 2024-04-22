@@ -60,7 +60,7 @@ MetaProtocolProxy::DecodeStatus MemcachedCodec::decode(Buffer::Instance& buffer,
   if (extras_length >= 8) { // Ensure there are at least 8 bytes for flags and expiry
     buffer.drain(MemcachedHeaderSize); // Remove the header
     flags = ntohl(*reinterpret_cast<const uint32_t*>(buffer.linearize(4)));
-    expiry = ntohl(*reinterpret_cast<const uint32_t*>(buffer.linearize(4) + 4));
+    expiry = ntohl(*reinterpret_cast<const uint32_t*>(buffer.linearize(4)) + 4);
     buffer.drain(8); // Remove the extras
     metadata.put("Flags", flags);
     metadata.put("Expiry", expiry);
@@ -97,9 +97,9 @@ void MemcachedCodec::encode(const MetaProtocolProxy::Metadata& metadata,
 }
 
 
-void MemcachedCodec::onError(const MetaProtocolProxy::Metadata& metadata,
-                             const MetaProtocolProxy::Error& error,
-                             Buffer::Instance& buffer) {
+void MemcachedCodec::onError(const MetaProtocolProxy::Metadata&,
+                             const MetaProtocolProxy::Error&,
+                             Buffer::Instance&) {
     // Error handling logic will be implemented in the next part
 }
 

@@ -34,6 +34,7 @@ envoy_cc_library(
         "@envoy//source/common/common:logger_lib",
         "@envoy//source/common/buffer:buffer_lib",
         "//src/meta_protocol_proxy/codec:codec_interface",
+        ":protocol",
         # Any additional dependencies specific to your codec
     ],
 )

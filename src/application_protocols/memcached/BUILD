@@ -33,6 +33,7 @@ envoy_cc_library(
         "@envoy//envoy/buffer:buffer_interface",
         "@envoy//source/common/common:logger_lib",
         "@envoy//source/common/buffer:buffer_lib",
+        "@envoy//source/common/common:assert_lib",
         "//src/meta_protocol_proxy/codec:codec_interface",
         ":protocol",
         # Any additional dependencies specific to your codec

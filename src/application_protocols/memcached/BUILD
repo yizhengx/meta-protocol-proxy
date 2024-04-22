@@ -50,5 +50,6 @@ envoy_cc_library(
         ":pkg_cc_proto",
         "@envoy//source/common/buffer:buffer_lib",
         "@envoy//source/common/common:minimal_logger_lib",
+        "//src/meta_protocol_proxy/codec:codec_interface",
     ]
 )

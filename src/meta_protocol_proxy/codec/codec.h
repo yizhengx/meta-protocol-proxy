@@ -130,6 +130,7 @@ using MutationSharedPtr = std::shared_ptr<Mutation>;
 enum class DecodeStatus {
   WaitForData = 0,
   Done = 1,
+  Error = 2
 };
 
 enum class ErrorType {

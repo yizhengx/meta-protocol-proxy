@@ -402,7 +402,7 @@ void ActiveMessage::onMessageDecoded(MetadataSharedPtr metadata, MutationSharedP
   }
 
   ENVOY_LOG(
-      debug,
+      warn,
       "meta protocol {} request: complete processing of downstream request messages, id is {}",
       connection_manager_.config().applicationProtocol(), metadata->getRequestId());
 }

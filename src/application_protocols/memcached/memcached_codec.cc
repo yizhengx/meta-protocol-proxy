@@ -31,7 +31,7 @@ MetaProtocolProxy::DecodeStatus MemcachedCodec::decode(Buffer::Instance& buffer,
   uint16_t status_or_reserved = ntohs(*reinterpret_cast<const uint16_t*>(header_bytes + 6));
   uint32_t total_body_length = ntohl(*reinterpret_cast<const uint32_t*>(header_bytes + 8));
   uint32_t opaque = ntohl(*reinterpret_cast<const uint32_t*>(header_bytes + 12));
-  uint64_t cas = ntohll(*reinterpret_cast<const uint64_t*>(header_bytes + 16));
+  uint64_t cas = ntohl(*reinterpret_cast<const uint64_t*>(header_bytes + 16));
 
   // Check if the buffer has the full body of the message
   if (buffer.length() < MemcachedHeaderSize + total_body_length) {
@@ -85,62 +85,6 @@ MetaProtocolProxy::DecodeStatus MemcachedCodec::decode(Buffer::Instance& buffer,
 
   return MetaProtocolProxy::DecodeStatus::Done;
 }
-
-static std::string MagicByteToString(uint8_t magic) {
-    switch (magic) {
-        case 0x80: return "Request";
-        case 0x81: return "Response";
-        default: return "Unknown";
-    }
-}
-
-static std::string ResponseStatusToString(uint16_t status) {
-    switch (status) {
-        case 0x0000: return "No error";
-        case 0x0001: return "Key not found";
-        case 0x0002: return "Key exists";
-        case 0x0003: return "Value too large";
-        case 0x0004: return "Invalid arguments";
-        case 0x0005: return "Item not stored";
-        case 0x0006: return "Incr/Decr on non-numeric value";
-        case 0x0081: return "Unknown command";
-        case 0x0082: return "Out of memory";
-        default: return "Other error";
-    }
-}
-
-   static std::string OpcodeToString(uint8_t opcode) {
-        switch (opcode) {
-            case 0x00: return "Get";
-            case 0x01: return "Set";
-            case 0x02: return "Add";
-            case 0x03: return "Replace";
-            case 0x04: return "Delete";
-            case 0x05: return "Increment";
-            case 0x06: return "Decrement";
-            case 0x07: return "Quit";
-            case 0x08: return "Flush";
-            case 0x09: return "GetQ";
-            case 0x0A: return "No-op";
-            case 0x0B: return "Version";
-            case 0x0C: return "GetK";
-            case 0x0D: return "GetKQ";
-            case 0x0E: return "Append";
-            case 0x0F: return "Prepend";
-            case 0x10: return "Stat";
-            case 0x11: return "SetQ";
-            case 0x12: return "AddQ";
-            case 0x13: return "ReplaceQ";
-            case 0x14: return "DeleteQ";
-            case 0x15: return "IncrementQ";
-            case 0x16: return "DecrementQ";
-            case 0x17: return "QuitQ";
-            case 0x18: return "FlushQ";
-            case 0x19: return "AppendQ";
-            case 0x1A: return "PrependQ";
-            default: return "Unknown Opcode";
-        }
-    }
 
 void MemcachedCodec::encode(const MetaProtocolProxy::Metadata& metadata,
                             const MetaProtocolProxy::Mutation& mutation,

@@ -301,7 +301,7 @@ ActiveMessage::commonDecodePrefix(ActiveMessageDecoderFilter* filter,
 }
 
 void ActiveMessage::onMessageDecoded(MetadataSharedPtr metadata, MutationSharedPtr mutation) {
-  ENVOY_LOG(critical,"onMessageDecoded");
+  ENVOY_LOG(warn,"onMessageDecoded");
   connection_manager_.stats().request_decoding_success_.inc();
   stream_info_->addBytesSent(metadata->getMessageSize());
 

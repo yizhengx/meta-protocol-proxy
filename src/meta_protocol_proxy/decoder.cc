@@ -1,7 +1,5 @@
 #include "src/meta_protocol_proxy/decoder.h"
 #include "src/meta_protocol_proxy/codec_impl.h"
-// #include "src/application_protocols/thrift/thrift_codec.h"
-// #include "src/application_protocols/memcached/memcached_codec.h"
 
 namespace Envoy {
 namespace Extensions {
@@ -11,8 +9,8 @@ namespace MetaProtocolProxy {
 ProtocolState DecoderStateMachine::onDecodeStream(Buffer::Instance& buffer) {
   auto metadata = std::make_shared<MetadataImpl>();
   metadata->setMessageType(messageType_);
-  ENVOY_LOG(debug, "meta protocol decoder: start to decode a message, {} bytes available, {} protocol",
-            buffer.length(), codec_);
+  ENVOY_LOG(debug, "meta protocol decoder: start to decode a message, {} bytes available",
+            buffer.length());
   auto decodeStatus = codec_.decode(buffer, *metadata);
   ENVOY_LOG(debug, "meta protocol decoder finished");
   if (decodeStatus == DecodeStatus::WaitForData) {

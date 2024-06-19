@@ -11,14 +11,8 @@ namespace MetaProtocolProxy {
 ProtocolState DecoderStateMachine::onDecodeStream(Buffer::Instance& buffer) {
   auto metadata = std::make_shared<MetadataImpl>();
   metadata->setMessageType(messageType_);
-  std::string protocol = "default";
-  if ((Thrift::ThriftCodec*) a = dynamic_cast<Thrift::ThriftCodec*>(&codec_)){
-    protocol = "thrift";
-  } elif ((Memcached::MemcachedCodec*) b = dynamic_cast<Memcached::MemcachedCodec*>(&codec_)){
-    protocol = "memcached";
-  }
   ENVOY_LOG(debug, "meta protocol decoder: start to decode a message, {} bytes available, {} protocol",
-            buffer.length(), protocol);
+            buffer.length(), codec_);
   auto decodeStatus = codec_.decode(buffer, *metadata);
   ENVOY_LOG(debug, "meta protocol decoder finished");
   if (decodeStatus == DecodeStatus::WaitForData) {

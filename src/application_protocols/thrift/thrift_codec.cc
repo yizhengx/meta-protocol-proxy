@@ -18,7 +18,7 @@ namespace Thrift {
 MetaProtocolProxy::DecodeStatus ThriftCodec::decode(Buffer::Instance& data,
                                                     MetaProtocolProxy::Metadata& metadata) {
 
-  ENVOY_LOG(debug, "thrift: {} bytes available", data.length());
+  ENVOY_LOG(warn, "thrift decoder: {} bytes available", data.length());
 
   if (frame_ended_) {
     // Continuation after filter stopped iteration on transportComplete callback.
@@ -107,7 +107,7 @@ void ThriftCodec::encode(const MetaProtocolProxy::Metadata& metadata,
   for (const auto& keyValue : mutation) {
     ENVOY_LOG(debug, "thrift: codec mutation {} : {}", keyValue.first, keyValue.second);
   }
-  ENVOY_LOG(debug, "thrift: codec server real address: {} ",
+  ENVOY_LOG(warn, "thrift: encoder codec server real address: {} ",
             metadata.getString(ReservedHeaders::RealServerAddress));
   // ASSERT(buffer.length() == 0);
   switch (metadata.getMessageType()) {

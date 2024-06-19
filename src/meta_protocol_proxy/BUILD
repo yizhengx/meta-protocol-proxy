@@ -117,8 +117,6 @@ envoy_cc_library(
         ":codec_impl_lib",
         "@envoy//source/common/buffer:buffer_lib",
         "@envoy//source/common/common:logger_lib",
-        -- "//src/application_protocols/thrift:codec_lib",
-        -- "//src/application_protocols/memcached:codec_lib",
     ],
 )
 

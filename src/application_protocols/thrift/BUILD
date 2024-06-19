@@ -28,6 +28,7 @@ envoy_cc_library(
     name = "codec_lib",
     repository = "@envoy",
     srcs = ["thrift_codec.cc"],
+    visibility = ["//visibility:public"],
     hdrs = [
     "thrift_codec.h",
     "conn_state.h",

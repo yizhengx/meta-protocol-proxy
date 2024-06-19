@@ -9,10 +9,10 @@ namespace MetaProtocolProxy {
 ProtocolState DecoderStateMachine::onDecodeStream(Buffer::Instance& buffer) {
   auto metadata = std::make_shared<MetadataImpl>();
   metadata->setMessageType(messageType_);
-  ENVOY_LOG(debug, "meta protocol decoder: start to decode a message, {} bytes available",
-            buffer.length());
+  ENVOY_LOG(debug, "meta protocol decoder: start to decode a message, {} bytes available, {} type of codec",
+            buffer.length(), codec_.name());
   auto decodeStatus = codec_.decode(buffer, *metadata);
-  ENVOY_LOG(debug, "meta protocol decoder: decode status {}", DecodeStatusNameValues::name(decodeStatus));
+  ENVOY_LOG(debug, "meta protocol decoder");
   if (decodeStatus == DecodeStatus::WaitForData) {
     return ProtocolState::WaitForData;
   }

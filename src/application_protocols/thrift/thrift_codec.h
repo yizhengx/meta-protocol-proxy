@@ -188,6 +188,7 @@ public:
             .createTransport();
     protocol_ = ThriftProxy::NamedProtocolConfigFactory::getFactory(ThriftProxy::ProtocolType::Auto)
                     .createProtocol();
+    ENVOY_LOG(warn, "ThriftCodec created");
   };
   ~ThriftCodec() override = default;
 

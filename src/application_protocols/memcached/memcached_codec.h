@@ -14,7 +14,9 @@ namespace Memcached {
 class MemcachedCodec : public MetaProtocolProxy::Codec,
                        public Logger::Loggable<Logger::Id::misc> {
 public:
-    MemcachedCodec() {};
+    MemcachedCodec() {
+        ENVOY_LOG(warn, "Memcached codec created");
+    };
     ~MemcachedCodec() override = default;
 
     // Decode incoming data from the buffer and populate metadata

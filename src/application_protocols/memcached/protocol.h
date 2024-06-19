@@ -17,7 +17,7 @@ enum class MemcachedCommand : uint8_t {
     // ... other commands
 };
 
-struct MemcachedRequestHeader {
+struct MemcachedRequestHeader : public Logger::Loggable<Logger::Id::filter> {
     uint8_t magic;
     MemcachedCommand command;
     uint16_t key_length;
@@ -32,7 +32,7 @@ struct MemcachedRequestHeader {
     // Encoding not required for request handling
 };
 
-struct MemcachedResponseHeader {
+struct MemcachedResponseHeader : public Logger::Loggable<Logger::Id::filter> {
     uint8_t magic;
     MemcachedCommand command;
     uint16_t status;

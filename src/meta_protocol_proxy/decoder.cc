@@ -1,5 +1,7 @@
 #include "src/meta_protocol_proxy/decoder.h"
 #include "src/meta_protocol_proxy/codec_impl.h"
+#include "src/application_protocols/thrift/thrift_codec.h"
+#include "src/application_protocols/memcached/memcached_codec.h"
 
 namespace Envoy {
 namespace Extensions {

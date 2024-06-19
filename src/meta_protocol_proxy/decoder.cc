@@ -12,7 +12,7 @@ ProtocolState DecoderStateMachine::onDecodeStream(Buffer::Instance& buffer) {
   auto metadata = std::make_shared<MetadataImpl>();
   metadata->setMessageType(messageType_);
   ENVOY_LOG(debug, "meta protocol decoder: start to decode a message, {} bytes available, is Thrift Codec {}, is Memcached Codec {}",
-            buffer.length(), isinstanceof<::ThriftCodec>(codec_), isinstanceof<MemcachedProxy::MemcachedCodec>(codec_));
+            buffer.length(), isinstanceof<ThriftProxy::ThriftCodec>(codec_), isinstanceof<MemcachedProxy::MemcachedCodec>(codec_));
   auto decodeStatus = codec_.decode(buffer, *metadata);
   ENVOY_LOG(debug, "meta protocol decoder");
   if (decodeStatus == DecodeStatus::WaitForData) {

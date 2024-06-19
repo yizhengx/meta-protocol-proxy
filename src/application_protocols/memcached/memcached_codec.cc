@@ -65,7 +65,8 @@ static std::string OpcodeToString(uint8_t opcode) {
 }
 
 MetaProtocolProxy::DecodeStatus MemcachedCodec::decode(Buffer::Instance& buffer, MetaProtocolProxy::Metadata& metadata) {
-  ENVOY_LOG(debug, "Memcached codec: {} bytes available", buffer.length());
+  ENVOY_LOG(warn, "Memcached decoder: {} bytes available, msg type: {}", buffer.length(),
+            static_cast<int>(metadata.getMessageType()));
 
   const size_t MemcachedHeaderSize = 24; // Size of Memcached protocol header
 
@@ -147,6 +148,8 @@ void MemcachedCodec::encode(const MetaProtocolProxy::Metadata& metadata,
                             Buffer::Instance& buffer) {
   // TODO we don't need to implement encode for now.
   // This method only need to be implemented if we want to modify the respose message
+  ENVOY_LOG(warn, "Memcached encoder: {} bytes available, msg type: {}", buffer.length(),
+            static_cast<int>(metadata.getMessageType()));
   (void)metadata;
   (void)mutation;
   (void)buffer;

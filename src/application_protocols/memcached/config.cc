@@ -11,6 +11,7 @@ namespace MetaProtocolProxy {
 namespace Memcached {
 
 MetaProtocolProxy::CodecPtr MemcachedCodecConfig::createCodec(const Protobuf::Message&) {
+  std::cout << "MemcachedCodecConfig::createCodec" << std::endl;
   return std::make_unique<Memcached::MemcachedCodec>();
 };
 

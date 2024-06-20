@@ -25,5 +25,6 @@ envoy_cc_library(
         "@envoy//envoy/config:typed_config_interface",
         "@envoy//source/common/common:macros",
         "@envoy//source/common/protobuf:utility_lib",
+        "@envoy//source/common/common:logger_lib",
     ],
 )

@@ -7,6 +7,7 @@
 #include "envoy/common/pure.h"
 #include "envoy/tracing/trace_context.h"
 #include "envoy/stream_info/stream_info.h"
+#include "source/common/common/logger.h"
 
 namespace Envoy {
 namespace Extensions {

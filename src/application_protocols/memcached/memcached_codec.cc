@@ -73,7 +73,7 @@ MetaProtocolProxy::DecodeStatus MemcachedCodec::decode(Buffer::Instance& buffer,
 
   // Check if the buffer has enough data for the Memcached header
   if (buffer.length() < MemcachedHeaderSize) {
-    std::cout << "[MemcachedCodec::decode()] Returned: waiting for more data" << std::endl;
+    std::cout << "[MemcachedCodec::decode()] Returned: waiting for more data (1st branch) " << std::endl;
     return MetaProtocolProxy::DecodeStatus::WaitForData;
   }
 
@@ -94,6 +94,7 @@ MetaProtocolProxy::DecodeStatus MemcachedCodec::decode(Buffer::Instance& buffer,
 
   // Check if the buffer has the full body of the message
   if (buffer.length() < MemcachedHeaderSize + total_body_length) {
+    std::cout << "[MemcachedCodec::decode()] Returned: waiting for more data (2nd branch) " << std::endl;
     return MetaProtocolProxy::DecodeStatus::WaitForData;
   }
 

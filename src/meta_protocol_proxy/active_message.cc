@@ -301,7 +301,6 @@ ActiveMessage::commonDecodePrefix(ActiveMessageDecoderFilter* filter,
 }
 
 void ActiveMessage::onMessageDecoded(MetadataSharedPtr metadata, MutationSharedPtr mutation) {
-  // ENVOY_LOG(warn,"onMessageDecoded");
   connection_manager_.stats().request_decoding_success_.inc();
   stream_info_->addBytesSent(metadata->getMessageSize());
 
@@ -406,6 +405,10 @@ void ActiveMessage::onMessageDecoded(MetadataSharedPtr metadata, MutationSharedP
       warn,
       "meta protocol {} request: complete processing of downstream request messages, id is {}",
       connection_manager_.config().applicationProtocol(), metadata->getRequestId());
+  std::cout << "meta protocol " << connection_manager_.config().applicationProtocol()
+            << "codec name "
+            << connection_manager_.config().codecConfig().name() << std::endl;
+    
 }
 
 void ActiveMessage::setUpstreamConnection(Tcp::ConnectionPool::ConnectionDataPtr conn) {

@@ -83,6 +83,7 @@ MetaProtocolProxy::DecodeStatus MemcachedCodec::decode(Buffer::Instance& buffer,
 
   // Parse the Memcached header
   uint8_t magic = header_bytes[0];
+  std::cout << "[MemcachedCodec::decode()] Magic: " << static_cast<int>(magic) << std::endl;
   uint8_t opcode = header_bytes[1];
   uint16_t key_length = ntohs(*reinterpret_cast<const uint16_t*>(header_bytes + 2));
   uint8_t extras_length = header_bytes[4];

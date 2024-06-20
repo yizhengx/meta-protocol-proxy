@@ -65,13 +65,15 @@ static std::string OpcodeToString(uint8_t opcode) {
 }
 
 MetaProtocolProxy::DecodeStatus MemcachedCodec::decode(Buffer::Instance& buffer, MetaProtocolProxy::Metadata& metadata) {
-  ENVOY_LOG(warn, "Memcached decoder: {} bytes available, msg type: {}", buffer.length(),
-            static_cast<int>(metadata.getMessageType()));
+  // ENVOY_LOG(warn, "Memcached decoder: {} bytes available, msg type: {}", buffer.length(),
+  //           static_cast<int>(metadata.getMessageType()));
+  std::cout << "[MemcachedCodec::decode()] Memcached decoder: " << buffer.length() << " bytes available, msg type: " << static_cast<int>(metadata.getMessageType()) << std::endl;
 
   const size_t MemcachedHeaderSize = 24; // Size of Memcached protocol header
 
   // Check if the buffer has enough data for the Memcached header
   if (buffer.length() < MemcachedHeaderSize) {
+    std::cout << "[MemcachedCodec::decode()] Returned: waiting for more data" << std::endl;
     return MetaProtocolProxy::DecodeStatus::WaitForData;
   }
 
@@ -139,6 +141,8 @@ MetaProtocolProxy::DecodeStatus MemcachedCodec::decode(Buffer::Instance& buffer,
     buffer.drain(value_length); // Remove the value
     metadata.putString("Value", value);
   }
+
+  std::cout << "[MemcachedCodec::decode()] Returned: done" << std::endl;
 
   return MetaProtocolProxy::DecodeStatus::Done;
 }

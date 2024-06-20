@@ -38,6 +38,7 @@ public:
   virtual RequestIDExtensionSharedPtr requestIDExtension() PURE;
   virtual const std::vector<AccessLog::InstanceSharedPtr>& accessLogs() const PURE;
   virtual bool multiplexing() PURE;
+  virtual CodecConfig codecConfig() PURE;
 };
 
 } // namespace MetaProtocolProxy

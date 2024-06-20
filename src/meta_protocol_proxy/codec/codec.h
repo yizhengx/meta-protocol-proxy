@@ -155,7 +155,7 @@ class Codec {
 public:
 
   Codec() {
-    std::cout << "Default Codec created" << std::endl;
+    std::cout << "[Codec::Codec()] Default Codec created" << std::endl;
   }
 
   virtual ~Codec() = default;

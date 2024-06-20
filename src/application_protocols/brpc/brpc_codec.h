@@ -31,6 +31,7 @@ class BrpcCodec : public MetaProtocolProxy::Codec,
                   public Logger::Loggable<Logger::Id::misc> {
 public:
   BrpcCodec() {
+    std::cout << "[BrpcCodec::BrpcCodec()] Brpc codec created" << std::endl;
     ENVOY_LOG(warn, "Brpc codec created");
   };
   ~BrpcCodec() override = default;

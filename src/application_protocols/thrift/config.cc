@@ -11,7 +11,7 @@ namespace MetaProtocolProxy {
 namespace Thrift {
 
 MetaProtocolProxy::CodecPtr ThriftCodecConfig::createCodec(const Protobuf::Message&) {
-  std::cout << "ThriftCodecConfig::createCodec" << std::endl;
+  std::cout << "[ThriftCodecConfig::createCodec()] ThriftCodecConfig::createCodec" << std::endl;
   return std::make_unique<Thrift::ThriftCodec>();
 };
 

@@ -86,15 +86,17 @@ MetaProtocolProxy::DecodeStatus MemcachedCodec::decode(Buffer::Instance& buffer,
   std::cout << "[MemcachedCodec::decode()] Magic: " << static_cast<int>(magic) << std::endl;
   uint8_t opcode = header_bytes[1];
   uint16_t key_length = ntohs(*reinterpret_cast<const uint16_t*>(header_bytes + 2));
+  std::cout << "[MemcachedCodec::decode()] Key length: " << key_length << std::endl;
   uint8_t extras_length = header_bytes[4];
   uint8_t data_type = header_bytes[5];
   uint16_t status_or_reserved = ntohs(*reinterpret_cast<const uint16_t*>(header_bytes + 6));
   uint32_t total_body_length = ntohl(*reinterpret_cast<const uint32_t*>(header_bytes + 8));
+  std::cout << "[MemcachedCodec::decode()] Total body length: " << total_body_length << std::endl;
   uint32_t opaque = ntohl(*reinterpret_cast<const uint32_t*>(header_bytes + 12));
   uint64_t cas = ntohl(*reinterpret_cast<const uint64_t*>(header_bytes + 16));
 
   // Check if the buffer has the full body of the message
-  if (buffer.length() < MemcachedHeaderSize + total_body_length) {
+  while (buffer.length() < MemcachedHeaderSize + total_body_length) {
     std::cout << "[MemcachedCodec::decode()] Returned: waiting for more data (2nd branch) " << std::endl;
     return MetaProtocolProxy::DecodeStatus::WaitForData;
   }
@@ -113,8 +115,6 @@ MetaProtocolProxy::DecodeStatus MemcachedCodec::decode(Buffer::Instance& buffer,
     metadata.putString("MagicValue", MagicByteToString(magic));
     metadata.putString("OpcodeValue", OpcodeToString(opcode));
     metadata.putString("StatusValue", ResponseStatusToString(status_or_reserved));
-
-
 
   // Extract the extras (flags and expiry)
   uint32_t flags, expiry;

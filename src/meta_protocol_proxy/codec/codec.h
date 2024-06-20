@@ -152,6 +152,11 @@ struct Error {
  */
 class Codec {
 public:
+
+  Codec() {
+    ENVOY_LOG(warn, "Default Codec created");
+  }
+
   virtual ~Codec() = default;
 
   /*

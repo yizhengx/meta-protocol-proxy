@@ -12,7 +12,7 @@ api_proto_package(
 
 envoy_cc_library(
     name = "config",
-    visibility = ["//visibility:public"],
+    visibility = ["//:__pkg__"],
     repository = "@envoy",
     srcs = ["config.cc"],
     hdrs = ["config.h"],
@@ -29,7 +29,6 @@ envoy_cc_library(
     repository = "@envoy",
     srcs = ["memcached_codec.cc"],  # Source file for your codec
     hdrs = ["memcached_codec.h"],   # Header file for your codec
-    visibility = ["//visibility:public"],
     deps = [
         # List dependencies required by your codec here
         "@envoy//envoy/buffer:buffer_interface",

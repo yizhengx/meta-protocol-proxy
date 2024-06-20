@@ -30,7 +30,9 @@ enum class BrpcDecodeStatus {
 class BrpcCodec : public MetaProtocolProxy::Codec,
                   public Logger::Loggable<Logger::Id::misc> {
 public:
-  BrpcCodec() {};
+  BrpcCodec() {
+    ENVOY_LOG(warn, "Brpc codec created");
+  };
   ~BrpcCodec() override = default;
 
   MetaProtocolProxy::DecodeStatus decode(Buffer::Instance& buffer,

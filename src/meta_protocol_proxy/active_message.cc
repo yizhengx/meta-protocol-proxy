@@ -405,9 +405,6 @@ void ActiveMessage::onMessageDecoded(MetadataSharedPtr metadata, MutationSharedP
       warn,
       "meta protocol {} request: complete processing of downstream request messages, id is {}",
       connection_manager_.config().applicationProtocol(), metadata->getRequestId());
-  std::cout << "meta protocol " << connection_manager_.config().applicationProtocol()
-            << "codec name "
-            << connection_manager_.config().codecConfig().name() << std::endl;
     
 }
 

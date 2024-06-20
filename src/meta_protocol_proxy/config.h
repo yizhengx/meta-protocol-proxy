@@ -103,7 +103,6 @@ public:
     return access_logs_;
   }
   bool multiplexing() override { return application_protocol_config_.multiplexing(); }
-  CodecConfig codecConfig() { return codecConfig_; }
 
 private:
   void registerFilter(const MetaProtocolFilterConfig& proto_config);

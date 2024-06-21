@@ -117,9 +117,9 @@ MetaProtocolProxy::DecodeStatus MemcachedCodec::decode(Buffer::Instance& buffer,
     metadata.putString("StatusValue", ResponseStatusToString(status_or_reserved));
 
   // Extract the extras (flags and expiry)
+  buffer.drain(MemcachedHeaderSize); // Remove the header
   uint32_t flags, expiry;
   if (extras_length >= 8) { // Ensure there are at least 8 bytes for flags and expiry
-    buffer.drain(MemcachedHeaderSize); // Remove the header
     flags = ntohl(*reinterpret_cast<const uint32_t*>(buffer.linearize(4)));
     expiry = ntohl(*reinterpret_cast<const uint32_t*>(buffer.linearize(4)) + 4);
     buffer.drain(8); // Remove the extras

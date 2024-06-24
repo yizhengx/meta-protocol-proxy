@@ -218,7 +218,7 @@ MemcachedDecodeStatus MemcachedCodec::decodeBody(Buffer::Instance& buffer) {
   // decode body: skip it for now since we dont care about the body
 
   origin_msg_ = std::make_unique<Buffer::OwnedImpl>();
-  origin_msg_->move(buffer, memcached_header_.get_key_length() + memcached_header_.get_total_body_length());
+  origin_msg_->move(buffer, MEMCACHED_HEADER_SIZE + memcached_header_.get_total_body_length());
   return MemcachedDecodeStatus::DecodeDone;
 }
 

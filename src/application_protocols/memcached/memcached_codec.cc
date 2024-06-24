@@ -192,7 +192,7 @@ MemcachedDecodeStatus MemcachedCodec::decodeHeader(Buffer::Instance& buffer) {
   std::cout << "[MemcachedCodec::decodeHeader()] Buffer length: " << buffer.length() << std::endl;
 
   
-  if (buffer.length() < MemcachedHeaderSize) {
+  if (buffer.length() < MEMCACHED_HEADER_SIZE) {
     std::cout << "[MemcachedCodec::decodeHeader()] Waiting for more data " << std::endl;
     return MemcachedDecodeStatus::WaitForData;
   }
@@ -207,20 +207,20 @@ MemcachedDecodeStatus MemcachedCodec::decodeHeader(Buffer::Instance& buffer) {
 
 MemcachedDecodeStatus MemcachedCodec::decodeBody(Buffer::Instance& buffer) {
   // Check if the buffer has the full body of the message
-  if (buffer.length() < memcached_header_.get_key_length() + memcached_header_.get_body_len()) {
+  if (buffer.length() < memcached_header_.get_key_length() + memcached_header_.get_total_body_length()) {
     std::cout << "[MemcachedCodec::decodeBody()] Waiting for more data " << std::endl;
     return MemcachedDecodeStatus::WaitForData;
   }
 
   // decode body: skip it for now since we dont care about the body
 
-  origin_message_ = std::make_unique<Buffer::OwnedImpl>();
-  origin_message_->move(buffer, memcached_header_.get_key_length() + memcached_header_.get_body_len());
+  origin_msg_ = std::make_unique<Buffer::OwnedImpl>();
+  origin_msg_->move(buffer, memcached_header_.get_key_length() + memcached_header_.get_total_body_length());
   return MemcachedDecodeStatus::DecodeDone;
 }
 
 void toMetadata(MetaProtocolProxy::Metadata& metadata) {
-  metadata.originMessage().move(*origin_message_);
+  metadata.originMessage().move(*origin_msg_);
 }
 
 

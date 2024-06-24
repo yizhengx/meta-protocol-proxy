@@ -175,7 +175,7 @@ MetaProtocolProxy::DecodeStatus MemcachedCodec::decode(Buffer::Instance& buffer,
 }
 
 
-MemcachedDecodeStatus handleState(Buffer::Instance& buffer) {
+MemcachedDecodeStatus MemcachedCodec::handleState(Buffer::Instance& buffer) {
   switch (decode_status_) {
   case MemcachedDecodeStatus::DecodeHeader: // decode header
     return decodeHeader(buffer);

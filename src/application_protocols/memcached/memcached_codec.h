@@ -11,6 +11,13 @@ namespace NetworkFilters {
 namespace MetaProtocolProxy {
 namespace Memcached {
 
+enum class MemcachedDecodeStatus {
+  DecodeHeader,
+  DecodeBody,
+  DecodeDone,
+  WaitForData,
+};
+
 class MemcachedCodec : public MetaProtocolProxy::Codec,
                        public Logger::Loggable<Logger::Id::misc> {
 public:
@@ -35,17 +42,17 @@ public:
                  Buffer::Instance& buffer) override;
 
 private:
-    // Method to handle decoding of GET commands
-    MetaProtocolProxy::DecodeStatus decodeGetCommand(Buffer::Instance& buffer,
-                                                     const MemcachedRequestHeader& header,
-                                                     MetaProtocolProxy::Metadata& metadata);
-
-    // Method to handle decoding of SET commands
-    MetaProtocolProxy::DecodeStatus decodeSetCommand(Buffer::Instance& buffer,
-                                                     const MemcachedRequestHeader& header,
-                                                     MetaProtocolProxy::Metadata& metadata);
-
     // Additional private methods and members as necessary
+
+    MemcachedDecodeStatus handleState(Buffer::Instance& buffer);
+    MemcachedDecodeStatus decodeHeader(Buffer::Instance& buffer);
+    MemcachedDecodeStatus decodeBody(Buffer::Instance& buffer);
+    void toMetadata(MetaProtocolProxy::Metadata& metadata);
+
+    MemcachedDecodeStatus decode_status_{MemcachedDecodeStatus::DecodeHeader};
+    MetaProtocolProxy::Memcached::MemcachedHeader memcached_header_;
+    MetaProtocolProxy::MessageType message_type_;
+    std::unique_ptr<Buffer::OwnedImpl> origin_msg_;
 };
 
 

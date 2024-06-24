@@ -181,6 +181,8 @@ MemcachedDecodeStatus MemcachedCodec::handleState(Buffer::Instance& buffer) {
     return decodeHeader(buffer);
   case MemcachedDecodeStatus::DecodeBody: // decode body
     return decodeBody(buffer);
+  case MemcachedDecodeStatus::WaitForData:
+    return MemcachedDecodeStatus::WaitForData;
   default:
     PANIC("not reached");
   }

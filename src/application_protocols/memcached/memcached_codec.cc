@@ -219,7 +219,7 @@ MemcachedDecodeStatus MemcachedCodec::decodeBody(Buffer::Instance& buffer) {
   return MemcachedDecodeStatus::DecodeDone;
 }
 
-void toMetadata(MetaProtocolProxy::Metadata& metadata) {
+void MemcachedCodec::toMetadata(MetaProtocolProxy::Metadata& metadata) {
   metadata.originMessage().move(*origin_msg_);
 }
 

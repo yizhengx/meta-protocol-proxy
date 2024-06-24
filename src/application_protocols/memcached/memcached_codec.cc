@@ -170,7 +170,7 @@ MetaProtocolProxy::DecodeStatus MemcachedCodec::decode(Buffer::Instance& buffer,
   // fill the metadata with the headers exacted from the message
   toMetadata(metadata);
   // reset decode status
-  decode_status_ = MemcachedDecodeStatus::DecodeDone;
+  decode_status_ = MemcachedDecodeStatus::DecodeHeader;
   return MetaProtocolProxy::DecodeStatus::Done;
 }
 

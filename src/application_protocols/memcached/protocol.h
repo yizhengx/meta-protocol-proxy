@@ -18,6 +18,7 @@ enum class MemcachedCommand : uint8_t {
 };
 
 struct MemcachedHeader : public Logger::Loggable<Logger::Id::filter> {
+    uint8_t magic;
     MemcachedCommand command;
     uint16_t key_length;
     uint8_t extras_length;

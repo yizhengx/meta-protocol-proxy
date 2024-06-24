@@ -160,9 +160,9 @@ MetaProtocolProxy::DecodeStatus MemcachedCodec::decode(Buffer::Instance& buffer,
   std::string message_type_str = message_type_ == MetaProtocolProxy::MessageType::Request ? "Request" : "Response";
   std::cout << "[MemcachedCodec::decode()] Memcached decoder: " << buffer.length() << " bytes available, msg type: " << message_type_str << std::endl;
 
-  while (decode_status != MemcachedDecodeStatus::DecodeDone) {
-    decode_status = handleState(buffer);
-    if (decode_status == MemcachedDecodeStatus::WaitForData) {
+  while (decode_status_ != MemcachedDecodeStatus::DecodeDone) {
+    decode_status_ = handleState(buffer);
+    if (decode_status_ == MemcachedDecodeStatus::WaitForData) {
       return MetaProtocolProxy::DecodeStatus::WaitForData;
     }
   }
@@ -176,7 +176,7 @@ MetaProtocolProxy::DecodeStatus MemcachedCodec::decode(Buffer::Instance& buffer,
 
 
 MemcachedDecodeStatus handleState(Buffer::Instance& buffer) {
-  switch (decode_status) {
+  switch (decode_status_) {
   case MemcachedDecodeStatus::DecodeHeader: // decode header
     return decodeHeader(buffer);
   case MemcachedDecodeStatus::DecodeBody: // decode body
@@ -187,7 +187,7 @@ MemcachedDecodeStatus handleState(Buffer::Instance& buffer) {
   return MemcachedDecodeStatus::DecodeDone;
 }
 
-MemcachedDecodeStatus decodeHeader(Buffer::Instance& buffer) {
+MemcachedDecodeStatus MemcachedCodec::decodeHeader(Buffer::Instance& buffer) {
   // Check if the buffer has enough data for the Memcached header
   std::cout << "[MemcachedCodec::decodeHeader()] Buffer length: " << buffer.length() << std::endl;
 
@@ -205,7 +205,7 @@ MemcachedDecodeStatus decodeHeader(Buffer::Instance& buffer) {
 
 }
 
-MemcachedDecodeStatus decodeBody(Buffer::Instance& buffer) {
+MemcachedDecodeStatus MemcachedCodec::decodeBody(Buffer::Instance& buffer) {
   // Check if the buffer has the full body of the message
   if (buffer.length() < memcached_header_.get_key_length() + memcached_header_.get_body_len()) {
     std::cout << "[MemcachedCodec::decodeBody()] Waiting for more data " << std::endl;

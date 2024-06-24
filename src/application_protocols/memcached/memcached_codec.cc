@@ -201,6 +201,7 @@ MemcachedDecodeStatus MemcachedCodec::decodeHeader(Buffer::Instance& buffer) {
     throw EnvoyException("Invalid Memcached header");
   }
 
+  std::cout << "[MemcachedCodec::decodeHeader()] Memcached header decoded: key length: " << memcached_header_.get_key_length() << ", total body length: " << memcached_header_.get_total_body_length() << std::endl;
   return MemcachedDecodeStatus::DecodeBody;
 
 }

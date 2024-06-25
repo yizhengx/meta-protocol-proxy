@@ -235,57 +235,57 @@ OP_MSG parseOP_MSG(const Buffer::Instance& buffer) {
 MetaProtocolProxy::DecodeStatus MongoCodec::decode(Buffer::Instance& buffer, MetaProtocolProxy::Metadata& metadata) {
     ENVOY_LOG(debug, "MongoDB decode: {} bytes available", buffer.length());
 
-    while (decode_status_ != MongoDecodeStatus::DecodeDone) {
+    while (decode_status_ != MongoDBDecodeStatus::DecodeDone) {
         decode_status_ = handleState(buffer);
-        if (decode_status_ == MongoDecodeStatus::WaitForData) {
+        if (decode_status_ == MongoDBDecodeStatus::WaitForData) {
             return MetaProtocolProxy::DecodeStatus::WaitForData;
         }
     }
 
     toMetadata(metadata);
-    decode_status_ = MongoDecodeStatus::DecodeHeader;
+    decode_status_ = MongoDBDecodeStatus::DecodeHeader;
     return MetaProtocolProxy::DecodeStatus::Done;
 }
 
-MongoDecodeStatus MongoCodec::handleState(Buffer::Instance& buffer) {
+MongoDBDecodeStatus MongoCodec::handleState(Buffer::Instance& buffer) {
     switch (decode_status_) {
-    case MongoDecodeStatus::DecodeHeader:
+    case MongoDBDecodeStatus::DecodeHeader:
         return decodeHeader(buffer);
-    case MongoDecodeStatus::DecodeBody:
+    case MongoDBDecodeStatus::DecodeBody:
         return decodeBody(buffer);
     default:
         PANIC("not reached");
     }
-    return MongoDecodeStatus::DecodeDone;
+    return MongoDBDecodeStatus::DecodeDone;
 }
 
-MongoDecodeStatus MongoCodec::decodeHeader(Buffer::Instance& buffer) {
+MongoDBDecodeStatus MongoCodec::decodeHeader(Buffer::Instance& buffer) {
     std::cout << "MongoDB decodeHeader: " << buffer.length() << " bytes available" << std::endl;
     // Wait for more data if the header is not complete
     if (buffer.length() < sizeof(MsgHeader)) {
         // ENVOY_LOG(debug, "continue {}", buffer.length());
         std::cout << "MongoDB decodeHeader: waiting for more data" << std::endl;
-        return MongoDecodeStatus::WaitForData;
+        return MongoDBDecodeStatus::WaitForData;
     }
 
     if (!mongo_header_.decode(buffer)) {
         throw EnvoyException(fmt::format("MongoDB header invalid"));
     }
 
-    return MongoDecodeStatus::DecodeBody;
+    return MongoDBDecodeStatus::DecodeBody;
 }
 
-MongoDecodeStatus MongoCodec::decodeBody(Buffer::Instance& buffer) {
+MongoDBDecodeStatus MongoCodec::decodeBody(Buffer::Instance& buffer) {
     // Wait for more data if the buffer is not a complete message
     if (buffer.length() < mongo_header_.messageLength()) {
-        return MongoDecodeStatus::WaitForData;
+        return MongoDBDecodeStatus::WaitForData;
     }
 
     // move the decoded message out of the buffer
     origin_msg_ = std::make_unique<Buffer::OwnedImpl>();
     origin_msg_->move(buffer, mongo_header_.messageLength());
 
-    return MongoDecodeStatus::DecodeDone;
+    return MongoDBDecodeStatus::DecodeDone;
 }
 
 void MongoCodec::toMetadata(MetaProtocolProxy::Metadata& metadata) {

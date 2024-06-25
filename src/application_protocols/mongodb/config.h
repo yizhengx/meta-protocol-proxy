@@ -11,7 +11,7 @@ namespace MetaProtocolProxy {
 namespace MongoDB {
 
 class MongoDBCodecConfig
-    : public MetaProtocolProxy::CodecFactoryBase<aeraki::meta_protocol::codec::MongoCodec> {
+    : public MetaProtocolProxy::CodecFactoryBase<aeraki::meta_protocol::codec::MongoDBCodec> {
 public:
   MongoDBCodecConfig() : CodecFactoryBase("aeraki.meta_protocol.codec.mongodb") {}
   MetaProtocolProxy::CodecPtr createCodec(const Protobuf::Message& config) override;

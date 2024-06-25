@@ -192,45 +192,45 @@ namespace MongoDB {
 // }
 
 // Function to parse MongoDB OP_MSG message
-OP_MSG parseOP_MSG(const Buffer::Instance& buffer) {
-    // Initialize variables to store parsed values.
-    uint32_t header;
-    uint32_t flagBits;
-    std::vector<std::string> sections;
-    uint32_t checksum = 0; // Initialize the checksum.
+// OP_MSG parseOP_MSG(const Buffer::Instance& buffer) {
+//     // Initialize variables to store parsed values.
+//     uint32_t header;
+//     uint32_t flagBits;
+//     std::vector<std::string> sections;
+//     uint32_t checksum = 0; // Initialize the checksum.
 
-    // Ensure there is enough data available for header and flagBits.
-    if (buffer.length() < 8) {
-        throw std::runtime_error("Insufficient data for OP_MSG header and flagBits");
-    }
+//     // Ensure there is enough data available for header and flagBits.
+//     if (buffer.length() < 8) {
+//         throw std::runtime_error("Insufficient data for OP_MSG header and flagBits");
+//     }
 
-    if (!buffer.readLEInt(header)) {
-        return false;  // Failed to read the header length
-    }
+//     if (!buffer.readLEInt(header)) {
+//         return false;  // Failed to read the header length
+//     }
 
-    // Read the flag bits
-    if (!buffer.readLEInt(flagBits)) {
-        return false;  // Failed to read flag bits
-    }
+//     // Read the flag bits
+//     if (!buffer.readLEInt(flagBits)) {
+//         return false;  // Failed to read flag bits
+//     }
 
-    // Read sections until the end of the message
-    while (!buffer.empty()) {
-        std::string section;
-        if (!buffer.readString(section)) {
-            return false;  // Failed to read section
-        }
-        sections_.push_back(section);
-    }
+//     // Read sections until the end of the message
+//     while (!buffer.empty()) {
+//         std::string section;
+//         if (!buffer.readString(section)) {
+//             return false;  // Failed to read section
+//         }
+//         sections_.push_back(section);
+//     }
 
-    // Check if a checksum is present.
-    if (flagBits & OP_MSG_CHECKSUM_PRESENT) {
-        if (buffer.length() < 4) {
-            throw std::runtime_error("Insufficient data for checksum in OP_MSG");
-        }
-        buffer.copyOut(4, &checksum);
-    }
+//     // Check if a checksum is present.
+//     if (flagBits & OP_MSG_CHECKSUM_PRESENT) {
+//         if (buffer.length() < 4) {
+//             throw std::runtime_error("Insufficient data for checksum in OP_MSG");
+//         }
+//         buffer.copyOut(4, &checksum);
+//     }
 
-}
+// }
 
 MetaProtocolProxy::DecodeStatus MongoCodec::decode(Buffer::Instance& buffer, MetaProtocolProxy::Metadata& metadata) {
     ENVOY_LOG(debug, "MongoDB decode: {} bytes available", buffer.length());

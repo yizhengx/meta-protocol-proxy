@@ -233,7 +233,11 @@ namespace MongoDB {
 // }
 
 MetaProtocolProxy::DecodeStatus MongoCodec::decode(Buffer::Instance& buffer, MetaProtocolProxy::Metadata& metadata) {
-    ENVOY_LOG(debug, "MongoDB decode: {} bytes available", buffer.length());
+
+    message_type_ = metadata.getMessageType();
+    std::string message_type_str = message_type_ == MetaProtocolProxy::MessageType::Request ? "Request" : "Response";
+
+    std::cout << "[MongoDBCodec::decode()] MongoDB decoder: " << buffer.length() << " bytes available, msg type: " << message_type_str << std::endl;
 
     while (decode_status_ != MongoDBDecodeStatus::DecodeDone) {
         decode_status_ = handleState(buffer);

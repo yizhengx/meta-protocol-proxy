@@ -287,7 +287,7 @@ MongoDBDecodeStatus MongoCodec::decodeBody(Buffer::Instance& buffer) {
 
     // move the decoded message out of the buffer
     origin_msg_ = std::make_unique<Buffer::OwnedImpl>();
-    origin_msg_->move(buffer, mongo_header_.messageLength());
+    origin_msg_->move(buffer, mongo_header_.getMessageLength());
 
     return MongoDBDecodeStatus::DecodeDone;
 }

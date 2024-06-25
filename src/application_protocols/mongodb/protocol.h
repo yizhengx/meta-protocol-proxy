@@ -3,6 +3,10 @@
 #include "envoy/buffer/buffer.h"
 #include "source/common/common/logger.h"
 
+namespace Envoy {
+namespace Extensions {
+namespace NetworkFilters {
+namespace MetaProtocolProxy {
 namespace MongoDB {
 
 struct MsgHeader {
@@ -24,3 +28,7 @@ public:
 // Define additional MongoDB message structures and constants here
 
 } // namespace MongoDB
+} // namespace MetaProtocolProxy
+} // namespace NetworkFilters
+} // namespace Extensions
+} // namespace Envoy

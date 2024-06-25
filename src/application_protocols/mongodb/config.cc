@@ -2,7 +2,7 @@
 
 #include "src/meta_protocol_proxy/codec/factory.h"
 #include "src/application_protocols/mongodb/config.h"
-#include "src/application_protocols/mongodb/mongo_codec.h"
+#include "src/application_protocols/mongodb/mongodb_codec.h"
 
 namespace Envoy {
 namespace Extensions {

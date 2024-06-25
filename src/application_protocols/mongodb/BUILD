@@ -27,8 +27,8 @@ envoy_cc_library(
 envoy_cc_library(
     name = "codec_lib",
     repository = "@envoy",
-    srcs = ["mongo_codec.cc"],  # Source file for your codec
-    hdrs = ["mongo_codec.h"],   # Header file for your codec
+    srcs = ["mongodb_codec.cc"],  # Source file for your codec
+    hdrs = ["mongodb_codec.h"],   # Header file for your codec
     deps = [
         # List dependencies required by your codec here
         "@envoy//envoy/buffer:buffer_interface",

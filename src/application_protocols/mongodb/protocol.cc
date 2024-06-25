@@ -1,6 +1,4 @@
 #include "protocol.h"
-#include "envoy/buffer/buffer.h"
-#include "envoy/common/logger.h"
 
 namespace MongoDB {
 

@@ -281,7 +281,7 @@ MongoDBDecodeStatus MongoCodec::decodeHeader(Buffer::Instance& buffer) {
 
 MongoDBDecodeStatus MongoCodec::decodeBody(Buffer::Instance& buffer) {
     // Wait for more data if the buffer is not a complete message
-    if (buffer.length() < mongo_header_.getMessageLength()) {
+    if (buffer.length() < static_cast<uint64_t>(mongo_header_.getMessageLength())) {
         return MongoDBDecodeStatus::WaitForData;
     }
 

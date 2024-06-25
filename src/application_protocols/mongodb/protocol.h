@@ -5,18 +5,20 @@
 
 namespace MongoDB {
 
+struct MsgHeader {
+    int32_t messageLength;
+    int32_t requestID;
+    int32_t responseTo;
+    int32_t opCode;
+};
+
 class MongoDBHeader : public Logger::Loggable<Logger::Id::filter> {
 public:
-  static const uint32_t HEADER_SIZE;
-  int32_t messageLength_;
-  int32_t requestID_;
-  int32_t responseTo_;
-  int32_t opCode_;
+  MsgHeader header_;
 
   bool decode(Buffer::Instance& buffer);
   bool encode(Buffer::Instance& buffer);
-
-  // Add more members and methods to handle MongoDB messages
+  int32_t getMessageLength() const { return header_.messageLength; }
 };
 
 // Define additional MongoDB message structures and constants here

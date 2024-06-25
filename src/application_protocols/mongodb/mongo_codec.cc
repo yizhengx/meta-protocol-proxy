@@ -8,193 +8,188 @@ namespace NetworkFilters {
 namespace MetaProtocolProxy {
 namespace MongoDB {
 
-struct MsgHeader {
-    int32_t messageLength;
-    int32_t requestID;
-    int32_t responseTo;
-    int32_t opCode;
-};
 
-MetaProtocolProxy::DecodeStatus MongoCodec::decode(Buffer::Instance& buffer,
-                                                MetaProtocolProxy::Metadata& metadata) {
-    const size_t MsgHeaderSize = sizeof(MsgHeader);
 
-    if (buffer.length() < MsgHeaderSize) {
-        return MetaProtocolProxy::DecodeStatus::WaitForData;
-    }
+// MetaProtocolProxy::DecodeStatus MongoCodec::decode(Buffer::Instance& buffer,
+//                                                 MetaProtocolProxy::Metadata& metadata) {
+//     const size_t MsgHeaderSize = sizeof(MsgHeader);
 
-    MsgHeader header;
-    buffer.copyOut(0, MsgHeaderSize, &header);
+//     if (buffer.length() < MsgHeaderSize) {
+//         return MetaProtocolProxy::DecodeStatus::WaitForData;
+//     }
 
-    header.messageLength = ntohl(header.messageLength);
-    header.requestID = ntohl(header.requestID);
-    header.responseTo = ntohl(header.responseTo);
-    header.opCode = ntohl(header.opCode);
+//     MsgHeader header;
+//     buffer.copyOut(0, MsgHeaderSize, &header);
 
-    metadata.put("MessageLength", header.messageLength);
-    metadata.put("RequestID", header.requestID);
-    metadata.put("ResponseTo", header.responseTo);
-    metadata.put("OpCode", header.opCode);
+//     header.messageLength = ntohl(header.messageLength);
+//     header.requestID = ntohl(header.requestID);
+//     header.responseTo = ntohl(header.responseTo);
+//     header.opCode = ntohl(header.opCode);
 
-    // Check if there is enough data in the buffer to read the complete message
-    if (buffer.length() < static_cast<size_t>(header.messageLength - sizeof(MsgHeader))) {
-        // Insufficient data to parse the complete message, wait for more data
-        return MetaProtocolProxy::DecodeStatus::WaitForData;
-    }
+//     metadata.put("MessageLength", header.messageLength);
+//     metadata.put("RequestID", header.requestID);
+//     metadata.put("ResponseTo", header.responseTo);
+//     metadata.put("OpCode", header.opCode);
 
-    // Read the remaining message data from the buffer
-    std::string messageData;
-    messageData.resize(header.messageLength - sizeof(MsgHeader));
-    buffer.copyOut(sizeof(MsgHeader), messageData.size(), &messageData[0]);
-    buffer.drain(messageData.size());  // Remove the message data from the buffer
+//     // Check if there is enough data in the buffer to read the complete message
+//     if (buffer.length() < static_cast<size_t>(header.messageLength - sizeof(MsgHeader))) {
+//         // Insufficient data to parse the complete message, wait for more data
+//         return MetaProtocolProxy::DecodeStatus::WaitForData;
+//     }
 
-    // Parse the 'messageData' according to the MongoDB protocol
-    switch (header.opCode) {
-        case 2013:  // OP_MSG
-            // Handle and parse OP_MSG message type
-            // Populate metadata with relevant information from OP_MSG
+//     // Read the remaining message data from the buffer
+//     std::string messageData;
+//     messageData.resize(header.messageLength - sizeof(MsgHeader));
+//     buffer.copyOut(sizeof(MsgHeader), messageData.size(), &messageData[0]);
+//     buffer.drain(messageData.size());  // Remove the message data from the buffer
 
-            // Initialize variables to store parsed values.
-            uint32_t flagBits;
-            std::vector<std::string> sections;
-            uint32_t checksum = 0; // Initialize the checksum.
+//     // Parse the 'messageData' according to the MongoDB protocol
+//     switch (header.opCode) {
+//         case 2013:  // OP_MSG
+//             // Handle and parse OP_MSG message type
+//             // Populate metadata with relevant information from OP_MSG
 
-            // Ensure there is enough data available for header and flagBits.
-            if (buffer.length() < 8) {
-                throw std::runtime_error("Insufficient data for OP_MSG header and flagBits");
-            }
+//             // Initialize variables to store parsed values.
+//             uint32_t flagBits;
+//             std::vector<std::string> sections;
+//             uint32_t checksum = 0; // Initialize the checksum.
 
-            // Read the flag bits
-            buffer.copyOut(sizeof(MsgHeader), sizeof(flagBits), &flagBits);
-            flagBits = ntohl(flagBits); // Convert from little endian
-            buffer.drain(sizeof(flagBits)); // Remove the flag bits from the buffer
+//             // Ensure there is enough data available for header and flagBits.
+//             if (buffer.length() < 8) {
+//                 throw std::runtime_error("Insufficient data for OP_MSG header and flagBits");
+//             }
 
-            // Read sections until the end of the message
-            while (buffer.length() > 4) { // Assuming the remaining 4 bytes are for checksum if present
-                std::string section;
-                // You need a function to read a section string from the buffer
-                // For example, buffer.readString(section);
-                // Add error handling for reading section
-                sections.push_back(section);
-            }
+//             // Read the flag bits
+//             buffer.copyOut(sizeof(MsgHeader), sizeof(flagBits), &flagBits);
+//             flagBits = ntohl(flagBits); // Convert from little endian
+//             buffer.drain(sizeof(flagBits)); // Remove the flag bits from the buffer
 
-            // Check if a checksum is present.
-            if (flagBits & OP_MSG_CHECKSUM_PRESENT) {
-                if (buffer.length() < 4) {
-                    throw std::runtime_error("Insufficient data for checksum in OP_MSG");
-                }
-                buffer.copyOut(buffer.length() - 4, sizeof(checksum), &checksum);
-                checksum = ntohl(checksum); // Convert from little endian
-                buffer.drain(sizeof(checksum)); // Remove the checksum from the buffer
-            }
-            metadata.put("OpCode", "OP_MSG");
-            metadata.put("FlagBits", flagBits);
+//             // Read sections until the end of the message
+//             while (buffer.length() > 4) { // Assuming the remaining 4 bytes are for checksum if present
+//                 std::string section;
+//                 // You need a function to read a section string from the buffer
+//                 // For example, buffer.readString(section);
+//                 // Add error handling for reading section
+//                 sections.push_back(section);
+//             }
 
-            // Example of adding each section to the metadata.
-            // This is a simplified representation. You might want to parse each section further
-            // based on your application's needs.
-            for (size_t i = 0; i < sections.size(); ++i) {
-                metadata.putString("Section" + std::to_string(i), sections[i]);
-            }
+//             // Check if a checksum is present.
+//             if (flagBits & OP_MSG_CHECKSUM_PRESENT) {
+//                 if (buffer.length() < 4) {
+//                     throw std::runtime_error("Insufficient data for checksum in OP_MSG");
+//                 }
+//                 buffer.copyOut(buffer.length() - 4, sizeof(checksum), &checksum);
+//                 checksum = ntohl(checksum); // Convert from little endian
+//                 buffer.drain(sizeof(checksum)); // Remove the checksum from the buffer
+//             }
+//             metadata.put("OpCode", "OP_MSG");
+//             metadata.put("FlagBits", flagBits);
 
-            if (flagBits & OP_MSG_CHECKSUM_PRESENT) {
-                metadata.put("Checksum", checksum);
-            }
-            break;
-        case 2004:  // OP_QUERY
-            // Handle and parse OP_QUERY message type
-            // Populate metadata with relevant information from OP_QUERY
-            break;
-        default:
-            // Handle other opCodes or unknown types
-            break;
-    }
+//             // Example of adding each section to the metadata.
+//             // This is a simplified representation. You might want to parse each section further
+//             // based on your application's needs.
+//             for (size_t i = 0; i < sections.size(); ++i) {
+//                 metadata.putString("Section" + std::to_string(i), sections[i]);
+//             }
 
-    // Return appropriate DecodeStatus
-    return MetaProtocolProxy::DecodeStatus::Done;
-}
+//             if (flagBits & OP_MSG_CHECKSUM_PRESENT) {
+//                 metadata.put("Checksum", checksum);
+//             }
+//             break;
+//         case 2004:  // OP_QUERY
+//             // Handle and parse OP_QUERY message type
+//             // Populate metadata with relevant information from OP_QUERY
+//             break;
+//         default:
+//             // Handle other opCodes or unknown types
+//             break;
+//     }
 
-MetaProtocolProxy::DecodeStatus MongoCodec::decode(Buffer::Instance& buffer, MetaProtocolProxy::Metadata& metadata) {
-    // Check if there is enough data in the buffer to read the MongoDB header.
-    if (buffer.length() < sizeof(MongoHeader)) {
-        // Insufficient data to parse the header, wait for more data.
-        return MetaProtocolProxy::DecodeStatus::WaitForData;
-    }
+//     // Return appropriate DecodeStatus
+//     return MetaProtocolProxy::DecodeStatus::Done;
+// }
+
+// MetaProtocolProxy::DecodeStatus MongoCodec::decode(Buffer::Instance& buffer, MetaProtocolProxy::Metadata& metadata) {
+//     // Check if there is enough data in the buffer to read the MongoDB header.
+//     if (buffer.length() < sizeof(MongoHeader)) {
+//         // Insufficient data to parse the header, wait for more data.
+//         return MetaProtocolProxy::DecodeStatus::WaitForData;
+//     }
     
-    // Read the MongoDB header from the buffer.
-    MongoHeader header;
-    buffer.copyTo(&header, sizeof(MongoHeader));
-    buffer.drain(sizeof(MongoHeader));  // Remove the header bytes from the buffer.
+//     // Read the MongoDB header from the buffer.
+//     MongoHeader header;
+//     buffer.copyTo(&header, sizeof(MongoHeader));
+//     buffer.drain(sizeof(MongoHeader));  // Remove the header bytes from the buffer.
     
-    // Extract information from the header.
-    uint32_t messageLength = header.messageLength;
-    int32_t opCode = header.opCode;
+//     // Extract information from the header.
+//     uint32_t messageLength = header.messageLength;
+//     int32_t opCode = header.opCode;
     
-    // Check if there is enough data in the buffer to read the complete message.
-    if (buffer.length() < static_cast<size_t>(messageLength - sizeof(uint32_t))) {
-        // Insufficient data to parse the complete message, wait for more data.
-        return MetaProtocolProxy::DecodeStatus::WaitForData;
-    }
+//     // Check if there is enough data in the buffer to read the complete message.
+//     if (buffer.length() < static_cast<size_t>(messageLength - sizeof(uint32_t))) {
+//         // Insufficient data to parse the complete message, wait for more data.
+//         return MetaProtocolProxy::DecodeStatus::WaitForData;
+//     }
     
-    // Read the remaining message data from the buffer.
-    std::string buffer;
-    buffer.resize(messageLength - sizeof(uint32_t));
-    buffer.copyOut(buffer.data(), buffer.size());
-    buffer.drain(buffer.size());  // Remove the message data from the buffer.
+//     // Read the remaining message data from the buffer.
+//     std::string buffer;
+//     buffer.resize(messageLength - sizeof(uint32_t));
+//     buffer.copyOut(buffer.data(), buffer.size());
+//     buffer.drain(buffer.size());  // Remove the message data from the buffer.
     
-    // Now, you can parse the buffer according to the MongoDB protocol.
-    // ...
+//     // Now, you can parse the buffer according to the MongoDB protocol.
+//     // ...
 
-    // Parse the 'buffer' according to the MongoDB protocol.
-    // Example: You can check the 'opCode' to determine the type of MongoDB message.
-    switch (opCode) {
-        case 2013: {
-            // Handle OP_MSG message type.
-            // You can parse the buffer for OP_MSG here.
-            // Example: Extract fields, flags, sections, and checksum.
-            OP_MSG opMsg = parseOP_MSG(buffer);
+//     // Parse the 'buffer' according to the MongoDB protocol.
+//     // Example: You can check the 'opCode' to determine the type of MongoDB message.
+//     switch (opCode) {
+//         case 2013: {
+//             // Handle OP_MSG message type.
+//             // You can parse the buffer for OP_MSG here.
+//             // Example: Extract fields, flags, sections, and checksum.
+//             OP_MSG opMsg = parseOP_MSG(buffer);
 
-            // Populate 'metadata' with relevant information from the OP_MSG.
-            // Example: metadata.set("op_code", opCode);
-            // ...
+//             // Populate 'metadata' with relevant information from the OP_MSG.
+//             // Example: metadata.set("op_code", opCode);
+//             // ...
 
-            // Return DecodeStatus indicating success or failure.
-            return MetaProtocolProxy::DecodeStatus::Success;
-        }
-        case 2004: {
-            // Handle OP_QUERY message type.
-            // You can parse the buffer for OP_QUERY here.
-            // Example: Extract fields like flags, collection name, query, etc.
-            OP_QUERY opQuery = parseOP_QUERY(buffer);
+//             // Return DecodeStatus indicating success or failure.
+//             return MetaProtocolProxy::DecodeStatus::Success;
+//         }
+//         case 2004: {
+//             // Handle OP_QUERY message type.
+//             // You can parse the buffer for OP_QUERY here.
+//             // Example: Extract fields like flags, collection name, query, etc.
+//             OP_QUERY opQuery = parseOP_QUERY(buffer);
 
-            // Populate 'metadata' with relevant information from the OP_QUERY.
-            // Example: metadata.set("op_code", opCode);
-            // ...
+//             // Populate 'metadata' with relevant information from the OP_QUERY.
+//             // Example: metadata.set("op_code", opCode);
+//             // ...
 
-            // Return DecodeStatus indicating success or failure.
-            return MetaProtocolProxy::DecodeStatus::Success;
-        }
-        default:
-            // Handle unsupported or unknown MongoDB message types.
-            // You can log an error or return DecodeStatus::Failure as needed.
-            return MetaProtocolProxy::DecodeStatus::Failure;
-    }
+//             // Return DecodeStatus indicating success or failure.
+//             return MetaProtocolProxy::DecodeStatus::Success;
+//         }
+//         default:
+//             // Handle unsupported or unknown MongoDB message types.
+//             // You can log an error or return DecodeStatus::Failure as needed.
+//             return MetaProtocolProxy::DecodeStatus::Failure;
+//     }
 
-    // ...
+//     // ...
 
-    // Extract relevant information from the MongoDB message.
+//     // Extract relevant information from the MongoDB message.
     
-    // Populate the 'metadata' object with the parsed information.
+//     // Populate the 'metadata' object with the parsed information.
     
-    // Return DecodeStatus indicating success or failure.
+//     // Return DecodeStatus indicating success or failure.
     
-    // Example:
-    // if (decodeSuccess) {
-    //     return MetaProtocolProxy::DecodeStatus::Success;
-    // } else {
-    //     return MetaProtocolProxy::DecodeStatus::Failure;
-    // }
-}
+//     // Example:
+//     // if (decodeSuccess) {
+//     //     return MetaProtocolProxy::DecodeStatus::Success;
+//     // } else {
+//     //     return MetaProtocolProxy::DecodeStatus::Failure;
+//     // }
+// }
 
 // Function to parse MongoDB OP_MSG message
 OP_MSG parseOP_MSG(const Buffer::Instance& buffer) {
@@ -235,6 +230,66 @@ OP_MSG parseOP_MSG(const Buffer::Instance& buffer) {
         buffer.copyOut(4, &checksum);
     }
 
+}
+
+MetaProtocolProxy::DecodeStatus MongoCodec::decode(Buffer::Instance& buffer, MetaProtocolProxy::Metadata& metadata) {
+    ENVOY_LOG(debug, "MongoDB decode: {} bytes available", buffer.length());
+
+    while (decode_status_ != MongoDecodeStatus::DecodeDone) {
+        decode_status_ = handleState(buffer);
+        if (decode_status_ == MongoDecodeStatus::WaitForData) {
+            return MetaProtocolProxy::DecodeStatus::WaitForData;
+        }
+    }
+
+    toMetadata(metadata);
+    decode_status_ = MongoDecodeStatus::DecodeHeader;
+    return MetaProtocolProxy::DecodeStatus::Done;
+}
+
+MongoDecodeStatus MongoCodec::handleState(Buffer::Instance& buffer) {
+    switch (decode_status_) {
+    case MongoDecodeStatus::DecodeHeader:
+        return decodeHeader(buffer);
+    case MongoDecodeStatus::DecodeBody:
+        return decodeBody(buffer);
+    default:
+        PANIC("not reached");
+    }
+    return MongoDecodeStatus::DecodeDone;
+}
+
+MongoDecodeStatus MongoCodec::decodeHeader(Buffer::Instance& buffer) {
+    std::cout << "MongoDB decodeHeader: " << buffer.length() << " bytes available" << std::endl;
+    // Wait for more data if the header is not complete
+    if (buffer.length() < sizeof(MsgHeader)) {
+        // ENVOY_LOG(debug, "continue {}", buffer.length());
+        std::cout << "MongoDB decodeHeader: waiting for more data" << std::endl;
+        return MongoDecodeStatus::WaitForData;
+    }
+
+    if (!mongo_header_.decode(buffer)) {
+        throw EnvoyException(fmt::format("MongoDB header invalid"));
+    }
+
+    return MongoDecodeStatus::DecodeBody;
+}
+
+MongoDecodeStatus MongoCodec::decodeBody(Buffer::Instance& buffer) {
+    // Wait for more data if the buffer is not a complete message
+    if (buffer.length() < mongo_header_.messageLength()) {
+        return MongoDecodeStatus::WaitForData;
+    }
+
+    // move the decoded message out of the buffer
+    origin_msg_ = std::make_unique<Buffer::OwnedImpl>();
+    origin_msg_->move(buffer, mongo_header_.messageLength());
+
+    return MongoDecodeStatus::DecodeDone;
+}
+
+void MongoCodec::toMetadata(MetaProtocolProxy::Metadata& metadata) {
+    metadata.originMessage().move(*origin_msg_);
 }
 
 void MongoCodec::encode(const MetaProtocolProxy::Metadata& metadata,

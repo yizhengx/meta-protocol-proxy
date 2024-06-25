@@ -11,6 +11,13 @@ namespace NetworkFilters {
 namespace MetaProtocolProxy {
 namespace MongoDB {
 
+enum class MongoDBDecodeStatus {
+  DecodeHeader,
+  DecodeBody,
+  DecodeDone,
+  WaitForData,
+};
+
 class MongoCodec : public MetaProtocolProxy::Codec,
                    public Logger::Loggable<Logger::Id::mongo> {
 public:
@@ -31,6 +38,17 @@ public:
 
 private:
   // Implement decoding and encoding methods as needed for MongoDB messages.
+
+  MongoDBDecodeStatus handleState(Buffer::Instance& buffer);
+  MongoDBDecodeStatus decodeHeader(Buffer::Instance& buffer);
+  MongoDBDecodeStatus decodeBody(Buffer::Instance& buffer);
+  void toMetadata(MetaProtocolProxy::Metadata& metadata);
+
+  MongoDBDecodeStatus decode_status_{MongoDBDecodeStatus::DecodeHeader};
+  MetaProtocolProxy::MongoDB::MongoDBHeader mongo_header_;
+  MetaProtocolProxy::MessageType message_type_;
+  std::unique_ptr<Buffer::OwnedImpl> origin_msg_;
+
 };
 
 } // namespace MongoDB

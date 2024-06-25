@@ -5,19 +5,19 @@
 namespace MongoDB {
 
 bool MongoDBHeader::decode(Buffer::Instance& buffer) {
-  if (buffer.length() < HEADER_SIZE) {
+  if (buffer.length() < sizeof(MsgHeader)) {
     ENVOY_LOG(error, "MongoDB Header decode buffer.length:{} < {}.", buffer.length(), HEADER_SIZE);
     return false;
   }
 
   uint64_t pos = 0;
-  messageLength_ = buffer.peekLEInt<int32_t>(pos);
+  header_.messageLength_ = buffer.peekLEInt<int32_t>(pos);
   pos += sizeof(int32_t);
-  requestID_ = buffer.peekLEInt<int32_t>(pos);
+  header_.requestID_ = buffer.peekLEInt<int32_t>(pos);
   pos += sizeof(int32_t);
-  responseTo_ = buffer.peekLEInt<int32_t>(pos);
+  header_.responseTo_ = buffer.peekLEInt<int32_t>(pos);
   pos += sizeof(int32_t);
-  opCode_ = buffer.peekLEInt<int32_t>(pos);
+  header_.opCode_ = buffer.peekLEInt<int32_t>(pos);
   pos += sizeof(int32_t);
 
   ASSERT(pos == HEADER_SIZE);
@@ -26,10 +26,10 @@ bool MongoDBHeader::decode(Buffer::Instance& buffer) {
 }
 
 bool MongoDBHeader::encode(Buffer::Instance& buffer) {
-  buffer.writeLEInt(messageLength_);
-  buffer.writeLEInt(requestID_);
-  buffer.writeLEInt(responseTo_);
-  buffer.writeLEInt(opCode_);
+  buffer.writeLEInt(header_.messageLength_);
+  buffer.writeLEInt(header_.requestID_);
+  buffer.writeLEInt(header_.responseTo_);
+  buffer.writeLEInt(header_.opCode_);
   return true;
 }
 

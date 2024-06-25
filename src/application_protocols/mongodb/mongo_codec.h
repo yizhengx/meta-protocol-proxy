@@ -1,6 +1,7 @@
 #pragma once
 
 #include "envoy/buffer/buffer.h"
+#include "source/common/buffer/buffer_impl.h"
 #include "source/common/common/logger.h"
 #include "src/meta_protocol_proxy/codec/codec.h"
 #include "protocol.h"  // Include the Memcached protocol header

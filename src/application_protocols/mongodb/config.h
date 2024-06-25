@@ -1,8 +1,8 @@
 #pragma once
 
 #include "src/meta_protocol_proxy/codec/factory.h"
-#include "src/application_protocols/mongodb/mongo_codec.pb.h"
-#include "src/application_protocols/mongodb/mongo_codec.pb.validate.h"
+#include "src/application_protocols/mongodb/mongodb_codec.pb.h"
+#include "src/application_protocols/mongodb/mongodb_codec.pb.validate.h"
 
 namespace Envoy {
 namespace Extensions {

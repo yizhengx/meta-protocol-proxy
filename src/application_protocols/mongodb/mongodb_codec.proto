@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package aeraki.meta_protocol.codec.memcached;
+package aeraki.meta_protocol.codec.mongodb;
 
 import "udpa/annotations/status.proto";
 

@@ -20,7 +20,7 @@ enum class MongoDBDecodeStatus {
 };
 
 class MongoDBCodec : public MetaProtocolProxy::Codec,
-                   public Logger::Loggable<Logger::Id::mongo> {
+                   public Logger::Loggable<Logger::Id::misc> {
 public:
   MongoDBCodec() {}
   ~MongoDBCodec() override = default;

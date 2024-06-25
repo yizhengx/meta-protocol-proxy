@@ -11,7 +11,7 @@ namespace MetaProtocolProxy {
 namespace MongoDB {
 
 MetaProtocolProxy::CodecPtr MongoDBCodecConfig::createCodec(const Protobuf::Message&) {
-  return std::make_unique<MongoDB::MongoCodec>();
+  return std::make_unique<MongoDB::MongoDBCodec>();
 };
 
 /**

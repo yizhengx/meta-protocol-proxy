@@ -10,7 +10,7 @@ namespace MongoDB {
 
 
 
-// MetaProtocolProxy::DecodeStatus MongoCodec::decode(Buffer::Instance& buffer,
+// MetaProtocolProxy::DecodeStatus MongoDBCodec::decode(Buffer::Instance& buffer,
 //                                                 MetaProtocolProxy::Metadata& metadata) {
 //     const size_t MsgHeaderSize = sizeof(MsgHeader);
 
@@ -109,7 +109,7 @@ namespace MongoDB {
 //     return MetaProtocolProxy::DecodeStatus::Done;
 // }
 
-// MetaProtocolProxy::DecodeStatus MongoCodec::decode(Buffer::Instance& buffer, MetaProtocolProxy::Metadata& metadata) {
+// MetaProtocolProxy::DecodeStatus MongoDBCodec::decode(Buffer::Instance& buffer, MetaProtocolProxy::Metadata& metadata) {
 //     // Check if there is enough data in the buffer to read the MongoDB header.
 //     if (buffer.length() < sizeof(MongoHeader)) {
 //         // Insufficient data to parse the header, wait for more data.
@@ -232,7 +232,7 @@ namespace MongoDB {
 
 // }
 
-MetaProtocolProxy::DecodeStatus MongoCodec::decode(Buffer::Instance& buffer, MetaProtocolProxy::Metadata& metadata) {
+MetaProtocolProxy::DecodeStatus MongoDBCodec::decode(Buffer::Instance& buffer, MetaProtocolProxy::Metadata& metadata) {
 
     message_type_ = metadata.getMessageType();
     std::string message_type_str = message_type_ == MetaProtocolProxy::MessageType::Request ? "Request" : "Response";
@@ -251,7 +251,7 @@ MetaProtocolProxy::DecodeStatus MongoCodec::decode(Buffer::Instance& buffer, Met
     return MetaProtocolProxy::DecodeStatus::Done;
 }
 
-MongoDBDecodeStatus MongoCodec::handleState(Buffer::Instance& buffer) {
+MongoDBDecodeStatus MongoDBCodec::handleState(Buffer::Instance& buffer) {
     switch (decode_status_) {
     case MongoDBDecodeStatus::DecodeHeader:
         return decodeHeader(buffer);
@@ -263,7 +263,7 @@ MongoDBDecodeStatus MongoCodec::handleState(Buffer::Instance& buffer) {
     return MongoDBDecodeStatus::DecodeDone;
 }
 
-MongoDBDecodeStatus MongoCodec::decodeHeader(Buffer::Instance& buffer) {
+MongoDBDecodeStatus MongoDBCodec::decodeHeader(Buffer::Instance& buffer) {
     std::cout << "MongoDB decodeHeader: " << buffer.length() << " bytes available" << std::endl;
     // Wait for more data if the header is not complete
     if (buffer.length() < sizeof(MsgHeader)) {
@@ -279,7 +279,7 @@ MongoDBDecodeStatus MongoCodec::decodeHeader(Buffer::Instance& buffer) {
     return MongoDBDecodeStatus::DecodeBody;
 }
 
-MongoDBDecodeStatus MongoCodec::decodeBody(Buffer::Instance& buffer) {
+MongoDBDecodeStatus MongoDBCodec::decodeBody(Buffer::Instance& buffer) {
     // Wait for more data if the buffer is not a complete message
     if (buffer.length() < static_cast<uint64_t>(mongo_header_.getMessageLength())) {
         return MongoDBDecodeStatus::WaitForData;
@@ -292,11 +292,11 @@ MongoDBDecodeStatus MongoCodec::decodeBody(Buffer::Instance& buffer) {
     return MongoDBDecodeStatus::DecodeDone;
 }
 
-void MongoCodec::toMetadata(MetaProtocolProxy::Metadata& metadata) {
+void MongoDBCodec::toMetadata(MetaProtocolProxy::Metadata& metadata) {
     metadata.originMessage().move(*origin_msg_);
 }
 
-void MongoCodec::encode(const MetaProtocolProxy::Metadata& metadata,
+void MongoDBCodec::encode(const MetaProtocolProxy::Metadata& metadata,
                         const MetaProtocolProxy::Mutation& mutation, Buffer::Instance& buffer) {
     // TODO we don't need to implement encode for now.
     // This method only need to be implemented if we want to modify the respose message
@@ -305,7 +305,7 @@ void MongoCodec::encode(const MetaProtocolProxy::Metadata& metadata,
     (void)buffer;
 }
 
-void MongoCodec::onError(const MetaProtocolProxy::Metadata&,
+void MongoDBCodec::onError(const MetaProtocolProxy::Metadata&,
                         const MetaProtocolProxy::Error&, Buffer::Instance&) {
     // Implement handling of errors and encoding error messages.
     // Write error messages to the buffer.

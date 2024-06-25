@@ -19,11 +19,11 @@ enum class MongoDBDecodeStatus {
   WaitForData,
 };
 
-class MongoCodec : public MetaProtocolProxy::Codec,
+class MongoDBCodec : public MetaProtocolProxy::Codec,
                    public Logger::Loggable<Logger::Id::mongo> {
 public:
-  MongoCodec() {}
-  ~MongoCodec() override = default;
+  MongoDBCodec() {}
+  ~MongoDBCodec() override = default;
 
   // For protocol decoding, the buffer needs to be parsed and populated with MongoDB messages.
   MetaProtocolProxy::DecodeStatus decode(Buffer::Instance& buffer,

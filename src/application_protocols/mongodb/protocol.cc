@@ -13,13 +13,13 @@ bool MongoDBHeader::decode(Buffer::Instance& buffer) {
   }
 
   uint64_t pos = 0;
-  header_.messageLength_ = buffer.peekLEInt<int32_t>(pos);
+  header_.messageLength = buffer.peekLEInt<int32_t>(pos);
   pos += sizeof(int32_t);
-  header_.requestID_ = buffer.peekLEInt<int32_t>(pos);
+  header_.requestID = buffer.peekLEInt<int32_t>(pos);
   pos += sizeof(int32_t);
-  header_.responseTo_ = buffer.peekLEInt<int32_t>(pos);
+  header_.responseTo = buffer.peekLEInt<int32_t>(pos);
   pos += sizeof(int32_t);
-  header_.opCode_ = buffer.peekLEInt<int32_t>(pos);
+  header_.opCode = buffer.peekLEInt<int32_t>(pos);
   pos += sizeof(int32_t);
 
   ASSERT(pos == sizeof(MsgHeader));

@@ -23,7 +23,6 @@ class MemcachedCodec : public MetaProtocolProxy::Codec,
                        public Logger::Loggable<Logger::Id::misc> {
 public:
     MemcachedCodec() {
-        std::cout << "[MemcachedCodec::MemcachedCodec()] Memcached codec created" << std::endl;
         ENVOY_LOG(warn, "Memcached codec created");
     };
     ~MemcachedCodec() override = default;

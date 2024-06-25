@@ -158,7 +158,9 @@ MetaProtocolProxy::DecodeStatus MemcachedCodec::decode(Buffer::Instance& buffer,
 
   message_type_ = metadata.getMessageType();
   std::string message_type_str = message_type_ == MetaProtocolProxy::MessageType::Request ? "Request" : "Response";
-  std::cout << "[MemcachedCodec::decode()] Memcached decoder: " << buffer.length() << " bytes available, msg type: " << message_type_str << std::endl;
+  // std::cout << "[MemcachedCodec::decode()] Memcached decoder: " << buffer.length() << " bytes available, msg type: " << message_type_str << std::endl;
+  ENVOY_LOG(warn, "Memcached decoder: {} bytes available, msg type: {}", buffer.length(),
+            static_cast<int>(metadata.getMessageType()));
 
   while (decode_status_ != MemcachedDecodeStatus::DecodeDone) {
     decode_status_ = handleState(buffer);
@@ -191,11 +193,13 @@ MemcachedDecodeStatus MemcachedCodec::handleState(Buffer::Instance& buffer) {
 
 MemcachedDecodeStatus MemcachedCodec::decodeHeader(Buffer::Instance& buffer) {
   // Check if the buffer has enough data for the Memcached header
-  std::cout << "[MemcachedCodec::decodeHeader()] Buffer length: " << buffer.length() << std::endl;
+  // std::cout << "[MemcachedCodec::decodeHeader()] Buffer length: " << buffer.length() << std::endl;
+  ENVOY_LOG(warn, "Memcached decodeHeader: {} bytes available", buffer.length());
 
   
   if (buffer.length() < MEMCACHED_HEADER_SIZE) {
-    std::cout << "[MemcachedCodec::decodeHeader()] Waiting for more data " << std::endl;
+    // std::cout << "[MemcachedCodec::decodeHeader()] Waiting for more data " << std::endl;
+    ENVOY_LOG(warn, "Memcached decodeHeader: waiting for more data");
     return MemcachedDecodeStatus::WaitForData;
   }
 
@@ -203,15 +207,17 @@ MemcachedDecodeStatus MemcachedCodec::decodeHeader(Buffer::Instance& buffer) {
     throw EnvoyException("Invalid Memcached header");
   }
 
-  std::cout << "[MemcachedCodec::decodeHeader()] Memcached header decoded: key length: " << memcached_header_.get_key_length() << ", total body length: " << memcached_header_.get_total_body_length() << std::endl;
+  // std::cout << "[MemcachedCodec::decodeHeader()] Memcached header decoded: key length: " << memcached_header_.get_key_length() << ", total body length: " << memcached_header_.get_total_body_length() << std::endl;
+  ENVOY_LOG(warn, "Memcached decodeHeader: Memcached header decoded: key length: {}, total body length: {}", memcached_header_.get_key_length(), memcached_header_.get_total_body_length());
   return MemcachedDecodeStatus::DecodeBody;
 
 }
 
 MemcachedDecodeStatus MemcachedCodec::decodeBody(Buffer::Instance& buffer) {
   // Check if the buffer has the full body of the message
-  if (buffer.length() < memcached_header_.get_key_length() + memcached_header_.get_total_body_length()) {
-    std::cout << "[MemcachedCodec::decodeBody()] Waiting for more data " << std::endl;
+  if (buffer.length() < MEMCACHED_HEADER_SIZE + memcached_header_.get_total_body_length()) {
+    // std::cout << "[MemcachedCodec::decodeBody()] Waiting for more data " << std::endl;
+    ENVOY_LOG(warn, "Memcached decodeBody: waiting for more data");
     return MemcachedDecodeStatus::WaitForData;
   }
 
@@ -232,8 +238,7 @@ void MemcachedCodec::encode(const MetaProtocolProxy::Metadata& metadata,
                             Buffer::Instance& buffer) {
   // TODO we don't need to implement encode for now.
   // This method only need to be implemented if we want to modify the respose message
-  ENVOY_LOG(warn, "Memcached encoder: {} bytes available, msg type: {}", buffer.length(),
-            static_cast<int>(metadata.getMessageType()));
+  // ENVOY_LOG(warn, "Memcached encoder: {} bytes available, msg type: {}", buffer.length(), static_cast<int>(metadata.getMessageType()));
   (void)metadata;
   (void)mutation;
   (void)buffer;

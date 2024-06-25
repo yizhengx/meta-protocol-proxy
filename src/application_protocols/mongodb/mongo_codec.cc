@@ -281,7 +281,7 @@ MongoDBDecodeStatus MongoCodec::decodeHeader(Buffer::Instance& buffer) {
 
 MongoDBDecodeStatus MongoCodec::decodeBody(Buffer::Instance& buffer) {
     // Wait for more data if the buffer is not a complete message
-    if (buffer.length() < mongo_header_.messageLength()) {
+    if (buffer.length() < mongo_header_.getMessageLength()) {
         return MongoDBDecodeStatus::WaitForData;
     }
 
@@ -305,8 +305,8 @@ void MongoCodec::encode(const MetaProtocolProxy::Metadata& metadata,
     (void)buffer;
 }
 
-void MongoCodec::onError(const MetaProtocolProxy::Metadata& metadata,
-                        const MetaProtocolProxy::Error& error, Buffer::Instance& buffer) {
+void MongoCodec::onError(const MetaProtocolProxy::Metadata&,
+                        const MetaProtocolProxy::Error&, Buffer::Instance&) {
     // Implement handling of errors and encoding error messages.
     // Write error messages to the buffer.
 }

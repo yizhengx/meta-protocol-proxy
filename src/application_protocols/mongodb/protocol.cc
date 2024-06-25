@@ -8,7 +8,7 @@ namespace MongoDB {
 
 bool MongoDBHeader::decode(Buffer::Instance& buffer) {
   if (buffer.length() < sizeof(MsgHeader)) {
-    ENVOY_LOG(error, "MongoDB Header decode buffer.length:{} < {}.", buffer.length(), HEADER_SIZE);
+    ENVOY_LOG(error, "MongoDB Header decode buffer.length:{} < {}.", buffer.length(), sizeof(MsgHeader));
     return false;
   }
 
@@ -22,16 +22,16 @@ bool MongoDBHeader::decode(Buffer::Instance& buffer) {
   header_.opCode_ = buffer.peekLEInt<int32_t>(pos);
   pos += sizeof(int32_t);
 
-  ASSERT(pos == HEADER_SIZE);
+  ASSERT(pos == sizeof(MsgHeader));
 
   return true;
 }
 
 bool MongoDBHeader::encode(Buffer::Instance& buffer) {
-  buffer.writeLEInt(header_.messageLength_);
-  buffer.writeLEInt(header_.requestID_);
-  buffer.writeLEInt(header_.responseTo_);
-  buffer.writeLEInt(header_.opCode_);
+  buffer.writeLEInt(header_.messageLength);
+  buffer.writeLEInt(header_.requestID);
+  buffer.writeLEInt(header_.responseTo);
+  buffer.writeLEInt(header_.opCode);
   return true;
 }
 

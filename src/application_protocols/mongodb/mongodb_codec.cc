@@ -237,7 +237,7 @@ MetaProtocolProxy::DecodeStatus MongoDBCodec::decode(Buffer::Instance& buffer, M
     message_type_ = metadata.getMessageType();
     std::string message_type_str = message_type_ == MetaProtocolProxy::MessageType::Request ? "Request" : "Response";
 
-    std::cout << "[MongoDBCodec::decode()] MongoDB decoder: " << buffer.length() << " bytes available, msg type: " << message_type_str << std::endl;
+    std::cout << "[MongoDBCodec::decode()] MongoDB start decoder: " << buffer.length() << " bytes available, msg type: " << message_type_str << std::endl;
 
     while (decode_status_ != MongoDBDecodeStatus::DecodeDone) {
         decode_status_ = handleState(buffer);
@@ -264,7 +264,7 @@ MongoDBDecodeStatus MongoDBCodec::handleState(Buffer::Instance& buffer) {
 }
 
 MongoDBDecodeStatus MongoDBCodec::decodeHeader(Buffer::Instance& buffer) {
-    std::cout << "MongoDB decodeHeader: " << buffer.length() << " bytes available" << std::endl;
+    // std::cout << "MongoDB decodeHeader: " << buffer.length() << " bytes available" << std::endl;
     // Wait for more data if the header is not complete
     if (buffer.length() < sizeof(MsgHeader)) {
         // ENVOY_LOG(debug, "continue {}", buffer.length());
@@ -275,6 +275,8 @@ MongoDBDecodeStatus MongoDBCodec::decodeHeader(Buffer::Instance& buffer) {
     if (!mongo_header_.decode(buffer)) {
         throw EnvoyException(fmt::format("MongoDB header invalid"));
     }
+
+    std::cout << "MongoDB decodeHeader: message length: " << mongo_header_.getMessageLength() << std::endl;
 
     return MongoDBDecodeStatus::DecodeBody;
 }

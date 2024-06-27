@@ -293,7 +293,7 @@ MemcachedDecodeStatus MemcachedCodec::decodeTextRequest(char* chunk) {
             return true;
         }
     }
-    return false
+    return false;
   };
 
   if (checkCommand("set", 3) || checkCommand("add", 3) || checkCommand("cas", 3) ||

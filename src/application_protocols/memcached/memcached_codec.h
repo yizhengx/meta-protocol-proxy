@@ -51,8 +51,8 @@ private:
     MemcachedDecodeStatus decodeBody(Buffer::Instance& buffer);
     MemcachedDecodeStatus decodeRequest(Buffer::Instance& buffer);
     MemcachedDecodeStatus decodeTextProtocol(Buffer::Instance& buffer);
-    MemcachedDecodeStatus decodeTextRequest(Buffer::Instance& buffer);
-    MemcachedDecodeStatus decodeTextResponse(Buffer::Instance& buffer);
+    MemcachedDecodeStatus decodeTextRequest(char* chunk);
+    MemcachedDecodeStatus decodeTextResponse(char* chunk);
     void toMetadata(MetaProtocolProxy::Metadata& metadata);
 
     MemcachedDecodeStatus decode_status_{MemcachedDecodeStatus::DecodeHeader};

@@ -286,8 +286,9 @@ MemcachedDecodeStatus MemcachedCodec::decodeTextRequest(char* chunk) {
 
   auto checkCommand = [&](const char* command, size_t length) {
     if (chunk_length >= length) {
-        char buffer[8] = {0}; // Buffer size sufficient for the longest command
-        buffer_.copyOut(0, length, buffer);
+        char buffer[length + 1]; // Buffer size for the command plus null terminator
+        std::memcpy(buffer, chunk, length);
+        buffer[length] = '\0'; // Null-terminate the buffer
         if (memcmp(buffer, command, length) == 0) {
             std::cout << "[MemcachedCodec::decodeHeader()] " << command << " command" << std::endl;
             return true;

@@ -186,7 +186,7 @@ MemcachedDecodeStatus MemcachedCodec::handleState(Buffer::Instance& buffer) {
   case MemcachedDecodeStatus::DecodeBody: // decode body
     return decodeBody(buffer);
   case MemcachedDecodeStatus::DecodeTextProtocol:
-    return parseTextProtocol(buffer);
+    return decodeTextProtocol(buffer);
   case MemcachedDecodeStatus::WaitForData:
     return MemcachedDecodeStatus::WaitForData;
   default:
@@ -202,10 +202,10 @@ MemcachedDecodeStatus MemcachedCodec::decodeHeader(Buffer::Instance& buffer) {
 
   uint8_t magic_code = 0x80;
 
-  if buffer.length() >= 1: // we probabaly don't need this line
+  if (buffer.length()) >= 1: // we probabaly don't need this line
     bool is_magic = buffer.peekBEInt<uint8_t>(0) >= magic_code;
 
-    if !is_magic:
+    if (!is_magic):
       is_binary_protocol_ = false;
       std::cout << "[MemcachedCodec::decodeHeader()] Not a memcached binary protocol" << std::endl;
       return MemcachedDecodeStatus::DecodeTextProtocol;
@@ -236,7 +236,7 @@ MemcachedDecodeStatus MemcachedCodec::decodeTextProtocol(Buffer::Instance& buffe
 
     bool end_of_chunk = false;
     for (size_t i = parsed_pos_+1; i < buffer.length(); i++) {
-      if buffer.peekBEInt<uint8_t>(i-1) == 13 and buffer.peekBEInt<uint8_t>(i) == 10:
+      if (buffer.peekBEInt<uint8_t>(i-1) == 13 and buffer.peekBEInt<uint8_t>(i) == 10):
         // end of the command
         pos = i;
         end_of_chunk = true;
@@ -247,10 +247,10 @@ MemcachedDecodeStatus MemcachedCodec::decodeTextProtocol(Buffer::Instance& buffe
       std::cout << "[MemcachedCodec::decodeHeader()] Waiting for more data " << std::endl;
       return MemcachedDecodeStatus::WaitForData;
     }
-    parsed_pos = pos;
+    parsed_pos_ = pos;
 
-    char cur_bytes_chunk[parsed_pos-pre_parsed_pos_+1];
-    buffer.copyOut(pre_parsed_pos_+1, parsed_pos-pre_parsed_pos_+1, cur_bytes_chunk);
+    char cur_bytes_chunk[parsed_pos_-pre_parsed_pos_+1];
+    buffer.copyOut(pre_parsed_pos_+1, parsed_pos_-pre_parsed_pos_+1, cur_bytes_chunk);
 
     MemcachedDecodeStatus status;
     if (message_type_ == MetaProtocolProxy::MessageType::Request) {

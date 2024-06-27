@@ -174,7 +174,7 @@ MetaProtocolProxy::DecodeStatus MemcachedCodec::decode(Buffer::Instance& buffer,
   decode_status_ = MemcachedDecodeStatus::DecodeHeader;
   is_binary_protocol_ = true;
   is_request_cmd_done_ = false;
-  parsed_pos_ = -1;
+  parsed_pos_ = 0;
   return MetaProtocolProxy::DecodeStatus::Done;
 }
 
@@ -233,11 +233,12 @@ MemcachedDecodeStatus MemcachedCodec::decodeTextProtocol(Buffer::Instance& buffe
     // parse command
 
     // size_t pre_parsed_pos_ = parsed_pos_;
-    int pos;
+    size_t pos;
     std::vector<char> char_array;
 
     bool end_of_chunk = false;
-    for (int i = parsed_pos_+2; i < buffer.length(); i++) {
+    if (parsed_pos_ != 0) { parsed_pos_ += 1; }
+    for (size_t i = parsed_pos_+1; i < buffer.length(); i++) {
       char_array.push_back(buffer.peekBEInt<char>(i-1));
       if (buffer.peekBEInt<uint8_t>(i-1) == 13 and buffer.peekBEInt<uint8_t>(i) == 10){
         // end of the command

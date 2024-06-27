@@ -251,14 +251,14 @@ MemcachedDecodeStatus MemcachedCodec::decodeTextProtocol(Buffer::Instance& buffe
     }
     parsed_pos_ = pos;
 
-    char cur_bytes_chunk[parsed_pos_-pre_parsed_pos_+1];
-    buffer.copyOut(pre_parsed_pos_+1, parsed_pos_-pre_parsed_pos_+1, cur_bytes_chunk);
+    std::vector<char> cur_bytes_chunk[parsed_pos_-pre_parsed_pos_+1];
+    std::memcpy(cur_bytes_chunk.data(), buffer.peek() + pre_parsed_pos_, parsed_pos_-pre_parsed_pos_+1);
 
     MemcachedDecodeStatus status;
     if (message_type_ == MetaProtocolProxy::MessageType::Request) {
-      status = decodeTextRequest(cur_bytes_chunk);
+      status = decodeTextRequest(cur_bytes_chunk.data());
     } else {
-      status = decodeTextResponse(cur_bytes_chunk);
+      status = decodeTextResponse(cur_bytes_chunk.data());
     }
 
     if (status == MemcachedDecodeStatus::DecodeDone) {
@@ -288,9 +288,9 @@ MemcachedDecodeStatus MemcachedCodec::decodeTextRequest(char* chunk) {
 
   auto checkCommand = [&](const char* command, size_t length) {
     if (chunk_length >= length) {
-        char buffer[length + 1]; // Buffer size for the command plus null terminator
+        char buffer[8]; // Buffer size for the command plus null terminator
         std::memcpy(buffer, chunk, length);
-        buffer[length] = '\0'; // Null-terminate the buffer
+        buffer[7] = '\0'; // Null-terminate the buffer
         if (memcmp(buffer, command, length) == 0) {
             std::cout << "[MemcachedCodec::decodeHeader()] " << command << " command" << std::endl;
             return true;

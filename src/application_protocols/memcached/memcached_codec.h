@@ -64,7 +64,7 @@ private:
     // Additional private variables for TEXT protocol
     bool is_binary_protocol_{true};
     bool is_request_cmd_done_{false};
-    size_t parsed_pos_{0}; // The position of the last byte parsed
+    size_t parsed_pos_{-1}; // The position of the last byte parsed
 };
 
 

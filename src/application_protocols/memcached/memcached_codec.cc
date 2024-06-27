@@ -273,7 +273,9 @@ MemcachedDecodeStatus MemcachedCodec::decodeTextProtocol(Buffer::Instance& buffe
 
 MemcachedDecodeStatus MemcachedCodec::decodeTextRequest(char* chunk) {
 
-  std::cout << "[MemcachedCodec::decodeTextRequest()] Decoding request " << chunk << std::endl;
+  size_t chunk_length = std::strlen(chunk);
+
+  std::cout << "[MemcachedCodec::decodeTextResponse()] Decoding response: length" << chunk_length " | content: " << chunk << std::endl;
 
   if (is_request_cmd_done_){
     std::cout << "[MemcachedCodec::decodeHeader()] Request command is already done, decoding finished" << std::endl;
@@ -282,7 +284,7 @@ MemcachedDecodeStatus MemcachedCodec::decodeTextRequest(char* chunk) {
 
   is_request_cmd_done_ = true;
 
-  size_t chunk_length = std::strlen(chunk);
+  
   if (chunk_length < 3) {
     std::cout << "[MemcachedCodec::decodeHeader()] chunk length<3, probably other commands" << std::endl;
     return MemcachedDecodeStatus::DecodeDone;
@@ -310,33 +312,35 @@ MemcachedDecodeStatus MemcachedCodec::decodeTextRequest(char* chunk) {
 
 MemcachedDecodeStatus MemcachedCodec::decodeTextResponse(char* chunk) {
 
-  std::cout << "[MemcachedCodec::decodeTextResponse()] Decoding response " << chunk << std::endl;
 
-    size_t chunk_length = std::strlen(chunk);
+  size_t chunk_length = std::strlen(chunk);
+  
+  std::cout << "[MemcachedCodec::decodeTextResponse()] Decoding response: length" << chunk_length " | content: " << chunk << std::endl;
 
-    if (chunk_length < 5) {
-        std::cout << "[MemcachedCodec::decodeTextResponse()] Chunk length < 3, probably other content" << std::endl;
-        return MemcachedDecodeStatus::DecodeDone;
-    }
 
-    auto checkContent = [&](const char* content, size_t length) {
-      if (chunk_length == length && std::memcmp(chunk, content, length) == 0){
-        std::cout << "[MemcachedCodec::decodeTextResponse()] content: ";
-        for (size_t i = 0; i < length - 2; ++i) {
-            std::cout << content[i];
-        }
-        std::cout << std::endl;
-        return true;
+  if (chunk_length < 5) {
+      std::cout << "[MemcachedCodec::decodeTextResponse()] Chunk length < 3, probably other content" << std::endl;
+      return MemcachedDecodeStatus::DecodeDone;
+  }
+
+  auto checkContent = [&](const char* content, size_t length) {
+    if (chunk_length == length && std::memcmp(chunk, content, length) == 0){
+      std::cout << "[MemcachedCodec::decodeTextResponse()] content: ";
+      for (size_t i = 0; i < length - 2; ++i) {
+          std::cout << content[i];
       }
-      return false;
-    };
-
-    if (checkContent("STORED\r\n", 7) || checkContent("NOT_STORED\r\n", 11) || checkContent("EXISTS\r\n", 8) ||
-        checkContent("NOT_FOUND\r\n", 10) || checkContent("END\r\n", 5)) {
-        return MemcachedDecodeStatus::DecodeDone; // continue decoding
+      std::cout << std::endl;
+      return true;
     }
+    return false;
+  };
 
-    return MemcachedDecodeStatus::WaitForData;
+  if (checkContent("STORED\r\n", 7) || checkContent("NOT_STORED\r\n", 11) || checkContent("EXISTS\r\n", 8) ||
+      checkContent("NOT_FOUND\r\n", 10) || checkContent("END\r\n", 5)) {
+      return MemcachedDecodeStatus::DecodeDone; // continue decoding
+  }
+
+  return MemcachedDecodeStatus::WaitForData;
 }
 
 MemcachedDecodeStatus MemcachedCodec::decodeBody(Buffer::Instance& buffer) {

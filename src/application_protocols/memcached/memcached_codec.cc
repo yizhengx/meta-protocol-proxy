@@ -195,6 +195,13 @@ MemcachedDecodeStatus MemcachedCodec::decodeHeader(Buffer::Instance& buffer) {
   std::cout << "[MemcachedCodec::decodeHeader()] Buffer length: " << buffer.length() << std::endl;
   // ENVOY_LOG(warn, "Memcached decodeHeader: {} bytes available", buffer.length());
 
+  uint8_t byte;
+
+  for (int i = 0; i < 9; i++) {
+    byte = buffer.peekBEInt<uint8_t>(i);
+    std::cout << "[MemcachedCodec::decodeHeader()] Byte " << i << ": " << static_cast<int>(byte) << std::endl;
+  }
+
   
   if (buffer.length() < MEMCACHED_HEADER_SIZE) {
     std::cout << "[MemcachedCodec::decodeHeader()] Waiting for more data " << std::endl;

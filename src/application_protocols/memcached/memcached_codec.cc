@@ -232,7 +232,7 @@ MemcachedDecodeStatus MemcachedCodec::decodeTextProtocol(Buffer::Instance& buffe
   while (true) {
     // parse command
 
-    size_t pre_parsed_pos_ = parsed_pos_;
+    // size_t pre_parsed_pos_ = parsed_pos_;
     size_t pos;
     std::vector<char> char_array;
 

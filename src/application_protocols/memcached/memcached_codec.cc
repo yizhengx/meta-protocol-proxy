@@ -202,13 +202,14 @@ MemcachedDecodeStatus MemcachedCodec::decodeHeader(Buffer::Instance& buffer) {
 
   uint8_t magic_code = 0x80;
 
-  if (buffer.length()) >= 1: // we probabaly don't need this line
+  if (buffer.length() >= 1): // we probabaly don't need this line
     bool is_magic = buffer.peekBEInt<uint8_t>(0) >= magic_code;
 
-    if (!is_magic):
+    if (!is_magic) {
       is_binary_protocol_ = false;
       std::cout << "[MemcachedCodec::decodeHeader()] Not a memcached binary protocol" << std::endl;
       return MemcachedDecodeStatus::DecodeTextProtocol;
+    }
 
   
   if (buffer.length() < MEMCACHED_HEADER_SIZE) {
@@ -236,11 +237,12 @@ MemcachedDecodeStatus MemcachedCodec::decodeTextProtocol(Buffer::Instance& buffe
 
     bool end_of_chunk = false;
     for (size_t i = parsed_pos_+1; i < buffer.length(); i++) {
-      if (buffer.peekBEInt<uint8_t>(i-1) == 13 and buffer.peekBEInt<uint8_t>(i) == 10):
+      if (buffer.peekBEInt<uint8_t>(i-1) == 13 and buffer.peekBEInt<uint8_t>(i) == 10){
         // end of the command
         pos = i;
         end_of_chunk = true;
         break;
+      }
     } 
 
     if (!end_of_chunk) {
@@ -263,7 +265,7 @@ MemcachedDecodeStatus MemcachedCodec::decodeTextProtocol(Buffer::Instance& buffe
       // handle message saving 
       origin_msg_ = std::make_unique<Buffer::OwnedImpl>();
       origin_msg_->move(buffer, parsed_pos_+1);
-      std::cout << "[MemcachedCodec::decodeTextProtocol()] Memcached text protocol decoded, message type: " << message_type_ << std::endl;
+      std::cout << "[MemcachedCodec::decodeTextProtocol()] Memcached text protocol decoded, message type: " << static_cast<int>(message_type_) << std::endl;
       return MemcachedDecodeStatus::DecodeDone;
     } 
   }

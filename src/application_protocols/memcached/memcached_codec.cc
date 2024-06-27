@@ -273,6 +273,8 @@ MemcachedDecodeStatus MemcachedCodec::decodeTextProtocol(Buffer::Instance& buffe
 
 MemcachedDecodeStatus MemcachedCodec::decodeTextRequest(char* chunk) {
 
+  std::cout << "[MemcachedCodec::decodeTextRequest()] Decoding request " << chunk << std::endl;
+
   if (is_request_cmd_done_){
     std::cout << "[MemcachedCodec::decodeHeader()] Request command is already done, decoding finished" << std::endl;
     return MemcachedDecodeStatus::DecodeDone;
@@ -307,6 +309,9 @@ MemcachedDecodeStatus MemcachedCodec::decodeTextRequest(char* chunk) {
 }
 
 MemcachedDecodeStatus MemcachedCodec::decodeTextResponse(char* chunk) {
+
+  std::cout << "[MemcachedCodec::decodeTextResponse()] Decoding response " << chunk << std::endl;
+
     size_t chunk_length = std::strlen(chunk);
 
     if (chunk_length < 5) {

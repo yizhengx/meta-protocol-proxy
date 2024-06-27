@@ -234,13 +234,16 @@ MemcachedDecodeStatus MemcachedCodec::decodeTextProtocol(Buffer::Instance& buffe
 
     size_t pre_parsed_pos_ = parsed_pos_;
     size_t pos;
+    std::vector<char> char_array;
 
     bool end_of_chunk = false;
     for (size_t i = parsed_pos_+1; i < buffer.length(); i++) {
+      char_array.push_back(buffer.peekBEInt<char>(i-1));
       if (buffer.peekBEInt<uint8_t>(i-1) == 13 and buffer.peekBEInt<uint8_t>(i) == 10){
         // end of the command
         pos = i;
         end_of_chunk = true;
+        char_array.push_back(buffer.peekBEInt<char>(i));
         break;
       }
     } 
@@ -251,14 +254,11 @@ MemcachedDecodeStatus MemcachedCodec::decodeTextProtocol(Buffer::Instance& buffe
     }
     parsed_pos_ = pos;
 
-    std::vector<char> cur_bytes_chunk[parsed_pos_-pre_parsed_pos_+1];
-    std::memcpy(cur_bytes_chunk.data(), buffer.peek() + pre_parsed_pos_, parsed_pos_-pre_parsed_pos_+1);
-
     MemcachedDecodeStatus status;
     if (message_type_ == MetaProtocolProxy::MessageType::Request) {
-      status = decodeTextRequest(cur_bytes_chunk.data());
+      status = decodeTextRequest(char_array.data());
     } else {
-      status = decodeTextResponse(cur_bytes_chunk.data());
+      status = decodeTextResponse(char_array.data());
     }
 
     if (status == MemcachedDecodeStatus::DecodeDone) {

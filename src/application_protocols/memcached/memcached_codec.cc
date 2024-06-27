@@ -324,7 +324,7 @@ MemcachedDecodeStatus MemcachedCodec::decodeTextResponse(char* chunk) {
   }
 
   auto checkContent = [&](const char* content, size_t length) {
-    if (chunk_length == length && std::memcmp(chunk, content, length) == 0){
+    if (chunk_length >= length && std::memcmp(chunk, content, length) == 0){
       std::cout << "[MemcachedCodec::decodeTextResponse()] content: ";
       for (size_t i = 0; i < length - 2; ++i) {
           std::cout << content[i];

@@ -275,7 +275,7 @@ MemcachedDecodeStatus MemcachedCodec::decodeTextRequest(char* chunk) {
 
   size_t chunk_length = std::strlen(chunk);
 
-  std::cout << "[MemcachedCodec::decodeTextResponse()] Decoding response: length" << chunk_length " | content: " << chunk << std::endl;
+  std::cout << "[MemcachedCodec::decodeTextResponse()] Decoding response: length" << chunk_length << " | content: " << chunk << std::endl;
 
   if (is_request_cmd_done_){
     std::cout << "[MemcachedCodec::decodeHeader()] Request command is already done, decoding finished" << std::endl;
@@ -315,7 +315,7 @@ MemcachedDecodeStatus MemcachedCodec::decodeTextResponse(char* chunk) {
 
   size_t chunk_length = std::strlen(chunk);
   
-  std::cout << "[MemcachedCodec::decodeTextResponse()] Decoding response: length" << chunk_length " | content: " << chunk << std::endl;
+  std::cout << "[MemcachedCodec::decodeTextResponse()] Decoding response: length" << chunk_length << " | content: " << chunk << std::endl;
 
 
   if (chunk_length < 5) {

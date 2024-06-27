@@ -249,7 +249,7 @@ MemcachedDecodeStatus MemcachedCodec::decodeTextProtocol(Buffer::Instance& buffe
     } 
 
     if (!end_of_chunk) {
-      std::cout << "[MemcachedCodec::decodeHeader()] Waiting for more data " << std::endl;
+      std::cout << "[MemcachedCodec::decodeTextProtocol()] Waiting for more data, message type" << static_cast<int>(message_type_) << std::endl;
       return MemcachedDecodeStatus::WaitForData;
     }
     parsed_pos_ = pos;
@@ -274,8 +274,6 @@ MemcachedDecodeStatus MemcachedCodec::decodeTextProtocol(Buffer::Instance& buffe
 MemcachedDecodeStatus MemcachedCodec::decodeTextRequest(char* chunk) {
 
   size_t chunk_length = std::strlen(chunk);
-
-  std::cout << "[MemcachedCodec::decodeTextResponse()] Decoding response: length" << chunk_length << " | content: " << chunk << std::endl;
 
   if (is_request_cmd_done_){
     std::cout << "[MemcachedCodec::decodeHeader()] Request command is already done, decoding finished" << std::endl;
@@ -307,6 +305,7 @@ MemcachedDecodeStatus MemcachedCodec::decodeTextRequest(char* chunk) {
     checkCommand("append", 6) || checkCommand("prepend", 7) || checkCommand("replace", 7)) {
     return MemcachedDecodeStatus::WaitForData; // continue decoding
   }
+  std::cout << "[MemcachedCodec::decodeTextResponse()] Decoding request done: length " << chunk_length << " | content: " << chunk << std::endl;
   return MemcachedDecodeStatus::DecodeDone;
 }
 
@@ -314,9 +313,6 @@ MemcachedDecodeStatus MemcachedCodec::decodeTextResponse(char* chunk) {
 
 
   size_t chunk_length = std::strlen(chunk);
-  
-  std::cout << "[MemcachedCodec::decodeTextResponse()] Decoding response: length" << chunk_length << " | content: " << chunk << std::endl;
-
 
   if (chunk_length < 5) {
       std::cout << "[MemcachedCodec::decodeTextResponse()] Chunk length < 3, probably other content" << std::endl;
@@ -325,7 +321,7 @@ MemcachedDecodeStatus MemcachedCodec::decodeTextResponse(char* chunk) {
 
   auto checkContent = [&](const char* content, size_t length) {
     if (chunk_length >= length && std::memcmp(chunk, content, length) == 0){
-      std::cout << "[MemcachedCodec::decodeTextResponse()] content: ";
+      std::cout << "[MemcachedCodec::decodeTextResponse()] Finished decoding response content: ";
       for (size_t i = 0; i < length - 2; ++i) {
           std::cout << content[i];
       }
@@ -339,7 +335,7 @@ MemcachedDecodeStatus MemcachedCodec::decodeTextResponse(char* chunk) {
       checkContent("NOT_FOUND\r\n", 10) || checkContent("END\r\n", 5)) {
       return MemcachedDecodeStatus::DecodeDone; // continue decoding
   }
-
+  std::cout << "[MemcachedCodec::decodeTextResponse()] Decoding response: wait for more data - chunk length " << chunk_length << " | content: " << chunk << std::endl;
   return MemcachedDecodeStatus::WaitForData;
 }
 

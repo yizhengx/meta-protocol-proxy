@@ -196,9 +196,13 @@ MemcachedDecodeStatus MemcachedCodec::decodeHeader(Buffer::Instance& buffer) {
   // ENVOY_LOG(warn, "Memcached decodeHeader: {} bytes available", buffer.length());
 
   uint8_t byte;
+  uint8_t magic_code = 0x80;
 
   for (int i = 0; i < 9; i++) {
     byte = buffer.peekBEInt<uint8_t>(i);
+    if (i==0){
+      std::cout << "[MemcachedCodec::decodeHeader()] Is Magic: " << byte >= magic_code << std::endl;
+    }
     std::cout << "[MemcachedCodec::decodeHeader()] Byte " << i << ": " << static_cast<int>(byte) << std::endl;
   }
 

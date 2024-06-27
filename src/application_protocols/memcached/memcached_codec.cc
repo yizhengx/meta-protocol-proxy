@@ -335,8 +335,16 @@ MemcachedDecodeStatus MemcachedCodec::decodeTextResponse(char* chunk) {
       checkContent("NOT_FOUND\r\n", 10) || checkContent("END\r\n", 5)) {
       return MemcachedDecodeStatus::DecodeDone; // continue decoding
   }
-  std::cout << "[MemcachedCodec::decodeTextResponse()] Decoding response: wait for more data - chunk length " << chunk_length << " | content: " << chunk << std::endl;
+  std::cout << "[MemcachedCodec::decodeTextResponse()] Decoding response: wait for more data - chunk length " << chunk_length << " | content: " << char_to_ascii(chunk, chunk_length) << std::endl;
   return MemcachedDecodeStatus::WaitForData;
+}
+
+std::string char_to_ascii(char* chunk, size_t length) {
+  std::string result;
+  for (size_t i = 0; i < length; i++) {
+    result += std::to_string(static_cast<int>(chunk[i])) + "|";
+  }
+  return result;
 }
 
 MemcachedDecodeStatus MemcachedCodec::decodeBody(Buffer::Instance& buffer) {

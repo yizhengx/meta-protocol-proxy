@@ -17,6 +17,7 @@ enum class MemcachedDecodeStatus {
   DecodeBody,
   DecodeDone,
   WaitForData,
+  DecodeTextProtocol,
 };
 
 class MemcachedCodec : public MetaProtocolProxy::Codec,
@@ -48,12 +49,19 @@ private:
     MemcachedDecodeStatus handleState(Buffer::Instance& buffer);
     MemcachedDecodeStatus decodeHeader(Buffer::Instance& buffer);
     MemcachedDecodeStatus decodeBody(Buffer::Instance& buffer);
+    MemcachedDecodeStatus decodeRequest(Buffer::Instance& buffer);
+    MemcachedDecodeStatus decodeTextProtocol(Buffer::Instance& buffer);
     void toMetadata(MetaProtocolProxy::Metadata& metadata);
 
     MemcachedDecodeStatus decode_status_{MemcachedDecodeStatus::DecodeHeader};
     MetaProtocolProxy::Memcached::MemcachedHeader memcached_header_;
     MetaProtocolProxy::MessageType message_type_;
     std::unique_ptr<Buffer::OwnedImpl> origin_msg_;
+
+    // Additional private variables for TEXT protocol
+    bool is_binary_protocol_{true};
+    bool is_request_cmd_done_{false};
+    size_t parsed_pos_{0}; // The position of the last byte parsed
 };
 
 

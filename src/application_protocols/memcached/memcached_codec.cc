@@ -202,7 +202,7 @@ MemcachedDecodeStatus MemcachedCodec::decodeHeader(Buffer::Instance& buffer) {
 
   uint8_t magic_code = 0x80;
 
-  if (buffer.length() >= 1): // we probabaly don't need this line
+  if (buffer.length() >= 1){ // we probabaly don't need this line
     bool is_magic = buffer.peekBEInt<uint8_t>(0) >= magic_code;
 
     if (!is_magic) {
@@ -210,7 +210,7 @@ MemcachedDecodeStatus MemcachedCodec::decodeHeader(Buffer::Instance& buffer) {
       std::cout << "[MemcachedCodec::decodeHeader()] Not a memcached binary protocol" << std::endl;
       return MemcachedDecodeStatus::DecodeTextProtocol;
     }
-
+  }
   
   if (buffer.length() < MEMCACHED_HEADER_SIZE) {
     std::cout << "[MemcachedCodec::decodeHeader()] Waiting for more data " << std::endl;

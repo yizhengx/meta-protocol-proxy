@@ -172,6 +172,9 @@ MetaProtocolProxy::DecodeStatus MemcachedCodec::decode(Buffer::Instance& buffer,
   toMetadata(metadata);
   // reset decode status
   decode_status_ = MemcachedDecodeStatus::DecodeHeader;
+  is_binary_protocol_ = true;
+  is_request_cmd_done_ = false;
+  parsed_pos_ = 0;
   return MetaProtocolProxy::DecodeStatus::Done;
 }
 
@@ -281,7 +284,7 @@ MemcachedDecodeStatus MemcachedCodec::decodeTextRequest(char* chunk) {
     return MemcachedDecodeStatus::DecodeDone;
   }
 
-  bool checkCommand = [&](const char* command, size_t length) {
+  auto checkCommand = [&](const char* command, size_t length) {
     if (chunk_length >= length) {
         char buffer[8] = {0}; // Buffer size sufficient for the longest command
         buffer_.copyOut(0, length, buffer);
@@ -308,7 +311,7 @@ MemcachedDecodeStatus MemcachedCodec::decodeTextResponse(char* chunk) {
         return MemcachedDecodeStatus::DecodeDone;
     }
 
-    bool checkContent = [&](const char* content, size_t length) {
+    auto checkContent = [&](const char* content, size_t length) {
       if (chunk_length == length && std::memcmp(chunk, content, length) == 0){
         std::cout << "[MemcachedCodec::decodeTextResponse()] content: ";
         for (size_t i = 0; i < length - 2; ++i) {

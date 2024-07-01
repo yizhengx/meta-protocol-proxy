@@ -356,7 +356,7 @@ MemcachedDecodeStatus MemcachedCodec::decodeTextResponse(char* chunk) {
 std::string MemcachedCodec::buffer_to_string(Buffer::Instance& buffer, size_t length) {
   std::string result;
   for (size_t i = 0; i < length; i++) {
-    char byte = static_cast<char>(origin_msg_->peekInt<uint8_t>(i));
+    char byte = static_cast<char>(buffer->peekInt<uint8_t>(i));
     if (byte == '\r' || byte == '\n') {
       result += "*";
     } else {

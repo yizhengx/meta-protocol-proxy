@@ -197,7 +197,7 @@ MemcachedDecodeStatus MemcachedCodec::handleState(Buffer::Instance& buffer) {
 
 MemcachedDecodeStatus MemcachedCodec::decodeHeader(Buffer::Instance& buffer) {
   // Check if the buffer has enough data for the Memcached header
-  std::cout << "[MemcachedCodec::decodeHeader()] Buffer length: " << buffer.length() << std::endl;
+  // std::cout << "[MemcachedCodec::decodeHeader()] Buffer length: " << buffer.length() << std::endl;
   // ENVOY_LOG(warn, "Memcached decodeHeader: {} bytes available", buffer.length());
 
   uint8_t magic_code = 0x80;
@@ -207,7 +207,7 @@ MemcachedDecodeStatus MemcachedCodec::decodeHeader(Buffer::Instance& buffer) {
 
     if (!is_magic) {
       is_binary_protocol_ = false;
-      std::cout << "[MemcachedCodec::decodeHeader()] Not a memcached binary protocol" << std::endl;
+      // std::cout << "[MemcachedCodec::decodeHeader()] Not a memcached binary protocol" << std::endl;
       return MemcachedDecodeStatus::DecodeTextProtocol;
     }
   }
@@ -250,7 +250,7 @@ MemcachedDecodeStatus MemcachedCodec::decodeTextProtocol(Buffer::Instance& buffe
     } 
 
     if (!end_of_chunk) {
-      std::cout << "[MemcachedCodec::decodeTextProtocol()] Waiting for more data, message type" << static_cast<int>(message_type_) << std::endl;
+      // std::cout << "[MemcachedCodec::decodeTextProtocol()] Waiting for more data, message type" << static_cast<int>(message_type_) << std::endl;
       return MemcachedDecodeStatus::WaitForData;
     }
     parsed_pos_ = pos;
@@ -266,7 +266,7 @@ MemcachedDecodeStatus MemcachedCodec::decodeTextProtocol(Buffer::Instance& buffe
       // handle message saving 
       origin_msg_ = std::make_unique<Buffer::OwnedImpl>();
       origin_msg_->move(buffer, parsed_pos_+1);
-      std::cout << "[MemcachedCodec::decodeTextProtocol()] Memcached text protocol decoded, message type: " << static_cast<int>(message_type_) << std::endl;
+      // std::cout << "[MemcachedCodec::decodeTextProtocol()] Memcached text protocol decoded, message type: " << static_cast<int>(message_type_) << std::endl;
       return MemcachedDecodeStatus::DecodeDone;
     } 
   }
@@ -277,7 +277,7 @@ MemcachedDecodeStatus MemcachedCodec::decodeTextRequest(char* chunk) {
   size_t chunk_length = std::strlen(chunk);
 
   if (is_request_cmd_done_){
-    std::cout << "[MemcachedCodec::decodeHeader()] Request command is already done, decoding finished" << std::endl;
+    // std::cout << "[MemcachedCodec::decodeHeader()] Request command is already done, decoding finished" << std::endl;
     return MemcachedDecodeStatus::DecodeDone;
   }
 
@@ -285,7 +285,7 @@ MemcachedDecodeStatus MemcachedCodec::decodeTextRequest(char* chunk) {
 
   
   if (chunk_length < 3) {
-    std::cout << "[MemcachedCodec::decodeHeader()] chunk length<3, probably other commands" << std::endl;
+    std::cout << "[MemcachedCodec::decodeTextRequest()] Decode request: chunk length<3, probably other commands" << std::endl;
     return MemcachedDecodeStatus::DecodeDone;
   }
 
@@ -295,7 +295,7 @@ MemcachedDecodeStatus MemcachedCodec::decodeTextRequest(char* chunk) {
         std::memcpy(buffer, chunk, length);
         buffer[7] = '\0'; // Null-terminate the buffer
         if (memcmp(buffer, command, length) == 0) {
-            std::cout << "[MemcachedCodec::decodeHeader()] " << command << " command" << std::endl;
+            // std::cout << "[MemcachedCodec::decodeHeader()] " << command << " command" << std::endl;
             return true;
         }
     }
@@ -306,7 +306,7 @@ MemcachedDecodeStatus MemcachedCodec::decodeTextRequest(char* chunk) {
     checkCommand("append", 6) || checkCommand("prepend", 7) || checkCommand("replace", 7)) {
     return MemcachedDecodeStatus::WaitForData; // continue decoding
   }
-  std::cout << "[MemcachedCodec::decodeTextResponse()] Decoding request done: length " << chunk_length << " | content: " << chunk << std::endl;
+  std::cout << "[MemcachedCodec::decodeTextResponse()] Decoding request done: length " << chunk_length << " | content: " << char_to_ascii(chunk, chunk_length) << std::endl;
   return MemcachedDecodeStatus::DecodeDone;
 }
 
@@ -322,11 +322,11 @@ MemcachedDecodeStatus MemcachedCodec::decodeTextResponse(char* chunk) {
 
   auto checkContent = [&](const char* content, size_t length) {
     if (chunk_length >= length && std::memcmp(chunk, content, length) == 0){
-      std::cout << "[MemcachedCodec::decodeTextResponse()] Finished decoding response content: ";
-      for (size_t i = 0; i < 3; ++i) {
-          std::cout << content[i];
-      }
-      std::cout << std::endl;
+      // std::cout << "[MemcachedCodec::decodeTextResponse()] Finished decoding response content: ";
+      // for (size_t i = 0; i < 3; ++i) {
+      //     std::cout << content[i];
+      // }
+      // std::cout << std::endl;
       return true;
     }
     return false;
@@ -334,16 +334,21 @@ MemcachedDecodeStatus MemcachedCodec::decodeTextResponse(char* chunk) {
 
   if (checkContent("STORED\r\n", 8) || checkContent("NOT_STORED\r\n", 12) || checkContent("EXISTS\r\n", 8) ||
       checkContent("NOT_FOUND\r\n", 11) || checkContent("ERROR\r\n", 7) || checkContent("END\r\n", 5)) {
-      return MemcachedDecodeStatus::DecodeDone; // continue decoding
+      std::cout << "[MemcachedCodec::decodeTextResponse()] Decoding response done: length " << chunk_length << " | content: " << char_to_ascii(chunk, chunk_length) << std::endl;
+      return MemcachedDecodeStatus::DecodeDone; 
   }
-  std::cout << "[MemcachedCodec::decodeTextResponse()] Decoding response: wait for more data - chunk length " << chunk_length << " | content: " << char_to_ascii(chunk, 3) << std::endl;
+  // std::cout << "[MemcachedCodec::decodeTextResponse()] Decoding response: wait for more data - chunk length " << chunk_length << " | content: " << char_to_ascii(chunk, 3) << std::endl;
   return MemcachedDecodeStatus::WaitForData;
 }
 
 std::string MemcachedCodec::char_to_ascii(char* chunk, size_t length) {
   std::string result;
   for (size_t i = 0; i < length; i++) {
-    result += chunk[i];
+    if (chunk[i] == '\r' || chunk[i] == '\n') {
+      result += "*";
+    } else {
+      result += chunk[i];
+    }
   }
   return result;
 }

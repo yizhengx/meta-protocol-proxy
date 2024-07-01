@@ -272,7 +272,6 @@ MemcachedDecodeStatus MemcachedCodec::decodeTextProtocol(Buffer::Instance& buffe
       if (message_type_ == MetaProtocolProxy::MessageType::Request) {
         std::cout << "[MemcachedCodec::decodeTextProtocol()] Decoding request done: length " << parsed_pos_+1 << " | content: " << buffer_to_string(buffer, parsed_pos_+1) << std::endl;
         metadata.putString("Request", buffer_to_string(buffer, parsed_pos_+1)); // save the request
-        meta
       } else {
         std::cout << "[MemcachedCodec::decodeTextProtocol()] Decoding response done: length " << parsed_pos_+1 << " | content: " << buffer_to_string(buffer, parsed_pos_+1) << " | original request: " << metadata.getString("Request") << std::endl;
       }

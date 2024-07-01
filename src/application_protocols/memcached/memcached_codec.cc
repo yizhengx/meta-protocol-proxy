@@ -237,11 +237,9 @@ MemcachedDecodeStatus MemcachedCodec::decodeTextProtocol(Buffer::Instance& buffe
     std::vector<char> char_array;
 
     bool end_of_chunk = false;
-    if (parsed_pos_ != 0) { 
-      parsed_pos_ += 1; 
-    }
-    char_array.push_back(buffer.peekBEInt<char>(parsed_pos_-1));
-    for (size_t i = parsed_pos_+1; i < buffer.length(); i++) {
+    size_t start_pos = parsed_pos_+1 if (parsed_pos_ != 0) else 0;
+    char_array.push_back(buffer.peekBEInt<char>(start_pos));
+    for (size_t i = start_pos+1; i < buffer.length(); i++) {
       char_array.push_back(buffer.peekBEInt<char>(i-1));
       if (buffer.peekBEInt<uint8_t>(i-1) == 13 and buffer.peekBEInt<uint8_t>(i) == 10){
         // end of the command

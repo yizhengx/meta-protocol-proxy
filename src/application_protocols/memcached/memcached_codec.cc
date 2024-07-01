@@ -243,7 +243,7 @@ MemcachedDecodeStatus MemcachedCodec::decodeTextProtocol(Buffer::Instance& buffe
     } else {
       start_pos = 0;
     }
-    char_array.push_back(buffer.peekBEInt<char>(start_pos));
+    // char_array.push_back(buffer.peekBEInt<char>(start_pos));
     for (size_t i = start_pos+1; i < buffer.length(); i++) {
       char_array.push_back(buffer.peekBEInt<char>(i-1));
       if (buffer.peekBEInt<uint8_t>(i-1) == 13 and buffer.peekBEInt<uint8_t>(i) == 10){

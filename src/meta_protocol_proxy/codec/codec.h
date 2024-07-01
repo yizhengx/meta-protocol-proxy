@@ -154,9 +154,7 @@ struct Error {
 class Codec {
 public:
 
-  Codec() {
-    std::cout << "[Codec::Codec()] Default Codec created" << std::endl;
-  }
+  Codec() { }
 
   virtual ~Codec() = default;
 

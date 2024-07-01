@@ -157,12 +157,12 @@ namespace Memcached {
 MetaProtocolProxy::DecodeStatus MemcachedCodec::decode(Buffer::Instance& buffer, MetaProtocolProxy::Metadata& metadata) {
 
   message_type_ = metadata.getMessageType();
-  std::string message_type_str = message_type_ == MetaProtocolProxy::MessageType::Request ? "Request" : "Response";
-  std::cout << "[MemcachedCodec::decode()] Memcached decoder: " << buffer.length() << " bytes available, msg type: " << message_type_str << std::endl;
+  // std::string message_type_str = message_type_ == MetaProtocolProxy::MessageType::Request ? "Request" : "Response";
+  // std::cout << "[MemcachedCodec::decode()] Memcached decoder: " << buffer.length() << " bytes available, msg type: " << message_type_str << std::endl;
   // ENVOY_LOG(warn, "Memcached decoder: {} bytes available, msg type: {}", buffer.length(), static_cast<int>(metadata.getMessageType()));
 
   while (decode_status_ != MemcachedDecodeStatus::DecodeDone) {
-    decode_status_ = handleState(buffer);
+    decode_status_ = handleState(buffer, metadata);
     if (decode_status_ == MemcachedDecodeStatus::WaitForData) {
       return MetaProtocolProxy::DecodeStatus::WaitForData;
     }
@@ -179,14 +179,14 @@ MetaProtocolProxy::DecodeStatus MemcachedCodec::decode(Buffer::Instance& buffer,
 }
 
 
-MemcachedDecodeStatus MemcachedCodec::handleState(Buffer::Instance& buffer) {
+MemcachedDecodeStatus MemcachedCodec::handleState(Buffer::Instance& buffer, MetaProtocolProxy::Metadata& metadata) {
   switch (decode_status_) {
   case MemcachedDecodeStatus::DecodeHeader: // decode header
     return decodeHeader(buffer);
   case MemcachedDecodeStatus::DecodeBody: // decode body
     return decodeBody(buffer);
   case MemcachedDecodeStatus::DecodeTextProtocol:
-    return decodeTextProtocol(buffer);
+    return decodeTextProtocol(buffer, metadata);
   case MemcachedDecodeStatus::WaitForData:
     return MemcachedDecodeStatus::WaitForData;
   default:
@@ -228,7 +228,7 @@ MemcachedDecodeStatus MemcachedCodec::decodeHeader(Buffer::Instance& buffer) {
 
 }
 
-MemcachedDecodeStatus MemcachedCodec::decodeTextProtocol(Buffer::Instance& buffer) {
+MemcachedDecodeStatus MemcachedCodec::decodeTextProtocol(Buffer::Instance& buffer, MetaProtocolProxy::Metadata& metadata) {
   while (true) {
     // parse command
 
@@ -271,8 +271,10 @@ MemcachedDecodeStatus MemcachedCodec::decodeTextProtocol(Buffer::Instance& buffe
     if (status == MemcachedDecodeStatus::DecodeDone) {
       if (message_type_ == MetaProtocolProxy::MessageType::Request) {
         std::cout << "[MemcachedCodec::decodeTextProtocol()] Decoding request done: length " << parsed_pos_+1 << " | content: " << buffer_to_string(buffer, parsed_pos_+1) << std::endl;
+        metadata.putString("Request", buffer_to_string(buffer, parsed_pos_+1)); // save the request
+        meta
       } else {
-        std::cout << "[MemcachedCodec::decodeTextProtocol()] Decoding response done: length " << parsed_pos_+1 << " | content: " << buffer_to_string(buffer, parsed_pos_+1) << std::endl;
+        std::cout << "[MemcachedCodec::decodeTextProtocol()] Decoding response done: length " << parsed_pos_+1 << " | content: " << buffer_to_string(buffer, parsed_pos_+1) << " | original request: " << metadata.getString("Request") << std::endl;
       }
       // handle message saving 
       origin_msg_ = std::make_unique<Buffer::OwnedImpl>();
@@ -357,8 +359,10 @@ std::string MemcachedCodec::buffer_to_string(Buffer::Instance& buffer, size_t le
   std::string result;
   for (size_t i = 0; i < length; i++) {
     char byte = static_cast<char>(buffer.peekInt<uint8_t>(i));
-    if (byte == '\r' || byte == '\n') {
+    if (byte == '\r') {
       result += "*";
+    } else if (byte == '\n') {
+      result += "#";
     } else {
       result += byte;
     }

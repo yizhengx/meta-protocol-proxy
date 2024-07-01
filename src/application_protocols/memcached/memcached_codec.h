@@ -25,7 +25,7 @@ class MemcachedCodec : public MetaProtocolProxy::Codec,
 public:
     MemcachedCodec() {
         // ENVOY_LOG(warn, "Memcached codec created");
-        std::cout << "[MemcachedCodec::MemcachedCodec()] Memcached codec created" << std::endl;
+        // std::cout << "[MemcachedCodec::MemcachedCodec()] Memcached codec created" << std::endl;
     };
     ~MemcachedCodec() override = default;
 
@@ -46,11 +46,11 @@ public:
 private:
     // Additional private methods and members as necessary
 
-    MemcachedDecodeStatus handleState(Buffer::Instance& buffer);
+    MemcachedDecodeStatus handleState(Buffer::Instance& buffer, MetaProtocolProxy::Metadata& metadata);
     MemcachedDecodeStatus decodeHeader(Buffer::Instance& buffer);
     MemcachedDecodeStatus decodeBody(Buffer::Instance& buffer);
     MemcachedDecodeStatus decodeRequest(Buffer::Instance& buffer);
-    MemcachedDecodeStatus decodeTextProtocol(Buffer::Instance& buffer);
+    MemcachedDecodeStatus decodeTextProtocol(Buffer::Instance& buffer, MetaProtocolProxy::Metadata& metadata);
     MemcachedDecodeStatus decodeTextRequest(char* chunk);
     MemcachedDecodeStatus decodeTextResponse(char* chunk);
     void toMetadata(MetaProtocolProxy::Metadata& metadata);

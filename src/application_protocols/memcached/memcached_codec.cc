@@ -342,7 +342,7 @@ MemcachedDecodeStatus MemcachedCodec::decodeTextResponse(char* chunk) {
 
 std::string MemcachedCodec::char_to_ascii(char* chunk, size_t length) {
   std::string result;
-  for (size_t i = 0; i < std::max(length, 5); i++) {
+  for (size_t i = 0; i < std::max(length, 3); i++) {
     result += chunk[i];
   }
   return result;

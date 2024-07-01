@@ -323,7 +323,7 @@ MemcachedDecodeStatus MemcachedCodec::decodeTextResponse(char* chunk) {
   auto checkContent = [&](const char* content, size_t length) {
     if (chunk_length >= length && std::memcmp(chunk, content, length) == 0){
       std::cout << "[MemcachedCodec::decodeTextResponse()] Finished decoding response content: ";
-      for (size_t i = 0; i < 3; ++i) {
+      for (size_t i = 0; i < std::max(3, length - 2); ++i) {
           std::cout << content[i];
       }
       std::cout << std::endl;
@@ -336,13 +336,13 @@ MemcachedDecodeStatus MemcachedCodec::decodeTextResponse(char* chunk) {
       checkContent("NOT_FOUND\r\n", 11) || checkContent("ERROR\r\n", 7) || checkContent("END\r\n", 5)) {
       return MemcachedDecodeStatus::DecodeDone; // continue decoding
   }
-  std::cout << "[MemcachedCodec::decodeTextResponse()] Decoding response: wait for more data - chunk length " << chunk_length << " | content: " << char_to_ascii(chunk, chunk_length) << std::endl;
+  std::cout << "[MemcachedCodec::decodeTextResponse()] Decoding response: wait for more data - chunk length " << chunk_length << " | content: " << char_to_ascii(chunk, 3) << std::endl;
   return MemcachedDecodeStatus::WaitForData;
 }
 
 std::string MemcachedCodec::char_to_ascii(char* chunk, size_t length) {
   std::string result;
-  for (size_t i = 0; i < 3; i++) {
+  for (size_t i = 0; i < length; i++) {
     result += chunk[i];
   }
   return result;

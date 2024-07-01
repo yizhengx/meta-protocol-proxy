@@ -312,7 +312,8 @@ MemcachedDecodeStatus MemcachedCodec::decodeTextRequest(char* chunk) {
     checkCommand("append", 6) || checkCommand("prepend", 7) || checkCommand("replace", 7)) {
     return MemcachedDecodeStatus::WaitForData; // continue decoding
   }
-  std::cout << "[MemcachedCodec::decodeTextResponse()] Decoding request done: length " << chunk_length << " | content: " << char_to_ascii(chunk, chunk_length) << std::endl;
+  // std::cout << "[MemcachedCodec::decodeTextResponse()] Decoding request done: length " << chunk_length << " | content: " << char_to_ascii(chunk, chunk_length) << std::endl;
+  std::cout << "[MemcachedCodec::decodeTextResponse()] Decoding request done: length " << chunk_length << " | content: " << buffer_to_string(parsed_pos_+1) << std::endl;
   return MemcachedDecodeStatus::DecodeDone;
 }
 
@@ -340,11 +341,25 @@ MemcachedDecodeStatus MemcachedCodec::decodeTextResponse(char* chunk) {
 
   if (checkContent("STORED\r\n", 8) || checkContent("NOT_STORED\r\n", 12) || checkContent("EXISTS\r\n", 8) ||
       checkContent("NOT_FOUND\r\n", 11) || checkContent("ERROR\r\n", 7) || checkContent("END\r\n", 5)) {
-      std::cout << "[MemcachedCodec::decodeTextResponse()] Decoding response done: length " << chunk_length << " | content: " << char_to_ascii(chunk, chunk_length) << std::endl;
+      std::cout << "[MemcachedCodec::decodeTextResponse()] Decoding response done: length " << chunk_length << " | content: " << buffer_to_string(parsed_pos_+1) << std::endl;
       return MemcachedDecodeStatus::DecodeDone; 
   }
   // std::cout << "[MemcachedCodec::decodeTextResponse()] Decoding response: wait for more data - chunk length " << chunk_length << " | content: " << char_to_ascii(chunk, 3) << std::endl;
   return MemcachedDecodeStatus::WaitForData;
+}
+
+std::string MemcachedCodec::buffer_to_string(size_t length) {
+  std::string result;
+  for (size_t i = 0; i < length; i++) {
+    char byte = static_cast<char>(origin_msg_->peekInt<uint8_t>(i));
+    if (byte == '\r' || byte == '\n') {
+      result += "*";
+    } else {
+      result += byte;
+    }
+  }
+  return result;
+
 }
 
 std::string MemcachedCodec::char_to_ascii(char* chunk, size_t length) {

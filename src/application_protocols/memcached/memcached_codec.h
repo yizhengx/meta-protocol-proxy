@@ -55,6 +55,7 @@ private:
     MemcachedDecodeStatus decodeTextResponse(char* chunk);
     void toMetadata(MetaProtocolProxy::Metadata& metadata);
     std::string char_to_ascii(char* chunk, size_t len);
+    std::string MemcachedCodec::buffer_to_string(size_t length);
 
     MemcachedDecodeStatus decode_status_{MemcachedDecodeStatus::DecodeHeader};
     MetaProtocolProxy::Memcached::MemcachedHeader memcached_header_;

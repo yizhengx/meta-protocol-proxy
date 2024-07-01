@@ -332,8 +332,8 @@ MemcachedDecodeStatus MemcachedCodec::decodeTextResponse(char* chunk) {
     return false;
   };
 
-  if (checkContent("STORED\r\n", 7) || checkContent("NOT_STORED\r\n", 11) || checkContent("EXISTS\r\n", 8) ||
-      checkContent("NOT_FOUND\r\n", 10) || checkContent("END\r\n", 5)) {
+  if (checkContent("STORED\r\n", 8) || checkContent("NOT_STORED\r\n", 12) || checkContent("EXISTS\r\n", 8) ||
+      checkContent("NOT_FOUND\r\n", 11) || checkContent("ERROR\r\n", 7) || checkContent("END\r\n", 5)) {
       return MemcachedDecodeStatus::DecodeDone; // continue decoding
   }
   std::cout << "[MemcachedCodec::decodeTextResponse()] Decoding response: wait for more data - chunk length " << chunk_length << " | content: " << char_to_ascii(chunk, chunk_length) << std::endl;

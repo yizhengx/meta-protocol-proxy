@@ -281,7 +281,7 @@ MemcachedDecodeStatus MemcachedCodec::decodeTextProtocol(Buffer::Instance& buffe
       // std::cout << "[MemcachedCodec::decodeTextProtocol()] Memcached text protocol decoded, message type: " << static_cast<int>(message_type_) << std::endl;
       return MemcachedDecodeStatus::DecodeDone;
     }
-    return MemcachedDecodeStatus::WaitForData 
+    return MemcachedDecodeStatus::WaitForData;
   }
 }
 

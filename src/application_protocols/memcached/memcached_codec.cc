@@ -280,7 +280,8 @@ MemcachedDecodeStatus MemcachedCodec::decodeTextProtocol(Buffer::Instance& buffe
       origin_msg_->move(buffer, parsed_pos_+1);
       // std::cout << "[MemcachedCodec::decodeTextProtocol()] Memcached text protocol decoded, message type: " << static_cast<int>(message_type_) << std::endl;
       return MemcachedDecodeStatus::DecodeDone;
-    } 
+    }
+    return MemcachedDecodeStatus::WaitForData 
   }
 }
 

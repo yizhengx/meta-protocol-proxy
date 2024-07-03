@@ -229,6 +229,7 @@ MemcachedDecodeStatus MemcachedCodec::decodeHeader(Buffer::Instance& buffer) {
 }
 
 MemcachedDecodeStatus MemcachedCodec::decodeTextProtocol(Buffer::Instance& buffer, MetaProtocolProxy::Metadata& metadata) {
+  void(metadata); // avoid unused parameter warning
   while (true) {
     // parse command
 

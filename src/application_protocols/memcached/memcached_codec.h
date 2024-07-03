@@ -63,7 +63,6 @@ private:
     std::unique_ptr<Buffer::OwnedImpl> origin_msg_;
 
     // Additional private variables for TEXT protocol
-    bool is_binary_protocol_{true};
     bool is_request_cmd_done_{false};
     size_t parsed_pos_{0}; // The position of the last byte parsed
 };

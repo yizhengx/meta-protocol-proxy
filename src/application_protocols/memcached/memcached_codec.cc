@@ -172,7 +172,6 @@ MetaProtocolProxy::DecodeStatus MemcachedCodec::decode(Buffer::Instance& buffer,
   toMetadata(metadata);
   // reset decode status
   decode_status_ = MemcachedDecodeStatus::DecodeHeader;
-  is_binary_protocol_ = true;
   is_request_cmd_done_ = false;
   parsed_pos_ = 0;
   return MetaProtocolProxy::DecodeStatus::Done;
@@ -206,7 +205,6 @@ MemcachedDecodeStatus MemcachedCodec::decodeHeader(Buffer::Instance& buffer) {
     bool is_magic = buffer.peekBEInt<uint8_t>(0) >= magic_code;
 
     if (!is_magic) {
-      is_binary_protocol_ = false;
       // std::cout << "[MemcachedCodec::decodeHeader()] Not a memcached binary protocol" << std::endl;
       return MemcachedDecodeStatus::DecodeTextProtocol;
     }

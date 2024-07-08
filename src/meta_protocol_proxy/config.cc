@@ -206,7 +206,6 @@ Route::RouteConstSharedPtr ConfigImpl::route(const Metadata& metadata,
 CodecPtr ConfigImpl::createCodec() {
   auto& factory = Envoy::Config::Utility::getAndCheckFactoryByName<NamedCodecConfigFactory>(
       getCodecConfig().name());
-  std::cout << "[ConfigImpl::createCodec()] createCodec: " << getCodecConfig().name() << std::endl;
   ProtobufTypes::MessagePtr message = factory.createEmptyConfigProto();
   Envoy::Config::Utility::translateOpaqueConfig(getCodecConfig().config(),
                                                 context_.messageValidationVisitor(), *message);

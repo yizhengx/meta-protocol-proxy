@@ -235,28 +235,15 @@ MemcachedDecodeStatus MemcachedCodec::decodeTextProtocol(Buffer::Instance& buffe
     size_t pos;
     std::vector<char> char_array;
 
-    // bool end_of_chunk = false;
-    // size_t start_pos;
-    // if (parsed_pos_ !=0 ){
-    //   start_pos = parsed_pos_+1;
-    // } else {
-    //   start_pos = 0;
-    // }
-    // // char_array.push_back(buffer.peekBEInt<char>(start_pos));
-    // for (size_t i = start_pos+1; i < buffer.length(); i++) {
-    //   char_array.push_back(buffer.peekBEInt<char>(i-1));
-    //   if (buffer.peekBEInt<uint8_t>(i-1) == 13 and buffer.peekBEInt<uint8_t>(i) == 10){
-    //     // end of the command
-    //     pos = i;
-    //     end_of_chunk = true;
-    //     char_array.push_back(buffer.peekBEInt<char>(i));
-    //     break;
-    //   }
-    // } 
-
     bool end_of_chunk = false;
-    if (parsed_pos_ != 0) { parsed_pos_ += 1; }
-    for (size_t i = parsed_pos_+1; i < buffer.length(); i++) {
+    size_t start_pos;
+    if (parsed_pos_ !=0 ){
+      start_pos = parsed_pos_+1;
+    } else {
+      start_pos = 0;
+    }
+    // char_array.push_back(buffer.peekBEInt<char>(start_pos));
+    for (size_t i = start_pos+1; i < buffer.length(); i++) {
       char_array.push_back(buffer.peekBEInt<char>(i-1));
       if (buffer.peekBEInt<uint8_t>(i-1) == 13 and buffer.peekBEInt<uint8_t>(i) == 10){
         // end of the command
@@ -266,6 +253,19 @@ MemcachedDecodeStatus MemcachedCodec::decodeTextProtocol(Buffer::Instance& buffe
         break;
       }
     } 
+
+    // bool end_of_chunk = false;
+    // if (parsed_pos_ != 0) { parsed_pos_ += 1; }
+    // for (size_t i = parsed_pos_+1; i < buffer.length(); i++) {
+    //   char_array.push_back(buffer.peekBEInt<char>(i-1));
+    //   if (buffer.peekBEInt<uint8_t>(i-1) == 13 and buffer.peekBEInt<uint8_t>(i) == 10){
+    //     // end of the command
+    //     pos = i;
+    //     end_of_chunk = true;
+    //     char_array.push_back(buffer.peekBEInt<char>(i));
+    //     break;
+    //   }
+    // } 
 
     if (!end_of_chunk) {
       // std::cout << "[MemcachedCodec::decodeTextProtocol()] Waiting for more data, message type" << static_cast<int>(message_type_) << std::endl;

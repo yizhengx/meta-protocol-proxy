@@ -297,7 +297,6 @@ MemcachedDecodeStatus MemcachedCodec::decodeTextProtocol(Buffer::Instance& buffe
       
       return MemcachedDecodeStatus::DecodeDone;
     }
-    return MemcachedDecodeStatus::WaitForData;
   }
 }
 

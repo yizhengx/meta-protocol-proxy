@@ -303,6 +303,8 @@ MemcachedDecodeStatus MemcachedCodec::decodeTextProtocol(Buffer::Instance& buffe
 
 MemcachedDecodeStatus MemcachedCodec::decodeTextRequest(char* chunk) {
 
+  std::cout << "[MemcachedCodec::decodeTextRequest()] Decoding request: length " << std::strlen(chunk) << " | content: " << char_to_ascii(chunk, std::strlen(chunk)) << std::endl;
+
   size_t chunk_length = std::strlen(chunk);
 
   if (is_request_cmd_done_){

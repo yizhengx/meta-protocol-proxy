@@ -335,7 +335,7 @@ MemcachedDecodeStatus MemcachedCodec::decodeTextRequest(char* chunk) {
     checkCommand("append", 6) || checkCommand("prepend", 7) || checkCommand("replace", 7)) {
     return MemcachedDecodeStatus::WaitForData; // continue decoding
   }
-  // std::cout << "[MemcachedCodec::decodeTextResponse()] Decoding request done: length " << chunk_length << " | content: " << char_to_ascii(chunk, chunk_length) << std::endl;
+  std::cout << "[MemcachedCodec::decodeTextResponse()] Decoding request done: length " << chunk_length << " | content: " << char_to_ascii(chunk, chunk_length) << std::endl;
   // std::cout << "[MemcachedCodec::decodeTextResponse()] Decoding request done: length " << chunk_length << " | content: " << buffer_to_string(parsed_pos_+1) << std::endl;
   return MemcachedDecodeStatus::DecodeDone;
 }

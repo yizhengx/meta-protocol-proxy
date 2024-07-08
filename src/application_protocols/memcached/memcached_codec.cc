@@ -227,7 +227,7 @@ MemcachedDecodeStatus MemcachedCodec::decodeHeader(Buffer::Instance& buffer) {
 }
 
 MemcachedDecodeStatus MemcachedCodec::decodeTextProtocol(Buffer::Instance& buffer, MetaProtocolProxy::Metadata&) {
-  std::cout << "[MemcachedCodec::decodeTextProtocol()] Decoding text protocol" << buffer_to_string(buffer, buffer.length()) << std::endl;
+  // std::cout << "[MemcachedCodec::decodeTextProtocol()] Decoding text protocol | Content: " << buffer_to_string(buffer, buffer.length()) << std::endl;
   while (true) {
     // parse command
 

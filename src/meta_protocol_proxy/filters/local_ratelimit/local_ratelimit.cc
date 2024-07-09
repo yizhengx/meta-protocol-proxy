@@ -28,6 +28,7 @@ void LocalRateLimit::setDecoderFilterCallbacks(DecoderFilterCallbacks& callbacks
 }
 
 FilterStatus LocalRateLimit::onMessageDecoded(MetadataSharedPtr, MutationSharedPtr) {
+  ENVOY_LOG(warn, "onMessageDecoded ");
   // // Version 1: Original version
   // if (has_buffered) {
   //   // ENVOY_STREAM_LOG(warn, "meta protocol local rate limit: onMessageDecoded, resumeIteration {}", *callbacks_, metadata->getRequestId());

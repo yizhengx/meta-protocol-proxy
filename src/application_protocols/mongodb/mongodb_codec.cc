@@ -260,9 +260,9 @@ MongoDBDecodeStatus MongoDBCodec::handleState(Buffer::Instance& buffer) {
     case MongoDBDecodeStatus::WaitForData:
         return MongoDBDecodeStatus::WaitForData;
     default:
-        return MongoDBDecodeStatus::DecodeDone;
+        PANIC("not reached");
     }
-    
+    return MongoDBDecodeStatus::DecodeDone;
 }
 
 MongoDBDecodeStatus MongoDBCodec::decodeHeader(Buffer::Instance& buffer) {

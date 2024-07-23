@@ -384,7 +384,6 @@ std::string MemcachedCodec::buffer_to_string(Buffer::Instance& buffer, size_t le
     }
   }
   return result;
-
 }
 
 std::string MemcachedCodec::char_to_ascii(char* chunk, size_t length) {

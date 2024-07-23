@@ -268,10 +268,10 @@ MongoDBDecodeStatus MongoDBCodec::handleState(Buffer::Instance& buffer) {
 MongoDBDecodeStatus MongoDBCodec::decodeHeader(Buffer::Instance& buffer) {
     // std::cout << "MongoDB decodeHeader: " << buffer.length() << " bytes available" << std::endl;
     // Wait for more data if the header is not complete
-    std::cout << "MongoDB decodeHeader: " << buffer_to_string(buffer, buffer.length()) << std::endl;
+    // std::cout << "MongoDB decodeHeader: " << buffer_to_string(buffer, buffer.length()) << std::endl;
     if (buffer.length() < sizeof(MsgHeader)) {
         // ENVOY_LOG(debug, "continue {}", buffer.length());
-        std::cout << "MongoDB decodeHeader: waiting for more data" << std::endl;
+        // std::cout << "MongoDB decodeHeader: waiting for more data" << std::endl;
         return MongoDBDecodeStatus::WaitForData;
     }
 
@@ -286,9 +286,9 @@ MongoDBDecodeStatus MongoDBCodec::decodeHeader(Buffer::Instance& buffer) {
 
 MongoDBDecodeStatus MongoDBCodec::decodeBody(Buffer::Instance& buffer) {
     // Wait for more data if the buffer is not a complete message
-    std::cout << "MongoDB decodeBody: " << buffer_to_string(buffer, buffer.length()) << std::endl;
+    // std::cout << "MongoDB decodeBody: " << buffer_to_string(buffer, buffer.length()) << std::endl;
     if (buffer.length() < static_cast<uint64_t>(mongo_header_.getMessageLength())) {
-        std::cout << "MongoDB decodeBody: waiting for more data" << std::endl;
+        // std::cout << "MongoDB decodeBody: waiting for more data" << std::endl;
         return MongoDBDecodeStatus::WaitForData;
     }
 

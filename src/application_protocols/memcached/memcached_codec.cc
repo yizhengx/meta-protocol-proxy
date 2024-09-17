@@ -347,6 +347,8 @@ MemcachedDecodeStatus MemcachedCodec::decodeTextResponse(char* chunk) {
 
   if (chunk_length < 5) {
       std::cout << "[MemcachedCodec::decodeTextResponse()] Chunk length < 3, probably other content" << std::endl;
+      std::cout << "[MemcachedCodec::decodeTextResponse()] Decoding response chunk data: " << char_to_ascii(chunk, chunk_length) << std::endl; 
+      std::cout << "[MemcachedCodec::decodeTextResponse()] Decoding response buffer done: " << buffer_to_string(parsed_pos_+1) << std::endl;
       return MemcachedDecodeStatus::DecodeDone;
   }
 

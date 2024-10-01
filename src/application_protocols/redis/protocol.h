@@ -1,0 +1,73 @@
+#pragma once
+
+#include "envoy/buffer/buffer.h"
+#include "source/common/common/logger.h"
+
+namespace Envoy {
+namespace Extensions {
+namespace NetworkFilters {
+namespace MetaProtocolProxy {
+namespace Redis {
+
+const size_t MEMCACHED_HEADER_SIZE = 24;
+
+enum class RedisCommand : uint8_t {
+    Get = 0x00,
+    Set = 0x01,
+    // ... other commands
+};
+
+struct RedisHeader : public Logger::Loggable<Logger::Id::filter> {
+    uint8_t magic;
+    RedisCommand command;
+    uint16_t key_length;
+    uint8_t extras_length;
+    uint8_t data_type;
+    uint16_t vbucket_id;
+    uint32_t total_body_length;
+    uint32_t opaque;
+    uint64_t cas;
+
+    bool decode(Buffer::Instance& buffer);
+    bool encode(Buffer::Instance& buffer);
+
+    uint16_t get_key_length() const { return key_length; }
+    uint32_t get_total_body_length() const { return total_body_length; }
+};
+
+
+// struct RedisRequestHeader : public Logger::Loggable<Logger::Id::filter> {
+//     uint8_t magic;
+//     RedisCommand command;
+//     uint16_t key_length;
+//     uint8_t extras_length;
+//     uint8_t data_type;
+//     uint16_t vbucket_id;
+//     uint32_t total_body_length;
+//     uint32_t opaque;
+//     uint64_t cas;
+
+//     bool decode(Buffer::Instance& buffer);
+//     // Encoding not required for request handling
+// };
+
+// struct RedisResponseHeader : public Logger::Loggable<Logger::Id::filter> {
+//     uint8_t magic;
+//     RedisCommand command;
+//     uint16_t status;
+//     uint16_t key_length;
+//     uint8_t extras_length;
+//     uint8_t data_type;
+//     uint32_t total_body_length;
+//     uint32_t opaque;
+//     uint64_t cas;
+
+//     bool encode(Buffer::Instance& buffer);
+//     // Decoding not required for response generation
+// };
+
+} // namespace Redis
+} // namespace MetaProtocolProxy
+} // namespace NetworkFilters
+} // namespace Extensions
+} // namespace Envoy

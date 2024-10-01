@@ -1,0 +1,448 @@
+#include "redis_codec.h"
+#include "envoy/common/exception.h"
+#include "source/common/common/assert.h"
+
+namespace Envoy {
+namespace Extensions {
+namespace NetworkFilters {
+namespace MetaProtocolProxy {
+namespace Redis {
+
+// static std::string MagicByteToString(uint8_t magic) {
+//     switch (magic) {
+//         case 0x80: return "Request";
+//         case 0x81: return "Response";
+//         default: return "Unknown";
+//     }
+// }
+
+// static std::string ResponseStatusToString(uint16_t status) {
+//     switch (status) {
+//         case 0x0000: return "No error";
+//         case 0x0001: return "Key not found";
+//         case 0x0002: return "Key exists";
+//         case 0x0003: return "Value too large";
+//         case 0x0004: return "Invalid arguments";
+//         case 0x0005: return "Item not stored";
+//         case 0x0006: return "Incr/Decr on non-numeric value";
+//         case 0x0081: return "Unknown command";
+//         case 0x0082: return "Out of memory";
+//         default: return "Other error";
+//     }
+// }
+
+// static std::string OpcodeToString(uint8_t opcode) {
+//     switch (opcode) {
+//         case 0x00: return "Get";
+//         case 0x01: return "Set";
+//         case 0x02: return "Add";
+//         case 0x03: return "Replace";
+//         case 0x04: return "Delete";
+//         case 0x05: return "Increment";
+//         case 0x06: return "Decrement";
+//         case 0x07: return "Quit";
+//         case 0x08: return "Flush";
+//         case 0x09: return "GetQ";
+//         case 0x0A: return "No-op";
+//         case 0x0B: return "Version";
+//         case 0x0C: return "GetK";
+//         case 0x0D: return "GetKQ";
+//         case 0x0E: return "Append";
+//         case 0x0F: return "Prepend";
+//         case 0x10: return "Stat";
+//         case 0x11: return "SetQ";
+//         case 0x12: return "AddQ";
+//         case 0x13: return "ReplaceQ";
+//         case 0x14: return "DeleteQ";
+//         case 0x15: return "IncrementQ";
+//         case 0x16: return "DecrementQ";
+//         case 0x17: return "QuitQ";
+//         case 0x18: return "FlushQ";
+//         case 0x19: return "AppendQ";
+//         case 0x1A: return "PrependQ";
+//         default: return "Unknown Opcode";
+//     }
+// }
+
+// MetaProtocolProxy::DecodeStatus RedisCodec::decode(Buffer::Instance& buffer, MetaProtocolProxy::Metadata& metadata) {
+//   // ENVOY_LOG(warn, "Redis decoder: {} bytes available, msg type: {}", buffer.length(),
+//   //           static_cast<int>(metadata.getMessageType())); 
+
+//   MetaProtocolProxy::MessageType messageType_ = metadata.getMessageType();
+//   std::string message_type_str = messageType_ == MetaProtocolProxy::MessageType::Request ? "Request" : "Response";
+//   std::cout << "[RedisCodec::decode()] Redis decoder: " << buffer.length() << " bytes available, msg type: " << message_type_str << std::endl;
+
+//   const size_t RedisHeaderSize = 24; // Size of Redis protocol header
+
+//   // Check if the buffer has enough data for the Redis header
+//   if (buffer.length() < RedisHeaderSize) {
+//     std::cout << "[RedisCodec::decode()] Returned: waiting for more data (1st branch) " << std::endl;
+//     return MetaProtocolProxy::DecodeStatus::WaitForData;
+//   }
+
+//   // Extract the first 24 bytes from the buffer as header
+//   uint8_t header_bytes[RedisHeaderSize];
+//   buffer.copyOut(0, RedisHeaderSize, header_bytes);
+
+//   // Parse the Redis header
+//   uint8_t magic = header_bytes[0];
+//   std::cout << "[RedisCodec::decode()] Magic: " << static_cast<int>(magic) << std::endl;
+//   uint8_t opcode = header_bytes[1];
+//   uint16_t key_length = ntohs(*reinterpret_cast<const uint16_t*>(header_bytes + 2));
+//   std::cout << "[RedisCodec::decode()] Key length: " << key_length << std::endl;
+//   uint8_t extras_length = header_bytes[4];
+//   std::cout << "[RedisCodec::decode()] Extras length: " << static_cast<int>(extras_length) << std::endl;
+//   uint8_t data_type = header_bytes[5];
+//   uint16_t status_or_reserved = ntohs(*reinterpret_cast<const uint16_t*>(header_bytes + 6));
+//   uint32_t total_body_length = ntohl(*reinterpret_cast<const uint32_t*>(header_bytes + 8));
+//   std::cout << "[RedisCodec::decode()] Total body length: " << total_body_length << std::endl;
+//   uint32_t opaque = ntohl(*reinterpret_cast<const uint32_t*>(header_bytes + 12));
+//   uint64_t cas = ntohl(*reinterpret_cast<const uint64_t*>(header_bytes + 16));
+
+//   // Check if the buffer has the full body of the message
+//   while (buffer.length() < RedisHeaderSize + total_body_length) {
+//     std::cout << "[RedisCodec::decode()] Returned: waiting for more data (2nd branch) " << std::endl;
+//     return MetaProtocolProxy::DecodeStatus::WaitForData;
+//   }
+
+//   // Populate metadata
+//   metadata.put("Magic", magic);
+//   metadata.put("Opcode", opcode);
+//   metadata.put("KeyLength", key_length);
+//   metadata.put("ExtrasLength", extras_length);
+//   metadata.put("DataType", data_type);
+//   metadata.put(magic == 0x81 ? "Status" : "Reserved", status_or_reserved);
+//   metadata.put("TotalBodyLength", total_body_length);
+//   metadata.put("Opaque", opaque);
+//   metadata.put("CAS", cas);
+//   // Inside your decode method
+//     metadata.putString("MagicValue", MagicByteToString(magic));
+//     metadata.putString("OpcodeValue", OpcodeToString(opcode));
+//     metadata.putString("StatusValue", ResponseStatusToString(status_or_reserved));
+
+//   // Extract the extras (flags and expiry)
+//   buffer.drain(RedisHeaderSize); // Remove the header
+//   uint32_t flags, expiry;
+//   if (extras_length >= 8) { // Ensure there are at least 8 bytes for flags and expiry
+//     flags = ntohl(*reinterpret_cast<const uint32_t*>(buffer.linearize(4)));
+//     expiry = ntohl(*reinterpret_cast<const uint32_t*>(buffer.linearize(4)) + 4);
+//     buffer.drain(8); // Remove the extras
+//     metadata.put("Flags", flags);
+//     metadata.put("Expiry", expiry);
+//   }
+
+//   // Extract the key
+//   std::string key;
+//   if (key_length > 0) {
+//     key.assign(static_cast<const char*>(buffer.linearize(key_length)), key_length);
+//     buffer.drain(key_length); // Remove the key
+//     metadata.putString("Key", key);
+//   }
+
+//   // Extract the value
+//   size_t value_length = total_body_length - key_length - extras_length;
+//   std::string value;
+//   if (value_length > 0) {
+//     value.assign(static_cast<const char*>(buffer.linearize(value_length)), value_length);
+//     buffer.drain(value_length); // Remove the value
+//     metadata.putString("Value", value);
+//   }
+
+//   std::cout << "[RedisCodec::decode()] Returned: done" << std::endl;
+
+//   return MetaProtocolProxy::DecodeStatus::Done;
+// }
+
+
+MetaProtocolProxy::DecodeStatus RedisCodec::decode(Buffer::Instance& buffer, MetaProtocolProxy::Metadata& metadata) {
+
+  message_type_ = metadata.getMessageType();
+  // std::string message_type_str = message_type_ == MetaProtocolProxy::MessageType::Request ? "Request" : "Response";
+  // std::cout << "[RedisCodec::decode()] Redis decoder: " << buffer.length() << " bytes available, msg type: " << message_type_str << std::endl;
+  // ENVOY_LOG(warn, "Redis decoder: {} bytes available, msg type: {}", buffer.length(), static_cast<int>(metadata.getMessageType()));
+
+  while (decode_status_ != RedisDecodeStatus::DecodeDone) {
+    decode_status_ = handleState(buffer, metadata);
+    if (decode_status_ == RedisDecodeStatus::WaitForData) {
+      return MetaProtocolProxy::DecodeStatus::WaitForData;
+    }
+  }
+
+  // fill the metadata with the headers exacted from the message
+  toMetadata(metadata);
+  // reset decode status
+  decode_status_ = RedisDecodeStatus::DecodeHeader;
+  is_request_cmd_done_ = false;
+  parsed_pos_ = 0;
+  return MetaProtocolProxy::DecodeStatus::Done;
+}
+
+
+RedisDecodeStatus RedisCodec::handleState(Buffer::Instance& buffer, MetaProtocolProxy::Metadata& metadata) {
+  switch (decode_status_) {
+  case RedisDecodeStatus::DecodeHeader: // decode header
+    return decodeHeader(buffer);
+  case RedisDecodeStatus::DecodeBody: // decode body
+    return decodeBody(buffer);
+  case RedisDecodeStatus::DecodeTextProtocol:
+    return decodeTextProtocol(buffer, metadata);
+  case RedisDecodeStatus::WaitForData:
+    return RedisDecodeStatus::WaitForData;
+  default:
+    PANIC("not reached");
+  }
+  return RedisDecodeStatus::DecodeDone;
+}
+
+RedisDecodeStatus RedisCodec::decodeHeader(Buffer::Instance& buffer) {
+  // Check if the buffer has enough data for the Redis header
+  // std::cout << "[RedisCodec::decodeHeader()] Buffer length: " << buffer.length() << std::endl;
+  // ENVOY_LOG(warn, "Redis decodeHeader: {} bytes available", buffer.length());
+
+  uint8_t magic_code = 0x80;
+
+  if (buffer.length() >= 1){ // we probabaly don't need this line
+    bool is_magic = buffer.peekBEInt<uint8_t>(0) >= magic_code;
+
+    if (!is_magic) {
+      // std::cout << "[RedisCodec::decodeHeader()] Not a redis binary protocol" << std::endl;
+      return RedisDecodeStatus::DecodeTextProtocol;
+    }
+  }
+  
+  if (buffer.length() < MEMCACHED_HEADER_SIZE) {
+    std::cout << "[RedisCodec::decodeHeader()] Waiting for more data " << std::endl;
+    // ENVOY_LOG(warn, "Redis decodeHeader: waiting for more data");
+    return RedisDecodeStatus::WaitForData;
+  }
+
+  if (!redis_header_.decode(buffer)) {
+    throw EnvoyException("Invalid Redis header");
+  }
+
+  // std::cout << "[RedisCodec::decodeHeader()] Redis header decoded: key length: total body length: " << redis_header_.get_total_body_length() << std::endl;
+  // ENVOY_LOG(warn, "Redis decodeHeader: Redis header decoded: key length: {}, total body length: {}", redis_header_.get_key_length(), redis_header_.get_total_body_length());
+  return RedisDecodeStatus::DecodeBody;
+
+}
+
+RedisDecodeStatus RedisCodec::decodeTextProtocol(Buffer::Instance& buffer, MetaProtocolProxy::Metadata&) {
+  // std::cout << "[RedisCodec::decodeTextProtocol()] Decoding text protocol | Content: " << buffer_to_string(buffer, buffer.length()) << std::endl;
+  while (true) {
+    // parse command
+
+    // size_t pre_parsed_pos_ = parsed_pos_;
+    size_t pos;
+    std::vector<char> char_array;
+
+    bool end_of_chunk = false;
+    size_t start_pos;
+    if (parsed_pos_ !=0 ){
+      start_pos = parsed_pos_+1;
+    } else {
+      start_pos = 0;
+    }
+    // char_array.push_back(buffer.peekBEInt<char>(start_pos));
+    for (size_t i = start_pos+1; i < buffer.length(); i++) {
+      char_array.push_back(buffer.peekBEInt<char>(i-1));
+      if (buffer.peekBEInt<uint8_t>(i-1) == 13 and buffer.peekBEInt<uint8_t>(i) == 10){
+        // end of the command
+        pos = i;
+        end_of_chunk = true;
+        char_array.push_back(buffer.peekBEInt<char>(i));
+        break;
+      }
+    } 
+
+    // bool end_of_chunk = false;
+    // if (parsed_pos_ != 0) { parsed_pos_ += 1; }
+    // for (size_t i = parsed_pos_+1; i < buffer.length(); i++) {
+    //   char_array.push_back(buffer.peekBEInt<char>(i-1));
+    //   if (buffer.peekBEInt<uint8_t>(i-1) == 13 and buffer.peekBEInt<uint8_t>(i) == 10){
+    //     // end of the command
+    //     pos = i;
+    //     end_of_chunk = true;
+    //     char_array.push_back(buffer.peekBEInt<char>(i));
+    //     break;
+    //   }
+    // } 
+
+    if (!end_of_chunk) {
+      // std::cout << "[RedisCodec::decodeTextProtocol()] Waiting for more data, message type" << static_cast<int>(message_type_) << std::endl;
+      return RedisDecodeStatus::WaitForData;
+    }
+    parsed_pos_ = pos;
+
+    RedisDecodeStatus status;
+    if (message_type_ == MetaProtocolProxy::MessageType::Request) {
+      status = decodeTextRequest(char_array.data());
+    } else {
+      status = decodeTextResponse(char_array.data());
+    }
+
+    if (status == RedisDecodeStatus::DecodeDone) {
+
+      // if (message_type_ == MetaProtocolProxy::MessageType::Request) {
+      //   std::cout << "[RedisCodec::decodeTextProtocol()] Decoding request done: length " << parsed_pos_+1 << " | content: " << buffer_to_string(buffer, parsed_pos_+1) << std::endl;
+      // } else {
+      //   std::cout << "[RedisCodec::decodeTextProtocol()] Decoding response done: length " << parsed_pos_+1 << " | content: " << buffer_to_string(buffer, parsed_pos_+1) << std::endl;
+      // }
+
+      // handle message saving 
+      origin_msg_ = std::make_unique<Buffer::OwnedImpl>();
+      origin_msg_->move(buffer, parsed_pos_+1);
+      // std::cout << "[RedisCodec::decodeTextProtocol()] Redis text protocol decoded, message type: " << static_cast<int>(message_type_) << std::endl;
+      
+      return RedisDecodeStatus::DecodeDone;
+    }
+  }
+}
+
+RedisDecodeStatus RedisCodec::decodeTextRequest(char* chunk) {
+
+  // std::cout << "[RedisCodec::decodeTextRequest()] Decoding request: length " << std::strlen(chunk) << " | content: " << char_to_ascii(chunk, std::strlen(chunk)) << std::endl;
+
+  size_t chunk_length = std::strlen(chunk);
+
+  if (is_request_cmd_done_){
+    // std::cout << "[RedisCodec::decodeHeader()] Request command is already done, decoding finished" << std::endl;
+    return RedisDecodeStatus::DecodeDone;
+  }
+
+  is_request_cmd_done_ = true;
+
+  
+  if (chunk_length < 3) {
+    std::cout << "[RedisCodec::decodeTextRequest()] Decode request: chunk length<3, probably other commands" << std::endl;
+    return RedisDecodeStatus::DecodeDone;
+  }
+
+  auto checkCommand = [&](const char* command, size_t length) {
+    if (chunk_length >= length) {
+        char buffer[8]; // Buffer size for the command plus null terminator
+        std::memcpy(buffer, chunk, length);
+        buffer[7] = '\0'; // Null-terminate the buffer
+        if (memcmp(buffer, command, length) == 0) {
+            // std::cout << "[RedisCodec::decodeHeader()] " << command << " command" << std::endl;
+            return true;
+        }
+    }
+    return false;
+  };
+
+  if (checkCommand("set", 3) || checkCommand("add", 3) || checkCommand("cas", 3) ||
+    checkCommand("append", 6) || checkCommand("prepend", 7) || checkCommand("replace", 7)) {
+    // std::cout << "[RedisCodec::decodeTextResponse()] Decoding request command done: length " << chunk_length << " | content: " << char_to_ascii(chunk, chunk_length) << std::endl;
+    return RedisDecodeStatus::WaitForData; // continue decoding
+  }
+  // std::cout << "[RedisCodec::decodeTextResponse()] Decoding request done: length " << chunk_length << " | content: " << char_to_ascii(chunk, chunk_length) << std::endl;
+  // std::cout << "[RedisCodec::decodeTextResponse()] Decoding request done: length " << chunk_length << " | content: " << buffer_to_string(parsed_pos_+1) << std::endl;
+  return RedisDecodeStatus::DecodeDone;
+}
+
+RedisDecodeStatus RedisCodec::decodeTextResponse(char* chunk) {
+
+
+  size_t chunk_length = std::strlen(chunk);
+
+  if (chunk_length < 5) {
+      std::cout << "[RedisCodec::decodeTextResponse()] Chunk length < 3, probably other content" << std::endl;
+      std::cout << "[RedisCodec::decodeTextResponse()] Decoding response chunk data: " << char_to_ascii(chunk, chunk_length) << std::endl; 
+      std::cout << "[RedisCodec::decodeTextResponse()] Decoding response buffer done: " << buffer_to_string(parsed_pos_+1) << std::endl;
+      return RedisDecodeStatus::DecodeDone;
+  }
+
+  auto checkContent = [&](const char* content, size_t length) {
+    if (chunk_length >= length && std::memcmp(chunk, content, length) == 0){
+      // std::cout << "[RedisCodec::decodeTextResponse()] Finished decoding response content: ";
+      // for (size_t i = 0; i < 3; ++i) {
+      //     std::cout << content[i];
+      // }
+      // std::cout << std::endl;
+      return true;
+    }
+    return false;
+  };
+
+  if (checkContent("STORED\r\n", 8) || checkContent("NOT_STORED\r\n", 12) || checkContent("EXISTS\r\n", 8) ||
+      checkContent("NOT_FOUND\r\n", 11) || checkContent("ERROR\r\n", 7) || checkContent("END\r\n", 5)) {
+      // std::cout << "[RedisCodec::decodeTextResponse()] Decoding response done: length " << chunk_length << " | content: " << buffer_to_string(parsed_pos_+1) << std::endl;
+      return RedisDecodeStatus::DecodeDone; 
+  }
+  // std::cout << "[RedisCodec::decodeTextResponse()] Decoding response: wait for more data - chunk length " << chunk_length << " | content: " << char_to_ascii(chunk, 3) << std::endl;
+  return RedisDecodeStatus::WaitForData;
+}
+
+std::string RedisCodec::buffer_to_string(Buffer::Instance& buffer, size_t length) {
+  std::string result;
+  for (size_t i = 0; i < length; i++) {
+    char byte = static_cast<char>(buffer.peekInt<uint8_t>(i));
+    if (byte == '\r') {
+      result += "*";
+    } else if (byte == '\n') {
+      result += "#";
+    } else {
+      result += byte;
+    }
+  }
+  return result;
+}
+
+std::string RedisCodec::char_to_ascii(char* chunk, size_t length) {
+  std::string result;
+  for (size_t i = 0; i < length; i++) {
+    if (chunk[i] == '\r' || chunk[i] == '\n') {
+      result += "*";
+    } else {
+      result += chunk[i];
+    }
+  }
+  return result;
+}
+
+RedisDecodeStatus RedisCodec::decodeBody(Buffer::Instance& buffer) {
+  // Check if the buffer has the full body of the message
+  if (buffer.length() < MEMCACHED_HEADER_SIZE + redis_header_.get_total_body_length()) {
+    std::cout << "[RedisCodec::decodeBody()] Waiting for more data " << std::endl;
+    // ENVOY_LOG(warn, "Redis decodeBody: waiting for more data");
+    return RedisDecodeStatus::WaitForData;
+  }
+
+  // decode body: skip it for now since we dont care about the body
+
+  origin_msg_ = std::make_unique<Buffer::OwnedImpl>();
+  origin_msg_->move(buffer, MEMCACHED_HEADER_SIZE + redis_header_.get_total_body_length());
+  std::cout << "[RedisCodec::decodeBody()] Redis body decoded " << std::endl;
+  return RedisDecodeStatus::DecodeDone;
+}
+
+void RedisCodec::toMetadata(MetaProtocolProxy::Metadata& metadata) {
+  metadata.originMessage().move(*origin_msg_);
+}
+
+
+void RedisCodec::encode(const MetaProtocolProxy::Metadata& metadata,
+                            const MetaProtocolProxy::Mutation& mutation,
+                            Buffer::Instance& buffer) {
+  // TODO we don't need to implement encode for now.
+  // This method only need to be implemented if we want to modify the respose message
+  // ENVOY_LOG(warn, "Redis encoder: {} bytes available, msg type: {}", buffer.length(), static_cast<int>(metadata.getMessageType()));
+  (void)metadata;
+  (void)mutation;
+  (void)buffer;
+}
+
+
+void RedisCodec::onError(const MetaProtocolProxy::Metadata&,
+                             const MetaProtocolProxy::Error&,
+                             Buffer::Instance&) {
+    // Error handling logic will be implemented in the next part
+}
+
+// Additional private methods for handling specific commands
+
+} // namespace Redis
+} // namespace MetaProtocolProxy
+} // namespace NetworkFilters
+} // namespace Extensions
+} // namespace Envoy

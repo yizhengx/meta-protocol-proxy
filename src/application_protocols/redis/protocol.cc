@@ -6,11 +6,11 @@ namespace NetworkFilters {
 namespace MetaProtocolProxy {
 namespace Redis {
 
-bool RedisHeader::decode(Buffer::Instance& buffer) {
+bool RedisHeader::decode(Buffer::Instance&) {
     return true;
 }
 
-bool RedisHeader::encode(Buffer::Instance& buffer) {
+bool RedisHeader::encode(Buffer::Instance&) {
     return true;
 }
 

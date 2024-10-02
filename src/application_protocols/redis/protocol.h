@@ -12,9 +12,6 @@ namespace Redis {
 struct RedisHeader : public Logger::Loggable<Logger::Id::filter> {
     bool decode(Buffer::Instance& buffer);
     bool encode(Buffer::Instance& buffer);
-
-    uint16_t get_key_length() const { return key_length; }
-    uint32_t get_total_body_length() const { return total_body_length; }
 };
 
 } // namespace Redis

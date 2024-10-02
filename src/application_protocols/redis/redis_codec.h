@@ -13,11 +13,8 @@ namespace MetaProtocolProxy {
 namespace Redis {
 
 enum class RedisDecodeStatus {
-  DecodeHeader,
-  DecodeBody,
-  DecodeDone,
   WaitForData,
-  DecodeTextProtocol,
+  DecodeMsg,
 };
 
 class RedisCodec : public MetaProtocolProxy::Codec,
@@ -47,24 +44,16 @@ private:
     // Additional private methods and members as necessary
 
     RedisDecodeStatus handleState(Buffer::Instance& buffer, MetaProtocolProxy::Metadata& metadata);
-    RedisDecodeStatus decodeHeader(Buffer::Instance& buffer);
-    RedisDecodeStatus decodeBody(Buffer::Instance& buffer);
-    RedisDecodeStatus decodeRequest(Buffer::Instance& buffer);
-    RedisDecodeStatus decodeTextProtocol(Buffer::Instance& buffer, MetaProtocolProxy::Metadata& metadata);
-    RedisDecodeStatus decodeTextRequest(char* chunk);
-    RedisDecodeStatus decodeTextResponse(char* chunk);
     void toMetadata(MetaProtocolProxy::Metadata& metadata);
-    std::string char_to_ascii(char* chunk, size_t len);
+    RedisDecodeStatus decodeMsg(Buffer::Instance& buffer);
     std::string buffer_to_string(Buffer::Instance& buffer, size_t length);
-
-    RedisDecodeStatus decode_status_{RedisDecodeStatus::DecodeHeader};
-    MetaProtocolProxy::Redis::RedisHeader redis_header_;
     MetaProtocolProxy::MessageType message_type_;
     std::unique_ptr<Buffer::OwnedImpl> origin_msg_;
 
-    // Additional private variables for TEXT protocol
-    bool is_request_cmd_done_{false};
-    size_t parsed_pos_{0}; // The position of the last byte parsed
+    is_start_pos_op = true; // start reading position of the buffer
+    start_pos = 0;   // start reading position of the buffer
+    item_needed = 0; // how many items needed to complete the current msg
+    crlf_needed = 0; // how many crlf needed to complete the current item
 };
 
 

@@ -8,8 +8,6 @@ namespace NetworkFilters {
 namespace MetaProtocolProxy {
 namespace Redis {
 
-CRLF = "\r\n";
-
 MetaProtocolProxy::DecodeStatus RedisCodec::decode(Buffer::Instance& buffer, MetaProtocolProxy::Metadata& metadata) {
 
   message_type_ = metadata.getMessageType();
@@ -31,7 +29,7 @@ MetaProtocolProxy::DecodeStatus RedisCodec::decode(Buffer::Instance& buffer, Met
 }
 
 
-RedisDecodeStatus RedisCodec::handleState(Buffer::Instance& buffer, MetaProtocolProxy::Metadata& metadata) {
+RedisDecodeStatus RedisCodec::handleState(Buffer::Instance& buffer, MetaProtocolProxy::Metadata&) {
   switch (decode_status_) {
   case RedisDecodeStatus::DecodeMsg: // decode header 
     return decodeMsg(buffer);

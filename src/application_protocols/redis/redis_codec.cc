@@ -45,7 +45,7 @@ RedisDecodeStatus RedisCodec::decodeMsg(Buffer::Instance& buffer) {
   // std::cout << "Redis decodeMsg: " << buffer.length() << " bytes available" << std::endl;
 
   while (start_pos < buffer.length()) {
-    if ( crlf_needed = 0) {
+    if ( crlf_needed == 0) {
       // start reading a new item
       char op = static_cast<char>(buffer.peekInt<uint8_t>(start_pos));
       // find the next CRLF to make sure we have the whole control message
@@ -61,31 +61,31 @@ RedisDecodeStatus RedisCodec::decodeMsg(Buffer::Instance& buffer) {
         // not enough data
         return RedisDecodeStatus::WaitForData;
       }
-      if (op == "+"){
+      if (op == '+'){
         // simple string, since we have the CRLF, we can extract the item
         if (item_needed == 0) {
           return RedisDecodeStatus::DecodeDone;
         } else {
           item_needed -= 1;
         }
-      } else if (op == "-"){
+      } else if (op == '-'){
         // simple error
         if (item_needed == 0) {
           return RedisDecodeStatus::DecodeDone;
         } else {
           item_needed -= 1;
         }
-      } else if (op == ":"){
+      } else if (op == ':'){
         // integer
         if (item_needed == 0) {
           return RedisDecodeStatus::DecodeDone;
         } else {
           item_needed -= 1;
         }
-      } else if (op == "$"){
+      } else if (op == '$'){
         // bulk string
         crlf_needed = 1;
-      } else if (op == "*"){
+      } else if (op == '*'){
         // array, parse the op message to see how many items in the array
         int base = 1;
         int num = 0;

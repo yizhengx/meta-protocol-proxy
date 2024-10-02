@@ -132,17 +132,6 @@ std::string RedisCodec::buffer_to_string(Buffer::Instance& buffer, size_t length
   return result;
 }
 
-std::string RedisCodec::char_to_ascii(char* chunk, size_t length) {
-  std::string result;
-  for (size_t i = 0; i < length; i++) {
-    if (chunk[i] == '\r' || chunk[i] == '\n') {
-      result += "*";
-    } else {
-      result += chunk[i];
-    }
-  }
-  return result;
-}
 
 
 void RedisCodec::toMetadata(MetaProtocolProxy::Metadata& metadata) {

@@ -47,7 +47,7 @@ RedisDecodeStatus RedisCodec::decodeMsg(Buffer::Instance& buffer) {
   while (start_pos < buffer.length()) {
     if ( crlf_needed = 0) {
       // start reading a new item
-      char op = buffer.peekInt<char>(start_pos);
+      char op = static_cast<char>(buffer.peekInt<uint8_t>(start_pos));
       // find the next CRLF to make sure we have the whole control message
       size_t crlf_pos = start_pos;
       for (size_t i = start_pos+1; i < buffer.length(); i++) {

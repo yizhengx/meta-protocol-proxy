@@ -15,6 +15,7 @@ namespace Redis {
 enum class RedisDecodeStatus {
   WaitForData,
   DecodeMsg,
+  DecodeDone,
 };
 
 class RedisCodec : public MetaProtocolProxy::Codec,
@@ -50,10 +51,11 @@ private:
     MetaProtocolProxy::MessageType message_type_;
     std::unique_ptr<Buffer::OwnedImpl> origin_msg_;
 
-    is_start_pos_op = true; // start reading position of the buffer
-    start_pos = 0;   // start reading position of the buffer
-    item_needed = 0; // how many items needed to complete the current msg
-    crlf_needed = 0; // how many crlf needed to complete the current item
+    DecodeStatus decode_status_ = RedisDecodeStatus::DecodeMsg;
+    bool is_start_pos_op = true; // start reading position of the buffer
+    size_t start_pos = 0;   // start reading position of the buffer
+    size_t item_needed = 0; // how many items needed to complete the current msg
+    size_t crlf_needed = 0; // how many crlf needed to complete the current item
 };
 
 

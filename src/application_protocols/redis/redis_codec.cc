@@ -60,6 +60,7 @@ RedisDecodeStatus RedisCodec::decodeMsg(Buffer::Instance& buffer) {
         return RedisDecodeStatus::WaitForData;
       }
       if (op == '+'){
+        std::cout << "Simple string: " << buffer_to_string(buffer, crlf_pos-start_pos) << std::endl;
         // simple string, since we have the CRLF, we can extract the item
         if (item_needed == 0) {
           return RedisDecodeStatus::DecodeDone;
@@ -83,6 +84,7 @@ RedisDecodeStatus RedisCodec::decodeMsg(Buffer::Instance& buffer) {
       } else if (op == '$'){
         // bulk string
         crlf_needed = 1;
+        std::cout << "Bulk string: " << buffer_to_string(buffer, crlf_pos-start_pos) << std::endl;
       } else if (op == '*'){
         // array, parse the op message to see how many items in the array
         int base = 1;
@@ -92,6 +94,7 @@ RedisDecodeStatus RedisCodec::decodeMsg(Buffer::Instance& buffer) {
           base *= 10;
         }
         item_needed += num;
+        std::cout << "Array: " << num << std::endl;
       }  else {
         // invalid
         PANIC("Invalid Redis op code");

@@ -40,7 +40,7 @@ RedisDecodeStatus RedisCodec::handleState(Buffer::Instance& buffer, MetaProtocol
 }
 
 RedisDecodeStatus RedisCodec::decodeMsg(Buffer::Instance& buffer) {
-  // std::cout << "Redis decodeMsg: " << buffer.length() << " bytes available" << std::endl;
+  std::cout << "Redis decodeMsg: " << buffer_to_string(buffer, buffer.length()) << std::endl;
 
   while (start_pos < buffer.length()) {
     if ( crlf_needed == 0) {
@@ -131,7 +131,6 @@ std::string RedisCodec::buffer_to_string(Buffer::Instance& buffer, size_t length
   }
   return result;
 }
-
 
 
 void RedisCodec::toMetadata(MetaProtocolProxy::Metadata& metadata) {

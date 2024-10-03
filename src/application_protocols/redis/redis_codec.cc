@@ -91,7 +91,7 @@ RedisDecodeStatus RedisCodec::decodeMsg(Buffer::Instance& buffer) {
         int num = 0;
         for (size_t i = crlf_pos-2; i > start_pos; i--) {
           std::cout << "Array pick int " << buffer.peekInt<int8_t>(i) << std::endl;
-          num += base * buffer.peekInt<int8_t>(i);
+          num += base * static_cast<int>(buffer.peekInt<int8_t>(i));
           std::cout << "Array num: " << num << std::endl;
           base *= 10;
         }

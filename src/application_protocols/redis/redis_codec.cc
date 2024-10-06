@@ -147,7 +147,7 @@ std::string RedisCodec::buffer_to_string(Buffer::Instance& buffer, size_t length
 
 
 void RedisCodec::toMetadata(MetaProtocolProxy::Metadata& metadata) {
-  std::cout << "Redis toMetadata: " << buffer_to_string(*origin_msg_, origin_msg_->length()) << std::endl;
+  std::cout << "Redis toMetadata: " << buffer_to_string(metadata.originMessage(), metadata.originMessage()->length()) << std::endl;
   metadata.originMessage().move(*origin_msg_);
 }
 

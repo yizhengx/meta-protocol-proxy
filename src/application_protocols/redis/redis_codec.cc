@@ -116,7 +116,7 @@ RedisDecodeStatus RedisCodec::decodeMsg(Buffer::Instance& buffer) {
         crlf_needed -= 1;
         if (crlf_needed == 0) {
           // we have the whole item
-          if (item_needed == 0) {
+          if (item_needed == 1) {
             return RedisDecodeStatus::DecodeDone;
           } else {
             item_needed -= 1;

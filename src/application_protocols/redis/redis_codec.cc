@@ -62,21 +62,21 @@ RedisDecodeStatus RedisCodec::decodeMsg(Buffer::Instance& buffer) {
       if (op == '+'){
         std::cout << "Simple string: " << buffer_to_string(buffer, crlf_pos-start_pos) << std::endl;
         // simple string, since we have the CRLF, we can extract the item
-        if (item_needed == 0) {
+        if (item_needed == 1) {
           return RedisDecodeStatus::DecodeDone;
         } else {
           item_needed -= 1;
         }
       } else if (op == '-'){
         // simple error
-        if (item_needed == 0) {
+        if (item_needed == 1) {
           return RedisDecodeStatus::DecodeDone;
         } else {
           item_needed -= 1;
         }
       } else if (op == ':'){
         // integer
-        if (item_needed == 0) {
+        if (item_needed == 1) {
           return RedisDecodeStatus::DecodeDone;
         } else {
           item_needed -= 1;
@@ -117,6 +117,7 @@ RedisDecodeStatus RedisCodec::decodeMsg(Buffer::Instance& buffer) {
         if (crlf_needed == 0) {
           // we have the whole item
           if (item_needed == 1) {
+            std::cout << "Decode done" << std::endl;
             return RedisDecodeStatus::DecodeDone;
           } else {
             item_needed -= 1;
@@ -146,6 +147,7 @@ std::string RedisCodec::buffer_to_string(Buffer::Instance& buffer, size_t length
 
 
 void RedisCodec::toMetadata(MetaProtocolProxy::Metadata& metadata) {
+  std::cout << "Redis toMetadata: " << buffer_to_string(*origin_msg_, origin_msg_->length()) << std::endl;
   metadata.originMessage().move(*origin_msg_);
 }
 

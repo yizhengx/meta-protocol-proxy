@@ -20,6 +20,7 @@ MetaProtocolProxy::DecodeStatus RedisCodec::decode(Buffer::Instance& buffer, Met
   }
 
   // fill the metadata with the headers exacted from the message
+  std::cout << "TO METADATA: BUFFER -> " << buffer_to_string(buffer, buffer.length()) << std::endl;
   toMetadata(metadata);
   decode_status_ = RedisDecodeStatus::DecodeMsg;
   start_pos = 0;   // start reading position of the buffer

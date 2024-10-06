@@ -108,6 +108,11 @@ RedisDecodeStatus RedisCodec::decodeMsg(Buffer::Instance& buffer) {
       // if we reach here, it means the start_pos > 1
       if (buffer.peekInt<uint8_t>(start_pos-1) == '\r' && buffer.peekInt<uint8_t>(start_pos) == '\n') {
         // found crlf
+        std::cout << "--> ELSE BRANCH" << std::endl;
+        std::cout << "POS: " << start_pos << std::endl;
+        std::cout << "FOUND CRLF" << std::endl;
+        std::cout << "CRLF needed: " << crlf_needed << std::endl;
+        std::cout << "Item needed: " << item_needed << std::endl;
         crlf_needed -= 1;
         if (crlf_needed == 0) {
           // we have the whole item

@@ -93,7 +93,7 @@ RedisDecodeStatus RedisCodec::decodeMsg(Buffer::Instance& buffer) {
           std::cout << "Array pick int " <<  buffer.peekBEInt<int8_t>(i) << std::endl;
           std::cout << "Array pick int " <<  static_cast<int>(buffer.peekBEInt<int8_t>(i)) - '0' << std::endl;
           std::cout << "Array pick int " <<  static_cast<int>(buffer.peekBEInt<int8_t>(i)) << std::endl;
-          num += base * static_cast<int>(buffer.peekBEInt<int8_t>(i));
+          num += base * (static_cast<int>(buffer.peekBEInt<int8_t>(i)) - '0')
           std::cout << "Array num: " << num << std::endl;
           base *= 10;
         }

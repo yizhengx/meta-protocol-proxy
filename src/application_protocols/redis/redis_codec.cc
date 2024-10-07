@@ -24,7 +24,7 @@ MetaProtocolProxy::DecodeStatus RedisCodec::decode(Buffer::Instance& buffer, Met
   toMetadata(metadata);
   decode_status_ = RedisDecodeStatus::DecodeMsg;
   start_pos = 0;   // start reading position of the buffer
-  item_needed = 0; // how many items needed to complete the current msg
+  item_needed = 1; // how many items needed to complete the current msg
   crlf_needed = 0; // how many crlf needed to complete the current item
   return MetaProtocolProxy::DecodeStatus::Done;
 }
@@ -104,7 +104,7 @@ RedisDecodeStatus RedisCodec::decodeMsg(Buffer::Instance& buffer) {
           std::cout << "Array num: " << num << std::endl;
           base *= 10;
         }
-        item_needed += num;
+        item_needed += (num - 1);
         std::cout << "Array: " << num << std::endl;
       }  else {
         // invalid

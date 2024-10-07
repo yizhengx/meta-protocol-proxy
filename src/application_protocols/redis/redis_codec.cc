@@ -41,7 +41,7 @@ RedisDecodeStatus RedisCodec::handleState(Buffer::Instance& buffer, MetaProtocol
 }
 
 RedisDecodeStatus RedisCodec::decodeMsg(Buffer::Instance& buffer) {
-  std::cout << "Redis decodeMsg: " << buffer_to_string(buffer, buffer.length()) << std::endl;
+  std::cout << "Redis Msg type: " << static_cast<int>(message_type_)  << " decodeMsg: " << buffer_to_string(buffer, buffer.length()) << std::endl;
 
   while (start_pos < buffer.length()) {
     if ( crlf_needed == 0) {
@@ -82,8 +82,10 @@ RedisDecodeStatus RedisCodec::decodeMsg(Buffer::Instance& buffer) {
       } else if (op == ':'){
         // integer
         if (item_needed == 1) {
+          std::cout << 
           origin_msg_ = std::make_unique<Buffer::OwnedImpl>();
           origin_msg_->move(buffer, crlf_pos+1);
+          
           return RedisDecodeStatus::DecodeDone;
         } else {
           item_needed -= 1;

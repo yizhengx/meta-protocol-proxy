@@ -64,6 +64,8 @@ RedisDecodeStatus RedisCodec::decodeMsg(Buffer::Instance& buffer) {
         std::cout << "Simple string: " << buffer_to_string(buffer, crlf_pos-start_pos) << std::endl;
         // simple string, since we have the CRLF, we can extract the item
         if (item_needed == 1) {
+          original_msg_ = std::make_unique<Buffer::OwnedImpl>();
+          original_msg_->move(buffer, crlf_pos+1);
           return RedisDecodeStatus::DecodeDone;
         } else {
           item_needed -= 1;
@@ -71,6 +73,8 @@ RedisDecodeStatus RedisCodec::decodeMsg(Buffer::Instance& buffer) {
       } else if (op == '-'){
         // simple error
         if (item_needed == 1) {
+          original_msg_ = std::make_unique<Buffer::OwnedImpl>();
+          original_msg_->move(buffer, crlf_pos+1);
           return RedisDecodeStatus::DecodeDone;
         } else {
           item_needed -= 1;
@@ -78,6 +82,8 @@ RedisDecodeStatus RedisCodec::decodeMsg(Buffer::Instance& buffer) {
       } else if (op == ':'){
         // integer
         if (item_needed == 1) {
+          original_msg_ = std::make_unique<Buffer::OwnedImpl>();
+          original_msg_->move(buffer, crlf_pos+1);
           return RedisDecodeStatus::DecodeDone;
         } else {
           item_needed -= 1;
@@ -119,6 +125,8 @@ RedisDecodeStatus RedisCodec::decodeMsg(Buffer::Instance& buffer) {
           // we have the whole item
           if (item_needed == 1) {
             std::cout << "Decode done" << std::endl;
+            original_msg_ = std::make_unique<Buffer::OwnedImpl>();
+            original_msg_->move(buffer, start_pos+1);
             return RedisDecodeStatus::DecodeDone;
           } else {
             item_needed -= 1;

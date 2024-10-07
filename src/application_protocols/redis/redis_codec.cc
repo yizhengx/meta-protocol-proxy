@@ -82,7 +82,6 @@ RedisDecodeStatus RedisCodec::decodeMsg(Buffer::Instance& buffer) {
       } else if (op == ':'){
         // integer
         if (item_needed == 1) {
-          std::cout << 
           origin_msg_ = std::make_unique<Buffer::OwnedImpl>();
           origin_msg_->move(buffer, crlf_pos+1);
           

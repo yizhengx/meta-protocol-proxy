@@ -105,8 +105,15 @@ RedisDecodeStatus RedisCodec::decodeMsg(Buffer::Instance& buffer) {
           std::cout << "Array num: " << num << std::endl;
           base *= 10;
         }
-        item_needed += (num - 1);
+        item_needed += num;
         std::cout << "Array: " << num << std::endl;
+        if (item_needed == 1) {
+          origin_msg_ = std::make_unique<Buffer::OwnedImpl>();
+          origin_msg_->move(buffer, crlf_pos+1);
+          return RedisDecodeStatus::DecodeDone;
+        } else {
+          item_needed -= 1;
+        }
       }  else {
         // invalid
         PANIC("Invalid Redis op code");

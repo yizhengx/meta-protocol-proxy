@@ -12,6 +12,9 @@ bool MongoDBHeader::decode(Buffer::Instance& buffer) {
     return false;
   }
 
+  std::cout << "MongoDB Header decode buffer.length:" << buffer.length() << " >= " << sizeof(MsgHeader) << std::endl;
+  std::cout << "MongoDB Header decode buffer: " << buffer.toString() << std::endl;
+
   uint64_t pos = 0;
   header_.messageLength = buffer.peekBEInt<int32_t>(pos);
   pos += sizeof(int32_t);

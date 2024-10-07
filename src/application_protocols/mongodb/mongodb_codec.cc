@@ -292,6 +292,7 @@ MongoDBDecodeStatus MongoDBCodec::decodeBody(Buffer::Instance& buffer) {
         return MongoDBDecodeStatus::WaitForData;
     }
 
+    std::cout << "MongoDB decodeMsg done: " << buffer_to_string(buffer, mongo_header_.getMessageLength()) << std::endl;
     // move the decoded message out of the buffer
     origin_msg_ = std::make_unique<Buffer::OwnedImpl>();
     origin_msg_->move(buffer, mongo_header_.getMessageLength());

@@ -12,18 +12,17 @@ bool MongoDBHeader::decode(Buffer::Instance& buffer) {
     return false;
   }
 
-  std::cout << "MongoDB Header decode buffer.length:" << buffer.length() << " >= " << sizeof(MsgHeader) << std::endl;
-  std::cout << "MongoDB Header decode buffer: " << buffer.toString() << std::endl;
-
   uint64_t pos = 0;
-  header_.messageLength = buffer.peekBEInt<int32_t>(pos);
+  header_.messageLength = buffer.peekLEInt<int32_t>(pos);
   pos += sizeof(int32_t);
-  header_.requestID = buffer.peekBEInt<int32_t>(pos);
+  header_.requestID = buffer.peekLEInt<int32_t>(pos);
   pos += sizeof(int32_t);
-  header_.responseTo = buffer.peekBEInt<int32_t>(pos);
+  header_.responseTo = buffer.peekLEInt<int32_t>(pos);
   pos += sizeof(int32_t);
-  header_.opCode = buffer.peekBEInt<int32_t>(pos);
+  header_.opCode = buffer.peekLEInt<int32_t>(pos);
   pos += sizeof(int32_t);
+
+  std::cout << "MongoDB Header decode: messageLength: " << header_.messageLength << " | requestID: " << header_.requestID << " | responseTo: " << header_.responseTo << " | opCode: " << header_.opCode << std::endl;
 
   ASSERT(pos == sizeof(MsgHeader));
 

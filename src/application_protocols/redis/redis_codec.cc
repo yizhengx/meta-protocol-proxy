@@ -20,7 +20,7 @@ MetaProtocolProxy::DecodeStatus RedisCodec::decode(Buffer::Instance& buffer, Met
   }
 
   // fill the metadata with the headers exacted from the message
-  std::cout << "TO METADATA: BUFFER -> " << buffer_to_string(buffer, buffer.length()) << std::endl;
+  // std::cout << "TO METADATA: BUFFER -> " << buffer_to_string(buffer, buffer.length()) << std::endl;
   toMetadata(metadata);
   decode_status_ = RedisDecodeStatus::DecodeMsg;
   start_pos = 0;   // start reading position of the buffer
@@ -41,7 +41,7 @@ RedisDecodeStatus RedisCodec::handleState(Buffer::Instance& buffer, MetaProtocol
 }
 
 RedisDecodeStatus RedisCodec::decodeMsg(Buffer::Instance& buffer) {
-  std::cout << "Redis Msg type: " << static_cast<int>(message_type_)  << " decodeMsg: " << buffer_to_string(buffer, buffer.length()) << std::endl;
+  // std::cout << "Redis Msg type: " << static_cast<int>(message_type_)  << " decodeMsg: " << buffer_to_string(buffer, buffer.length()) << std::endl;
 
   while (start_pos < buffer.length()) {
     if ( crlf_needed == 0) {
@@ -61,7 +61,7 @@ RedisDecodeStatus RedisCodec::decodeMsg(Buffer::Instance& buffer) {
         return RedisDecodeStatus::WaitForData;
       }
       if (op == '+'){
-        std::cout << "Simple string: " << buffer_to_string(buffer, crlf_pos-start_pos) << std::endl;
+        // std::cout << "Simple string: " << buffer_to_string(buffer, crlf_pos-start_pos) << std::endl;
         // simple string, since we have the CRLF, we can extract the item
         if (item_needed == 1) {
           origin_msg_ = std::make_unique<Buffer::OwnedImpl>();
@@ -92,21 +92,21 @@ RedisDecodeStatus RedisCodec::decodeMsg(Buffer::Instance& buffer) {
       } else if (op == '$'){
         // bulk string
         crlf_needed = 1;
-        std::cout << "Bulk string: " << buffer_to_string(buffer, crlf_pos-start_pos) << std::endl;
+        // std::cout << "Bulk string: " << buffer_to_string(buffer, crlf_pos-start_pos) << std::endl;
       } else if (op == '*'){
         // array, parse the op message to see how many items in the array
         int base = 1;
         int num = 0;
         for (size_t i = crlf_pos-2; i > start_pos; i--) {
-          std::cout << "Array pick int " <<  buffer.peekBEInt<int8_t>(i) << std::endl;
-          std::cout << "Array pick int " <<  static_cast<int>(buffer.peekBEInt<int8_t>(i)) - '0' << std::endl;
-          std::cout << "Array pick int " <<  static_cast<int>(buffer.peekBEInt<int8_t>(i)) << std::endl;
+          // std::cout << "Array pick int " <<  buffer.peekBEInt<int8_t>(i) << std::endl;
+          // std::cout << "Array pick int " <<  static_cast<int>(buffer.peekBEInt<int8_t>(i)) - '0' << std::endl;
+          // std::cout << "Array pick int " <<  static_cast<int>(buffer.peekBEInt<int8_t>(i)) << std::endl;
           num += base * (static_cast<int>(buffer.peekBEInt<int8_t>(i)) - '0');
-          std::cout << "Array num: " << num << std::endl;
+          // std::cout << "Array num: " << num << std::endl;
           base *= 10;
         }
         item_needed += num;
-        std::cout << "Array: " << num << std::endl;
+        // std::cout << "Array: " << num << std::endl;
         if (item_needed == 1) {
           origin_msg_ = std::make_unique<Buffer::OwnedImpl>();
           origin_msg_->move(buffer, crlf_pos+1);
@@ -123,16 +123,16 @@ RedisDecodeStatus RedisCodec::decodeMsg(Buffer::Instance& buffer) {
       // if we reach here, it means the start_pos > 1
       if (buffer.peekInt<uint8_t>(start_pos-1) == '\r' && buffer.peekInt<uint8_t>(start_pos) == '\n') {
         // found crlf
-        std::cout << "--> ELSE BRANCH" << std::endl;
-        std::cout << "POS: " << start_pos << std::endl;
-        std::cout << "FOUND CRLF" << std::endl;
-        std::cout << "CRLF needed: " << crlf_needed << std::endl;
-        std::cout << "Item needed: " << item_needed << std::endl;
+        // std::cout << "--> ELSE BRANCH" << std::endl;
+        // std::cout << "POS: " << start_pos << std::endl;
+        // std::cout << "FOUND CRLF" << std::endl;
+        // std::cout << "CRLF needed: " << crlf_needed << std::endl;
+        // std::cout << "Item needed: " << item_needed << std::endl;
         crlf_needed -= 1;
         if (crlf_needed == 0) {
           // we have the whole item
           if (item_needed == 1) {
-            std::cout << "Decode done" << std::endl;
+            // std::cout << "Decode done" << std::endl;
             origin_msg_ = std::make_unique<Buffer::OwnedImpl>();
             origin_msg_->move(buffer, start_pos+1);
             return RedisDecodeStatus::DecodeDone;

@@ -278,7 +278,8 @@ MongoDBDecodeStatus MongoDBCodec::decodeHeader(Buffer::Instance& buffer, MetaPro
     if (!mongo_header_.decode(buffer)) {
         throw EnvoyException(fmt::format("MongoDB header invalid"));
     }
-
+    message_type_ = metadata.getMessageType();
+        std::string message_type_str = message_type_ == MetaProtocolProxy::MessageType::Request ? "Request" : "Response";
     std::string message_prefix = message_type_ == MetaProtocolProxy::MessageType::Request ? ">>>>>> " : "<<<<<< ";
     std::cout << message_prefix + " MongoDB decodeHeader " + message_type_str +" done: " << message_type_str << " RequestID: " << metadata.getRequestId() << " | messageLength: " << mongo_header_.header_.messageLength << " | requestID: " << mongo_header_.header_.requestID << " | responseTo: " << mongo_header_.header_.responseTo << " | opCode: " << mongo_header_.header_.opCode << std::endl;
 

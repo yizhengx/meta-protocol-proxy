@@ -22,8 +22,6 @@ bool MongoDBHeader::decode(Buffer::Instance& buffer) {
   header_.opCode = buffer.peekLEInt<int32_t>(pos);
   pos += sizeof(int32_t);
 
-  std::cout << "MongoDB Header decode: messageLength: " << header_.messageLength << " | requestID: " << header_.requestID << " | responseTo: " << header_.responseTo << " | opCode: " << header_.opCode << std::endl;
-
   ASSERT(pos == sizeof(MsgHeader));
 
   return true;

@@ -240,7 +240,7 @@ MetaProtocolProxy::DecodeStatus MongoDBCodec::decode(Buffer::Instance& buffer, M
     // std::cout << "[MongoDBCodec::decode()] MongoDB start decoder: " << buffer.length() << " bytes available, msg type: " << message_type_str << std::endl;
 
     while (decode_status_ != MongoDBDecodeStatus::DecodeDone) {
-        decode_status_ = handleState(buffer);
+        decode_status_ = handleState(buffer, metadata);
         if (decode_status_ == MongoDBDecodeStatus::WaitForData) {
             return MetaProtocolProxy::DecodeStatus::WaitForData;
         }
@@ -251,12 +251,12 @@ MetaProtocolProxy::DecodeStatus MongoDBCodec::decode(Buffer::Instance& buffer, M
     return MetaProtocolProxy::DecodeStatus::Done;
 }
 
-MongoDBDecodeStatus MongoDBCodec::handleState(Buffer::Instance& buffer) {
+MongoDBDecodeStatus MongoDBCodec::handleState(Buffer::Instance& buffer, MetaProtocolProxy::Metadata& metadata) {
     switch (decode_status_) {
     case MongoDBDecodeStatus::DecodeHeader:
-        return decodeHeader(buffer);
+        return decodeHeader(buffer, metadata);
     case MongoDBDecodeStatus::DecodeBody:
-        return decodeBody(buffer);
+        return decodeBody(buffer, metadata);
     case MongoDBDecodeStatus::WaitForData:
         return MongoDBDecodeStatus::WaitForData;
     default:
@@ -265,7 +265,7 @@ MongoDBDecodeStatus MongoDBCodec::handleState(Buffer::Instance& buffer) {
     return MongoDBDecodeStatus::DecodeDone;
 }
 
-MongoDBDecodeStatus MongoDBCodec::decodeHeader(Buffer::Instance& buffer) {
+MongoDBDecodeStatus MongoDBCodec::decodeHeader(Buffer::Instance& buffer, MetaProtocolProxy::Metadata& metadata) {
     // std::cout << "MongoDB decodeHeader: " << buffer.length() << " bytes available" << std::endl;
     // Wait for more data if the header is not complete
     // std::cout << "MongoDB decodeHeader: " << buffer_to_string(buffer, buffer.length()) << std::endl;
@@ -284,15 +284,19 @@ MongoDBDecodeStatus MongoDBCodec::decodeHeader(Buffer::Instance& buffer) {
     return MongoDBDecodeStatus::DecodeBody;
 }
 
-MongoDBDecodeStatus MongoDBCodec::decodeBody(Buffer::Instance& buffer) {
+MongoDBDecodeStatus MongoDBCodec::decodeBody(Buffer::Instance& buffer, MetaProtocolProxy::Metadata& metadata) {
     // Wait for more data if the buffer is not a complete message
     // std::cout << "MongoDB decodeBody: " << buffer_to_string(buffer, buffer.length()) << std::endl;
     if (buffer.length() < static_cast<uint64_t>(mongo_header_.getMessageLength())) {
         // std::cout << "MongoDB decodeBody: waiting for more data" << std::endl;
         return MongoDBDecodeStatus::WaitForData;
     }
-
-    std::cout << "MongoDB decodeMsg done: " << buffer_to_string(buffer, mongo_header_.getMessageLength()) << std::endl;
+    message_type_ = metadata.getMessageType();
+        std::string message_type_str = message_type_ == MetaProtocolProxy::MessageType::Request ? "Request" : "Response";
+    // std::cout << "MongoDB decodeMsg " + message_type_str +" done: " << buffer_to_string(buffer, mongo_header_.getMessageLength()) << std::endl;
+    // print the message type, metadata requestID, and actual message
+    std::string message_prefix = message_type_ == MetaProtocolProxy::MessageType::Request ? ">>>>>> " : "<<<<<< ";
+    std::cout << message_prefix + " MongoDB decodeMsg " + message_type_str +" done: " << message_type_str << " RequestID: " << metadata.getRequestID() << " Message: " << buffer_to_string(buffer, mongo_header_.getMessageLength()) << std::endl;
     // move the decoded message out of the buffer
     origin_msg_ = std::make_unique<Buffer::OwnedImpl>();
     origin_msg_->move(buffer, mongo_header_.getMessageLength());

@@ -40,9 +40,9 @@ public:
 private:
   // Implement decoding and encoding methods as needed for MongoDB messages.
 
-  MongoDBDecodeStatus handleState(Buffer::Instance& buffer);
-  MongoDBDecodeStatus decodeHeader(Buffer::Instance& buffer);
-  MongoDBDecodeStatus decodeBody(Buffer::Instance& buffer);
+  MongoDBDecodeStatus handleState(Buffer::Instance& buffer, MetaProtocolProxy::Metadata& metadata);
+  MongoDBDecodeStatus decodeHeader(Buffer::Instance& buffer, MetaProtocolProxy::Metadata& metadata);
+  MongoDBDecodeStatus decodeBody(Buffer::Instance& buffer, MetaProtocolProxy::Metadata& metadata);
   void toMetadata(MetaProtocolProxy::Metadata& metadata);
   std::string buffer_to_string(Buffer::Instance& buffer, size_t length);
 

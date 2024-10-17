@@ -278,6 +278,15 @@ MongoDBDecodeStatus MongoDBCodec::decodeHeader(Buffer::Instance& buffer, MetaPro
     if (!mongo_header_.decode(buffer)) {
         throw EnvoyException(fmt::format("MongoDB header invalid"));
     }
+
+    if (mongo_header_.header_.reponseTo == 0) {
+        // metadata.setMessageType(MetaProtocolProxy::MessageType::Request);
+        metadata.setRequestId(mongo_header_.header_.requestID);
+    } else {
+        // metadata.setMessageType(MetaProtocolProxy::MessageType::Response);
+        metadata.setRequestId(mongo_header_.header_.responseTo);
+    }
+
     message_type_ = metadata.getMessageType();
         std::string message_type_str = message_type_ == MetaProtocolProxy::MessageType::Request ? "Request" : "Response";
     std::string message_prefix = message_type_ == MetaProtocolProxy::MessageType::Request ? ">>>>>> " : "<<<<<< ";

@@ -279,7 +279,7 @@ MongoDBDecodeStatus MongoDBCodec::decodeHeader(Buffer::Instance& buffer, MetaPro
         throw EnvoyException(fmt::format("MongoDB header invalid"));
     }
 
-    if (mongo_header_.header_.reponseTo == 0) {
+    if (mongo_header_.header_.responseTo == 0) {
         // metadata.setMessageType(MetaProtocolProxy::MessageType::Request);
         metadata.setRequestId(mongo_header_.header_.requestID);
     } else {

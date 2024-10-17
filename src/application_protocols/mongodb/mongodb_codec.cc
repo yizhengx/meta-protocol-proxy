@@ -280,7 +280,7 @@ MongoDBDecodeStatus MongoDBCodec::decodeHeader(Buffer::Instance& buffer, MetaPro
     }
 
     std::string message_prefix = message_type_ == MetaProtocolProxy::MessageType::Request ? ">>>>>> " : "<<<<<< ";
-    std::cout << message_prefix + " MongoDB decodeHeader " + message_type_str +" done: " << message_type_str << " RequestID: " << metadata.getRequestId() << " | messageLength: " << mongo_header_.messageLength << " | requestID: " << mongo_header_.requestID << " | responseTo: " << mongo_header_.responseTo << " | opCode: " << mongo_header_.opCode << std::endl;
+    std::cout << message_prefix + " MongoDB decodeHeader " + message_type_str +" done: " << message_type_str << " RequestID: " << metadata.getRequestId() << " | messageLength: " << mongo_header_.header_.messageLength << " | requestID: " << mongo_header_.header_.requestID << " | responseTo: " << mongo_header_.header_.responseTo << " | opCode: " << mongo_header_.header_.opCode << std::endl;
 
     // std::cout << "MongoDB decodeHeader: message length: " << mongo_header_.getMessageLength() << std::endl;
 

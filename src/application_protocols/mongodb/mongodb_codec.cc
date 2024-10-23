@@ -310,6 +310,15 @@ MongoDBDecodeStatus MongoDBCodec::decodeBody(Buffer::Instance& buffer, MetaProto
     // print the message type, metadata requestID, and actual message
     std::string message_prefix = message_type_ == MetaProtocolProxy::MessageType::Request ? ">>>>>> " : "<<<<<< ";
     std::cout << message_prefix + " MongoDB decodeMsg " + message_type_str +" done: " << message_type_str << " RequestID: " << metadata.getRequestId() << " Message: " << buffer_to_string(buffer, mongo_header_.getMessageLength()) << std::endl;
+
+    // inpect the buffer to see if "ismaster
+    if (seen_is_master == false && buffer_to_string(buffer, mongo_header_.getMessageLength()).find("ismaster") != std::string::npos) {
+        seen_is_master = true;
+    }
+
+    if (buffer_to_string(buffer, mongo_header_.getMessageLength()).find("The client metadata document may only be sent in the first isMaster") != std::string::npos) {
+        std::cout << "[MongoDBCodec::decodeBody()] - The client metadata document may only be sent in the first isMaster && Seen: " << seen_is_master << std::endl;
+    }
     // move the decoded message out of the buffer
     origin_msg_ = std::make_unique<Buffer::OwnedImpl>();
     origin_msg_->move(buffer, mongo_header_.getMessageLength());

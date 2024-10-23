@@ -53,6 +53,8 @@ private:
   MetaProtocolProxy::MessageType message_type_;
   std::unique_ptr<Buffer::OwnedImpl> origin_msg_;
 
+  bool seen_is_master = false;
+
 };
 
 } // namespace MongoDB

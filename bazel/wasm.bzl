@@ -16,7 +16,6 @@
 #
 
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive", "http_file")
-load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive_")
 
 
 
@@ -37,8 +36,9 @@ def wasm_dependencies():
             "https://github.com/nlohmann/json/releases/download/v3.7.3/json.hpp",
         ],
     )
+
     # Load the BSON library or MongoDB C++ Driver as an external dependency
-    http_archive_(
+    http_archive(
         name = "mongo_cxx_driver",
         urls = ["https://github.com/mongodb/mongo-cxx-driver/releases/download/r3.6.6/mongo-cxx-driver-r3.6.6.tar.gz"],
         strip_prefix = "mongo-cxx-driver-r3.6.6",

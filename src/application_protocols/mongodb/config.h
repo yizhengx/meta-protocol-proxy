@@ -15,6 +15,7 @@ class MongoDBCodecConfig
 public:
   MongoDBCodecConfig() : CodecFactoryBase("aeraki.meta_protocol.codec.mongodb") {}
   MetaProtocolProxy::CodecPtr createCodec(const Protobuf::Message& config) override;
+  uint64_t codec_counter_{0};
 };
 
 } // namespace MongoDB

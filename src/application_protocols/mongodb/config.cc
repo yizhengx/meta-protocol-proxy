@@ -11,6 +11,8 @@ namespace MetaProtocolProxy {
 namespace MongoDB {
 
 MetaProtocolProxy::CodecPtr MongoDBCodecConfig::createCodec(const Protobuf::Message&) {
+  codec_counter_++;
+  std::cout << "MongoDBCodecConfig createCodec called: " << codec_counter_ << " times" << std::endl;
   return std::make_unique<MongoDB::MongoDBCodec>();
 };
 

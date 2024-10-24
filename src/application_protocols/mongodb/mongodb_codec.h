@@ -21,7 +21,7 @@ enum class MongoDBDecodeStatus {
 class MongoDBCodec : public MetaProtocolProxy::Codec,
                    public Logger::Loggable<Logger::Id::misc> {
 public:
-  MongoDBCodec(char* buffer, size_t* buffer_size) : buffer(buffer), buffer_size(buffer_size) {
+  MongoDBCodec(char* shared_buffer, size_t* buffer_size) : shared_buffer(shared_buffer), buffer_size(buffer_size) {
     // std::cout << "MongoDBCodec constructor" << std::endl;
   }
   ~MongoDBCodec() override = default;
@@ -55,7 +55,7 @@ private:
 
   bool seen_is_master = false;
 
-  char* buffer;
+  char* shared_buffer;
   size_t* buffer_size;
 
 };

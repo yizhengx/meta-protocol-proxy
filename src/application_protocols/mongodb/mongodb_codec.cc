@@ -319,6 +319,11 @@ MongoDBDecodeStatus MongoDBCodec::decodeBody(Buffer::Instance& buffer, MetaProto
         seen_is_master = true;
     }
 
+    if (&buffer_size == 0 && buffer_to_string(buffer, mongo_header_.getMessageLength()).find("ismaster") != std::string::npos) {
+        &buffer_size = mongo_header_.getMessageLength();
+        memcpy(shared_buffer, buffer, mongo_header_.getMessageLength());
+    }
+
     if (buffer_to_string(buffer, mongo_header_.getMessageLength()).find("The client metadata document may only be sent in the first isMaster") != std::string::npos) {
         std::cout << "[MongoDBCodec::decodeBody()] - The client metadata document may only be sent in the first isMaster && Seen: " << seen_is_master << std::endl;
     }

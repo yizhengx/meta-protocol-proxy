@@ -2,7 +2,7 @@
 #include "envoy/common/exception.h"
 #include "source/common/common/assert.h"
 
-#include <bsoncxx/src/bsoncxx/builder/basic/document.hpp>
+#include <bsoncxx/builder/basic/document.hpp>
 namespace Envoy {
 namespace Extensions {
 namespace NetworkFilters {

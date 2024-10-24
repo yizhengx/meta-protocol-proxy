@@ -12,7 +12,7 @@ namespace MongoDB {
 
 MetaProtocolProxy::CodecPtr MongoDBCodecConfig::createCodec(const Protobuf::Message&) {
   // pass the pointer to the buffer to the MongoDBCodec
-  return std::make_unique<MongoDB::MongoDBCodec>(buffer, buffer_size);
+  return std::make_unique<MongoDB::MongoDBCodec>();
 };
 
 /**

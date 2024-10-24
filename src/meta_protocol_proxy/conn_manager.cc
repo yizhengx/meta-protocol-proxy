@@ -263,16 +263,17 @@ ConnectionManager::getUpstreamHandler(const std::string& cluster_name,
   // use context downstream connection id as key
   // std::string key = std::to_string(context->downstreamConnection().);
   std::vector<uint8_t> hash_key;
-  std::string key;
+  bool use_downstream_connection_id = false;
   if (context.downstreamConnection()) {
     context.downstreamConnection()->hashKey(hash_key);
-    key = vectorToHexString(hash_key);
-    std::cout << "[ConnectionManager::getUpstreamHandler()] key: " << key << std::endl;
-  } else {
-    key = cluster_name + "_" + tcp_pool_data.value().host()->address()->asString();
-    std::cout << "[ConnectionManager::getUpstreamHandler()] key: " << key << std::endl;
+    use_downstream_connection_id = true;
+  }
+  std::string key(hash_key.begin(), hash_key.end());
+  if (!use_downstream_connection_id) {
+    std::string key = absl::StrCat(cluster_name, "_", tcp_pool_data.value().host()->address()->asString());
   }
   
+  std::cout << "[ConnectionManager::getUpstreamHandler()] key: " << key << std::endl;
   
   // get exist upstream handler
   auto upstream_handler = upstream_handler_manager_.get(key);

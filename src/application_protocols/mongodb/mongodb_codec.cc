@@ -351,7 +351,7 @@ void MongoDBCodec::print_buffer_as_bits(const Buffer::Instance& buffer, size_t l
         for (int j = 7; j >= 0; j--) {
             std::cout << ((byte >> j) & 1);
         }
-        print(" ");
+        std::cout << " ";
     }
     std::cout << std::endl;
 }

@@ -13,9 +13,15 @@ namespace MongoDB {
 class MongoDBCodecConfig
     : public MetaProtocolProxy::CodecFactoryBase<aeraki::meta_protocol::codec::MongoDBCodec> {
 public:
-  MongoDBCodecConfig() : CodecFactoryBase("aeraki.meta_protocol.codec.mongodb") {}
+  MongoDBCodecConfig() : CodecFactoryBase("aeraki.meta_protocol.codec.mongodb") {
+    buffer = malloc(500);
+    buffer_size = malloc(sizeof(size_t));
+    &buffer_size = 0;
+  }
   MetaProtocolProxy::CodecPtr createCodec(const Protobuf::Message& config) override;
-  uint64_t codec_counter_{0};
+  char* buffer;
+  size_t* buffer_size;
+  // bool* isMaster{false};
 };
 
 } // namespace MongoDB

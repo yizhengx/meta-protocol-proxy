@@ -310,9 +310,9 @@ MongoDBDecodeStatus MongoDBCodec::decodeBody(Buffer::Instance& buffer, MetaProto
     std::string message_prefix = message_type_ == MetaProtocolProxy::MessageType::Request ? ">>>>>> " : "<<<<<< ";
     std::cout << message_prefix + " MongoDB decodeMsg " + message_type_str +" done: " << message_type_str << " RequestID: " << metadata.getRequestId() << " Message: " << buffer_to_string(buffer, mongo_header_.getMessageLength()) << std::endl;
 
-    if (message_type_ == MetaProtocolProxy::MessageType::Response) {
-        print_buffer_as_bits(buffer, mongo_header_.getMessageLength());
-    }
+    // if (message_type_ == MetaProtocolProxy::MessageType::Response) {
+    //     print_buffer_as_bits(buffer, mongo_header_.getMessageLength());
+    // }
 
     // inpect the buffer to see if "ismaster
     if (seen_is_master == false && buffer_to_string(buffer, mongo_header_.getMessageLength()).find("ismaster") != std::string::npos) {

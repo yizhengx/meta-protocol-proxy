@@ -1,6 +1,7 @@
 #include "src/meta_protocol_proxy/conn_manager.h"
 
 #include <cstdint>
+#include <vector>
 
 #include "envoy/common/exception.h"
 

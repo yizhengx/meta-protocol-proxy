@@ -161,7 +161,7 @@ wasm_dependencies()
 # )
 
 new_local_repository(
-    name = "mongo_cxx_driver",
+    name = "mongo_c_driver",
     path = "/home/cc/mongo-c-driver/src/libbson",
     build_file = "mongo-c-driver.BUILD",
 )

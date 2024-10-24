@@ -1,11 +1,11 @@
 cc_library(
     name = "bsoncxx",
     srcs = glob([
-        "src/bsoncxx/**",
+        "src/bsoncxx/*.cpp",
     ]),
     hdrs = glob([
-        "src/bsoncxx/**",
-        "include/bsoncxx/**",
+        "src/bsoncxx/*.hpp",
+        "include/bsoncxx/**/*.hpp",
     ]),
     includes = ["include"],
     visibility = ["//visibility:public"],

@@ -18,8 +18,8 @@ absl::optional<uint64_t> HashPolicyImpl::generateHash(const Metadata& metadata) 
   //   std::sort(header_values.begin(), header_values.end());
   //   hash = HashUtil::xxHash64(absl::MakeSpan(header_values));
   // }
-  // generate a random hash value to avoid connection pooling
-  hash = HashUtil::xxHash64(absl::MakeSpan(metadata.getRequestId()));
+  // just use the request id to avoid connection pooling
+  hash = metadata.getRequestId();
   return hash;
 };
 

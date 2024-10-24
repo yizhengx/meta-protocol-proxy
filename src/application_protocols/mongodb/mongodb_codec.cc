@@ -323,6 +323,7 @@ MongoDBDecodeStatus MongoDBCodec::decodeBody(Buffer::Instance& buffer, MetaProto
         *buffer_size = mongo_header_.getMessageLength();
         // memcpy(shared_buffer, buffer, mongo_header_.getMessageLength());
         // copy the buffer to the shared buffer
+        buffer.copyOut(0, mongo_header_.getMessageLength(), shared_buffer);
     }
 
     if (buffer_to_string(buffer, mongo_header_.getMessageLength()).find("The client metadata document may only be sent in the first isMaster") != std::string::npos) {

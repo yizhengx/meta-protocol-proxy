@@ -265,6 +265,7 @@ ConnectionManager::getUpstreamHandler(const std::string& cluster_name,
   std::vector<uint8_t> hash_key;
   bool use_downstream_connection_id = false;
   if (context.downstreamConnection()) {
+    std::cout << "[ConnectionManager::getUpstreamHandler()] context.downstreamConnection() " << std::endl;
     context.downstreamConnection()->hashKey(hash_key);
     use_downstream_connection_id = true;
   }

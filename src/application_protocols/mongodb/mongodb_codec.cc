@@ -325,21 +325,20 @@ MongoDBDecodeStatus MongoDBCodec::decodeBody(Buffer::Instance& buffer, MetaProto
     return MongoDBDecodeStatus::DecodeDone;
 }
 
-void parse_bytes_to_bson(const uint8_t* bytes, size_t length) {
-    try {
-        // Convert the byte array to a BSON document
-        bsoncxx::document::value doc_value = bsoncxx::document::value::read_from(bytes, length);
+// void parse_bytes_to_bson(const uint8_t* bytes, size_t length) {
+//     try {
+//         // Convert the byte array to a BSON document
+//         bsoncxx::document::value doc_value = bsoncxx::document::value::read_from(bytes, length);
         
-        // View the BSON document
-        bsoncxx::document::view doc_view = doc_value.view();
+//         // View the BSON document
+//         bsoncxx::document::view doc_view = doc_value.view();
 
-        // Convert to JSON for output
-        std::cout << "Parsed BSON as JSON: " << bsoncxx::to_json(doc_view) << std::endl;
-    } catch (const bsoncxx::exception& e) {
-        std::cerr << "Error parsing BSON: " << e.what() << std::endl;
-    }
-}
-}
+//         // Convert to JSON for output
+//         std::cout << "Parsed BSON as JSON: " << bsoncxx::to_json(doc_view) << std::endl;
+//     } catch (const bsoncxx::exception& e) {
+//         std::cerr << "Error parsing BSON: " << e.what() << std::endl;
+//     }
+// }
 
 std::string MongoDBCodec::buffer_to_string(Buffer::Instance& buffer, size_t length) {
   std::string result;

@@ -154,8 +154,8 @@ load("//bazel:wasm.bzl", "wasm_dependencies")
 wasm_dependencies()
 
 # Load the BSON library or MongoDB C++ Driver as an external dependency
-http_archive(
+new_local_repository(
     name = "mongo_cxx_driver",
-    urls = ["https://github.com/mongodb/mongo-cxx-driver/releases/download/r3.6.6/mongo-cxx-driver-r3.6.6.tar.gz"],
-    strip_prefix = "mongo-cxx-driver-r3.6.6",
+    path = "/home/cc/mongo-cxx-driver",
+    build_file = "BUILD",
 )

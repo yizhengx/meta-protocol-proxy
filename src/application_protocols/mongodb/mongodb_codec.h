@@ -21,9 +21,7 @@ enum class MongoDBDecodeStatus {
 class MongoDBCodec : public MetaProtocolProxy::Codec,
                    public Logger::Loggable<Logger::Id::misc> {
 public:
-  MongoDBCodec() : {
-    // std::cout << "MongoDBCodec constructor" << std::endl;
-  }
+  MongoDBCodec() {}
   ~MongoDBCodec() override = default;
 
   // For protocol decoding, the buffer needs to be parsed and populated with MongoDB messages.
@@ -52,8 +50,6 @@ private:
   MetaProtocolProxy::MongoDB::MongoDBHeader mongo_header_;
   MetaProtocolProxy::MessageType message_type_;
   std::unique_ptr<Buffer::OwnedImpl> origin_msg_;
-
-  bool seen_is_master = false;
 };
 
 } // namespace MongoDB

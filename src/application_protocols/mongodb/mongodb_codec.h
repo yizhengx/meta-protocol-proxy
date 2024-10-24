@@ -5,7 +5,6 @@
 #include "source/common/common/logger.h"
 #include "src/meta_protocol_proxy/codec/codec.h"
 #include "protocol.h"  // Include the Memcached protocol header
-#include <bson/bson.h>
 namespace Envoy {
 namespace Extensions {
 namespace NetworkFilters {

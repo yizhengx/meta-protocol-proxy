@@ -14,9 +14,9 @@ class MongoDBCodecConfig
     : public MetaProtocolProxy::CodecFactoryBase<aeraki::meta_protocol::codec::MongoDBCodec> {
 public:
   MongoDBCodecConfig() : CodecFactoryBase("aeraki.meta_protocol.codec.mongodb") {
-    buffer = malloc(500);
+    buffer = (char *)malloc(500);
     buffer_size = malloc(sizeof(size_t));
-    &buffer_size = 0;
+    *buffer_size = 0;
   }
   MetaProtocolProxy::CodecPtr createCodec(const Protobuf::Message& config) override;
   char* buffer;

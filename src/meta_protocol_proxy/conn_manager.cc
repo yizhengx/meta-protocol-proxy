@@ -264,8 +264,14 @@ ConnectionManager::getUpstreamHandler(const std::string& cluster_name,
   std::vector<uint8_t> hash_key;
   if (context.downstreamConnection()) {
     context.downstreamConnection()->hashKey(hash_key);
+    std::string key(hash_key.begin(), hash_key.end());
+    std::cout << "[ConnectionManager::getUpstreamHandler()] key: " << key << std::endl;
+  } else {
+    std::string key = cluster_name + "_" + tcp_pool_data.value().host()->address()->asString();
+    std::cout << "[ConnectionManager::getUpstreamHandler()] key: " << key << std::endl;
   }
-  std::string key(hash_key.begin(), hash_key.end());
+  
+  
   // get exist upstream handler
   auto upstream_handler = upstream_handler_manager_.get(key);
   if (upstream_handler) {

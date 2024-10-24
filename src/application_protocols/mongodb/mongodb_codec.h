@@ -46,6 +46,7 @@ private:
   MongoDBDecodeStatus decodeBody(Buffer::Instance& buffer, MetaProtocolProxy::Metadata& metadata);
   void toMetadata(MetaProtocolProxy::Metadata& metadata);
   std::string buffer_to_string(Buffer::Instance& buffer, size_t length);
+  void print_buffer_as_bits(const Buffer::Instance& buffer);
 
   MongoDBDecodeStatus decode_status_{MongoDBDecodeStatus::DecodeHeader};
   MetaProtocolProxy::MongoDB::MongoDBHeader mongo_header_;

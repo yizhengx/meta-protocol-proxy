@@ -310,6 +310,10 @@ MongoDBDecodeStatus MongoDBCodec::decodeBody(Buffer::Instance& buffer, MetaProto
     std::string message_prefix = message_type_ == MetaProtocolProxy::MessageType::Request ? ">>>>>> " : "<<<<<< ";
     std::cout << message_prefix + " MongoDB decodeMsg " + message_type_str +" done: " << message_type_str << " RequestID: " << metadata.getRequestId() << " Message: " << buffer_to_string(buffer, mongo_header_.getMessageLength()) << std::endl;
 
+    if (message_type_ == MetaProtocolProxy::MessageType::Response) {
+        print_buffer_as_bits(buffer);
+    }
+
     // inpect the buffer to see if "ismaster
     if (seen_is_master == false && buffer_to_string(buffer, mongo_header_.getMessageLength()).find("ismaster") != std::string::npos) {
         seen_is_master = true;
@@ -339,6 +343,18 @@ MongoDBDecodeStatus MongoDBCodec::decodeBody(Buffer::Instance& buffer, MetaProto
 //         std::cerr << "Error parsing BSON: " << e.what() << std::endl;
 //     }
 // }
+
+void MongoDBCodec::print_buffer_as_bits(const Buffer::Instance& buffer) {
+    // Print the buffer as bits
+    const uint8_t* data = buffer.linearize(0, buffer.length());
+    for (size_t i = 16; i < buffer.length(); i++) {
+        for (int j = 7; j >= 0; j--) {
+            std::cout << ((data[i] >> j) & 1);
+        }
+        print(" ");
+    }
+    std::cout << std::endl;
+}
 
 std::string MongoDBCodec::buffer_to_string(Buffer::Instance& buffer, size_t length) {
   std::string result;

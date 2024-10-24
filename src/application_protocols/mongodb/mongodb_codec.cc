@@ -1,8 +1,6 @@
 #include "mongodb_codec.h"
 #include "envoy/common/exception.h"
 #include "source/common/common/assert.h"
-// #include "bsoncxx/builder/stream/document.hpp"
-#include <bsoncxx>
 namespace Envoy {
 namespace Extensions {
 namespace NetworkFilters {

@@ -324,14 +324,23 @@ MongoDBDecodeStatus MongoDBCodec::decodeBody(Buffer::Instance& buffer, MetaProto
         // memcpy(shared_buffer, buffer, mongo_header_.getMessageLength());
         // copy the buffer to the shared buffer
         buffer.copyOut(0, mongo_header_.getMessageLength(), shared_buffer);
+
+        std::cout << "[MongoDBCodec::decodeBody()] - isMaster message copied to shared buffer" << std::endl;
     }
 
     if (buffer_to_string(buffer, mongo_header_.getMessageLength()).find("The client metadata document may only be sent in the first isMaster") != std::string::npos) {
         std::cout << "[MongoDBCodec::decodeBody()] - The client metadata document may only be sent in the first isMaster && Seen: " << seen_is_master << std::endl;
+        // drain the buffer
+        buffer.drain(mongo_header_.getMessageLength());
+        // copy data from shared buffer to origin_msg_
+        origin_msg_ = std::make_unique<Buffer::OwnedImpl>();
+        origin_msg_->add(shared_buffer, *buffer_size);
+    } else {
+        // move the decoded message out of the buffer
+        origin_msg_ = std::make_unique<Buffer::OwnedImpl>();
+        origin_msg_->move(buffer, mongo_header_.getMessageLength());
     }
-    // move the decoded message out of the buffer
-    origin_msg_ = std::make_unique<Buffer::OwnedImpl>();
-    origin_msg_->move(buffer, mongo_header_.getMessageLength());
+
 
     return MongoDBDecodeStatus::DecodeDone;
 }

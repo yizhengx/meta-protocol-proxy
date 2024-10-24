@@ -19,6 +19,7 @@ absl::optional<uint64_t> HashPolicyImpl::generateHash(const Metadata& metadata) 
   //   hash = HashUtil::xxHash64(absl::MakeSpan(header_values));
   // }
   // just use the request id to avoid connection pooling
+  std::cout << "[HashPolicyImpl::generateHash()] metadata.getRequestId(): " << metadata.getRequestId() << std::endl;
   hash = metadata.getRequestId();
   return hash;
 };

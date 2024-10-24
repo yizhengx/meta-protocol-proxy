@@ -270,7 +270,7 @@ ConnectionManager::getUpstreamHandler(const std::string& cluster_name,
   }
   std::string key(hash_key.begin(), hash_key.end());
   if (!use_downstream_connection_id) {
-    key = absl::StrCat(cluster_name, "_", tcp_pool_data.value().host()->address()->asString());
+    key = cluster_name + "_" + tcp_pool_data.value().host()->address()->asString();
   }
   
   std::cout << "[ConnectionManager::getUpstreamHandler()] key: " << key << std::endl;

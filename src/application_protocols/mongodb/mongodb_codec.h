@@ -5,6 +5,9 @@
 #include "source/common/common/logger.h"
 #include "src/meta_protocol_proxy/codec/codec.h"
 #include "protocol.h"  // Include the Memcached protocol header
+#include <iostream>
+// include the bsoncxx library
+#include <bsoncxx/builder/stream/document.hpp>
 
 namespace Envoy {
 namespace Extensions {

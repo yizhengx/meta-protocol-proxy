@@ -311,7 +311,7 @@ MongoDBDecodeStatus MongoDBCodec::decodeBody(Buffer::Instance& buffer, MetaProto
     std::cout << message_prefix + " MongoDB decodeMsg " + message_type_str +" done: " << message_type_str << " RequestID: " << metadata.getRequestId() << " Message: " << buffer_to_string(buffer, mongo_header_.getMessageLength()) << std::endl;
 
     if (message_type_ == MetaProtocolProxy::MessageType::Response) {
-        print_buffer_as_bits(buffer);
+        print_buffer_as_bits(buffer, mongo_header_.getMessageLength());
     }
 
     // inpect the buffer to see if "ismaster
@@ -344,10 +344,10 @@ MongoDBDecodeStatus MongoDBCodec::decodeBody(Buffer::Instance& buffer, MetaProto
 //     }
 // }
 
-void MongoDBCodec::print_buffer_as_bits(const Buffer::Instance& buffer) {
+void MongoDBCodec::print_buffer_as_bits(const Buffer::Instance& buffer, size_t length) {
     // Print the buffer as bits
-    const uint8_t* data = buffer.linearize(0, buffer.length());
     for (size_t i = 16; i < buffer.length(); i++) {
+        char byte = static_cast<char>(buffer.peekInt<uint8_t>(i));
         for (int j = 7; j >= 0; j--) {
             std::cout << ((data[i] >> j) & 1);
         }

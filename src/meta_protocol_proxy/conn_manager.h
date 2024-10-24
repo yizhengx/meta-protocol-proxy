@@ -36,7 +36,9 @@ class ConnectionManager : public Network::ReadFilter,
                           Logger::Loggable<Logger::Id::filter> {
 public:
   ConnectionManager(Config& config, Random::RandomGenerator& random_generator,
-                    TimeSource& time_system, Upstream::ClusterManager& cluster_manager);
+                    TimeSource& time_system, Upstream::ClusterManager& cluster_manager){
+                      std::cout << "********** ConnectionManager constructed ***********" << std::endl;
+                    };
   ~ConnectionManager() override {
     ENVOY_LOG(trace, "********** ConnectionManager destructed ***********");
   };

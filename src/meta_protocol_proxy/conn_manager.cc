@@ -272,7 +272,7 @@ ConnectionManager::getUpstreamHandler(const std::string& cluster_name,
   if (!use_downstream_connection_id) {
     key = cluster_name + "_" + tcp_pool_data.value().host()->address()->asString();
   }
-  
+  ENVOY_LOG(warn, "use key: {}", key);
   std::cout << "[ConnectionManager::getUpstreamHandler()] key: " << key << std::endl;
   
   // get exist upstream handler

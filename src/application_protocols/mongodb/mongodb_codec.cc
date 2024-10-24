@@ -346,7 +346,7 @@ MongoDBDecodeStatus MongoDBCodec::decodeBody(Buffer::Instance& buffer, MetaProto
 
 void MongoDBCodec::print_buffer_as_bits(const Buffer::Instance& buffer, size_t length) {
     // Print the buffer as bits
-    for (size_t i = 16; i < buffer.length(); i++) {
+    for (size_t i = 16; i < length; i++) {
         char byte = static_cast<char>(buffer.peekInt<uint8_t>(i));
         for (int j = 7; j >= 0; j--) {
             std::cout << ((data[i] >> j) & 1);

@@ -157,5 +157,5 @@ wasm_dependencies()
 new_local_repository(
     name = "mongo_cxx_driver",
     path = "/home/cc/mongo-cxx-driver",
-    build_file = "BUILD",
+    build_file = "mongo_cxx_driver.BUILD",
 )

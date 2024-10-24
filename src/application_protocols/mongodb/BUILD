@@ -31,7 +31,7 @@ envoy_cc_library(
     hdrs = ["mongodb_codec.h"],   # Header file for your codec
     deps = [
         # List dependencies required by your codec here
-        "@mongo_cxx_driver//:bsoncxx",
+        "@mongo_c_driver//:bson",
         "@envoy//envoy/buffer:buffer_interface",
         "@envoy//source/common/common:logger_lib",
         "@envoy//source/common/buffer:buffer_lib",

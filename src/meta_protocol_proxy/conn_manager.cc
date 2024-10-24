@@ -257,7 +257,15 @@ ConnectionManager::getUpstreamHandler(const std::string& cluster_name,
                   fmt::format("meta protocol router: no healthy upstream for '{}'", cluster_name)},
             nullptr, "no_healthy_upstream"};
   }
-  std::string key = cluster_name + "_" + tcp_pool_data.value().host()->address()->asString();
+  // std::string key = cluster_name + "_" + tcp_pool_data.value().host()->address()->asString();
+
+  // use context downstream connection id as key
+  // std::string key = std::to_string(context->downstreamConnection().);
+  std::vector<uint8_t> hash_key;
+  if (context && context.downstreamConnection()) {
+    context.downstreamConnection()->hashKey(hash_key);
+  }
+  std::string key = absl::StrCat(cluster_name, "_", absl::BytesToHexString(hash_key));
 
   // get exist upstream handler
   auto upstream_handler = upstream_handler_manager_.get(key);

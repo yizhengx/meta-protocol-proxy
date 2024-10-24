@@ -1,6 +1,12 @@
 #include "mongodb_codec.h"
 #include "envoy/common/exception.h"
 #include "source/common/common/assert.h"
+#include <bsoncxx/builder/stream/document.hpp>
+#include <bsoncxx/builder/basic/document.hpp>
+#include <bsoncxx/json.hpp>
+#include <bsoncxx/exception/exception.hpp>
+#include <bsoncxx/types.hpp>
+#include <iostream>
 
 namespace Envoy {
 namespace Extensions {
@@ -324,6 +330,22 @@ MongoDBDecodeStatus MongoDBCodec::decodeBody(Buffer::Instance& buffer, MetaProto
     origin_msg_->move(buffer, mongo_header_.getMessageLength());
 
     return MongoDBDecodeStatus::DecodeDone;
+}
+
+void parse_bytes_to_bson(const uint8_t* bytes, size_t length) {
+    try {
+        // Convert the byte array to a BSON document
+        bsoncxx::document::value doc_value = bsoncxx::document::value::read_from(bytes, length);
+        
+        // View the BSON document
+        bsoncxx::document::view doc_view = doc_value.view();
+
+        // Convert to JSON for output
+        std::cout << "Parsed BSON as JSON: " << bsoncxx::to_json(doc_view) << std::endl;
+    } catch (const bsoncxx::exception& e) {
+        std::cerr << "Error parsing BSON: " << e.what() << std::endl;
+    }
+}
 }
 
 std::string MongoDBCodec::buffer_to_string(Buffer::Instance& buffer, size_t length) {

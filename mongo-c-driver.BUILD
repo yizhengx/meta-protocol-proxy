@@ -1,5 +1,5 @@
 cc_library(
-    name = "libbson",
+    name = "bson",
     srcs = glob(["bson/*.c"]),
     hdrs = glob(["bson/*.h"]),
     includes = ["bson"],

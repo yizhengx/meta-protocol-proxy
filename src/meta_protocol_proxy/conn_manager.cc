@@ -262,20 +262,10 @@ ConnectionManager::getUpstreamHandler(const std::string& cluster_name,
 
   // use context downstream connection id as key
   // std::string key = std::to_string(context->downstreamConnection().);
-  std::vector<uint8_t> hash_key;
-  bool use_downstream_connection_id = false;
-  if (context.downstreamConnection()) {
-    // std::cout << "[ConnectionManager::getUpstreamHandler()] context.downstreamConnection() " << std::endl;
-    context.downstreamConnection()->hashKey(hash_key);
-    use_downstream_connection_id = true;
-  }
-  std::string key(hash_key.begin(), hash_key.end());
-  if (!use_downstream_connection_id) {
-    key = cluster_name + "_" + tcp_pool_data.value().host()->address()->asString();
-  }
-  ENVOY_LOG(warn, "use key: {}", key);
-  // std::cout << "[ConnectionManager::getUpstreamHandler()] key: " << key << std::endl;
-  
+  // std::vector<uint8_t> hash_key;
+  // bool use_downstream_connection_id = false;
+  key = cluster_name + "_" + tcp_pool_data.value().host()->address()->asString();
+
   // get exist upstream handler
   auto upstream_handler = upstream_handler_manager_.get(key);
   if (upstream_handler) {

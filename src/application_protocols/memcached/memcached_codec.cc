@@ -70,13 +70,13 @@ namespace Memcached {
 
 //   MetaProtocolProxy::MessageType messageType_ = metadata.getMessageType();
 //   std::string message_type_str = messageType_ == MetaProtocolProxy::MessageType::Request ? "Request" : "Response";
-//   std::cout << "[MemcachedCodec::decode()] Memcached decoder: " << buffer.length() << " bytes available, msg type: " << message_type_str << std::endl;
+//   // std::cout << "[MemcachedCodec::decode()] Memcached decoder: " << buffer.length() << " bytes available, msg type: " << message_type_str << std::endl;
 
 //   const size_t MemcachedHeaderSize = 24; // Size of Memcached protocol header
 
 //   // Check if the buffer has enough data for the Memcached header
 //   if (buffer.length() < MemcachedHeaderSize) {
-//     std::cout << "[MemcachedCodec::decode()] Returned: waiting for more data (1st branch) " << std::endl;
+//     // std::cout << "[MemcachedCodec::decode()] Returned: waiting for more data (1st branch) " << std::endl;
 //     return MetaProtocolProxy::DecodeStatus::WaitForData;
 //   }
 
@@ -86,22 +86,22 @@ namespace Memcached {
 
 //   // Parse the Memcached header
 //   uint8_t magic = header_bytes[0];
-//   std::cout << "[MemcachedCodec::decode()] Magic: " << static_cast<int>(magic) << std::endl;
+//   // std::cout << "[MemcachedCodec::decode()] Magic: " << static_cast<int>(magic) << std::endl;
 //   uint8_t opcode = header_bytes[1];
 //   uint16_t key_length = ntohs(*reinterpret_cast<const uint16_t*>(header_bytes + 2));
-//   std::cout << "[MemcachedCodec::decode()] Key length: " << key_length << std::endl;
+//   // std::cout << "[MemcachedCodec::decode()] Key length: " << key_length << std::endl;
 //   uint8_t extras_length = header_bytes[4];
-//   std::cout << "[MemcachedCodec::decode()] Extras length: " << static_cast<int>(extras_length) << std::endl;
+//   // std::cout << "[MemcachedCodec::decode()] Extras length: " << static_cast<int>(extras_length) << std::endl;
 //   uint8_t data_type = header_bytes[5];
 //   uint16_t status_or_reserved = ntohs(*reinterpret_cast<const uint16_t*>(header_bytes + 6));
 //   uint32_t total_body_length = ntohl(*reinterpret_cast<const uint32_t*>(header_bytes + 8));
-//   std::cout << "[MemcachedCodec::decode()] Total body length: " << total_body_length << std::endl;
+//   // std::cout << "[MemcachedCodec::decode()] Total body length: " << total_body_length << std::endl;
 //   uint32_t opaque = ntohl(*reinterpret_cast<const uint32_t*>(header_bytes + 12));
 //   uint64_t cas = ntohl(*reinterpret_cast<const uint64_t*>(header_bytes + 16));
 
 //   // Check if the buffer has the full body of the message
 //   while (buffer.length() < MemcachedHeaderSize + total_body_length) {
-//     std::cout << "[MemcachedCodec::decode()] Returned: waiting for more data (2nd branch) " << std::endl;
+//     // std::cout << "[MemcachedCodec::decode()] Returned: waiting for more data (2nd branch) " << std::endl;
 //     return MetaProtocolProxy::DecodeStatus::WaitForData;
 //   }
 
@@ -148,7 +148,7 @@ namespace Memcached {
 //     metadata.putString("Value", value);
 //   }
 
-//   std::cout << "[MemcachedCodec::decode()] Returned: done" << std::endl;
+//   // std::cout << "[MemcachedCodec::decode()] Returned: done" << std::endl;
 
 //   return MetaProtocolProxy::DecodeStatus::Done;
 // }
@@ -158,7 +158,7 @@ MetaProtocolProxy::DecodeStatus MemcachedCodec::decode(Buffer::Instance& buffer,
 
   message_type_ = metadata.getMessageType();
   // std::string message_type_str = message_type_ == MetaProtocolProxy::MessageType::Request ? "Request" : "Response";
-  // std::cout << "[MemcachedCodec::decode()] Memcached decoder: " << buffer.length() << " bytes available, msg type: " << message_type_str << std::endl;
+  // // std::cout << "[MemcachedCodec::decode()] Memcached decoder: " << buffer.length() << " bytes available, msg type: " << message_type_str << std::endl;
   // ENVOY_LOG(warn, "Memcached decoder: {} bytes available, msg type: {}", buffer.length(), static_cast<int>(metadata.getMessageType()));
 
   while (decode_status_ != MemcachedDecodeStatus::DecodeDone) {
@@ -196,7 +196,7 @@ MemcachedDecodeStatus MemcachedCodec::handleState(Buffer::Instance& buffer, Meta
 
 MemcachedDecodeStatus MemcachedCodec::decodeHeader(Buffer::Instance& buffer) {
   // Check if the buffer has enough data for the Memcached header
-  // std::cout << "[MemcachedCodec::decodeHeader()] Buffer length: " << buffer.length() << std::endl;
+  // // std::cout << "[MemcachedCodec::decodeHeader()] Buffer length: " << buffer.length() << std::endl;
   // ENVOY_LOG(warn, "Memcached decodeHeader: {} bytes available", buffer.length());
 
   uint8_t magic_code = 0x80;
@@ -205,13 +205,13 @@ MemcachedDecodeStatus MemcachedCodec::decodeHeader(Buffer::Instance& buffer) {
     bool is_magic = buffer.peekBEInt<uint8_t>(0) >= magic_code;
 
     if (!is_magic) {
-      // std::cout << "[MemcachedCodec::decodeHeader()] Not a memcached binary protocol" << std::endl;
+      // // std::cout << "[MemcachedCodec::decodeHeader()] Not a memcached binary protocol" << std::endl;
       return MemcachedDecodeStatus::DecodeTextProtocol;
     }
   }
   
   if (buffer.length() < MEMCACHED_HEADER_SIZE) {
-    std::cout << "[MemcachedCodec::decodeHeader()] Waiting for more data " << std::endl;
+    // std::cout << "[MemcachedCodec::decodeHeader()] Waiting for more data " << std::endl;
     // ENVOY_LOG(warn, "Memcached decodeHeader: waiting for more data");
     return MemcachedDecodeStatus::WaitForData;
   }
@@ -220,14 +220,14 @@ MemcachedDecodeStatus MemcachedCodec::decodeHeader(Buffer::Instance& buffer) {
     throw EnvoyException("Invalid Memcached header");
   }
 
-  // std::cout << "[MemcachedCodec::decodeHeader()] Memcached header decoded: key length: total body length: " << memcached_header_.get_total_body_length() << std::endl;
+  // // std::cout << "[MemcachedCodec::decodeHeader()] Memcached header decoded: key length: total body length: " << memcached_header_.get_total_body_length() << std::endl;
   // ENVOY_LOG(warn, "Memcached decodeHeader: Memcached header decoded: key length: {}, total body length: {}", memcached_header_.get_key_length(), memcached_header_.get_total_body_length());
   return MemcachedDecodeStatus::DecodeBody;
 
 }
 
 MemcachedDecodeStatus MemcachedCodec::decodeTextProtocol(Buffer::Instance& buffer, MetaProtocolProxy::Metadata&) {
-  // std::cout << "[MemcachedCodec::decodeTextProtocol()] Decoding text protocol | Content: " << buffer_to_string(buffer, buffer.length()) << std::endl;
+  // // std::cout << "[MemcachedCodec::decodeTextProtocol()] Decoding text protocol | Content: " << buffer_to_string(buffer, buffer.length()) << std::endl;
   while (true) {
     // parse command
 
@@ -268,7 +268,7 @@ MemcachedDecodeStatus MemcachedCodec::decodeTextProtocol(Buffer::Instance& buffe
     // } 
 
     if (!end_of_chunk) {
-      // std::cout << "[MemcachedCodec::decodeTextProtocol()] Waiting for more data, message type" << static_cast<int>(message_type_) << std::endl;
+      // // std::cout << "[MemcachedCodec::decodeTextProtocol()] Waiting for more data, message type" << static_cast<int>(message_type_) << std::endl;
       return MemcachedDecodeStatus::WaitForData;
     }
     parsed_pos_ = pos;
@@ -283,15 +283,15 @@ MemcachedDecodeStatus MemcachedCodec::decodeTextProtocol(Buffer::Instance& buffe
     if (status == MemcachedDecodeStatus::DecodeDone) {
 
       // if (message_type_ == MetaProtocolProxy::MessageType::Request) {
-      //   std::cout << "[MemcachedCodec::decodeTextProtocol()] Decoding request done: length " << parsed_pos_+1 << " | content: " << buffer_to_string(buffer, parsed_pos_+1) << std::endl;
+      //   // std::cout << "[MemcachedCodec::decodeTextProtocol()] Decoding request done: length " << parsed_pos_+1 << " | content: " << buffer_to_string(buffer, parsed_pos_+1) << std::endl;
       // } else {
-      //   std::cout << "[MemcachedCodec::decodeTextProtocol()] Decoding response done: length " << parsed_pos_+1 << " | content: " << buffer_to_string(buffer, parsed_pos_+1) << std::endl;
+      //   // std::cout << "[MemcachedCodec::decodeTextProtocol()] Decoding response done: length " << parsed_pos_+1 << " | content: " << buffer_to_string(buffer, parsed_pos_+1) << std::endl;
       // }
 
       // handle message saving 
       origin_msg_ = std::make_unique<Buffer::OwnedImpl>();
       origin_msg_->move(buffer, parsed_pos_+1);
-      // std::cout << "[MemcachedCodec::decodeTextProtocol()] Memcached text protocol decoded, message type: " << static_cast<int>(message_type_) << std::endl;
+      // // std::cout << "[MemcachedCodec::decodeTextProtocol()] Memcached text protocol decoded, message type: " << static_cast<int>(message_type_) << std::endl;
       
       return MemcachedDecodeStatus::DecodeDone;
     }
@@ -300,12 +300,12 @@ MemcachedDecodeStatus MemcachedCodec::decodeTextProtocol(Buffer::Instance& buffe
 
 MemcachedDecodeStatus MemcachedCodec::decodeTextRequest(char* chunk) {
 
-  // std::cout << "[MemcachedCodec::decodeTextRequest()] Decoding request: length " << std::strlen(chunk) << " | content: " << char_to_ascii(chunk, std::strlen(chunk)) << std::endl;
+  // // std::cout << "[MemcachedCodec::decodeTextRequest()] Decoding request: length " << std::strlen(chunk) << " | content: " << char_to_ascii(chunk, std::strlen(chunk)) << std::endl;
 
   size_t chunk_length = std::strlen(chunk);
 
   if (is_request_cmd_done_){
-    // std::cout << "[MemcachedCodec::decodeHeader()] Request command is already done, decoding finished" << std::endl;
+    // // std::cout << "[MemcachedCodec::decodeHeader()] Request command is already done, decoding finished" << std::endl;
     return MemcachedDecodeStatus::DecodeDone;
   }
 
@@ -313,7 +313,7 @@ MemcachedDecodeStatus MemcachedCodec::decodeTextRequest(char* chunk) {
 
   
   if (chunk_length < 3) {
-    std::cout << "[MemcachedCodec::decodeTextRequest()] Decode request: chunk length<3, probably other commands" << std::endl;
+    // std::cout << "[MemcachedCodec::decodeTextRequest()] Decode request: chunk length<3, probably other commands" << std::endl;
     return MemcachedDecodeStatus::DecodeDone;
   }
 
@@ -323,7 +323,7 @@ MemcachedDecodeStatus MemcachedCodec::decodeTextRequest(char* chunk) {
         std::memcpy(buffer, chunk, length);
         buffer[7] = '\0'; // Null-terminate the buffer
         if (memcmp(buffer, command, length) == 0) {
-            // std::cout << "[MemcachedCodec::decodeHeader()] " << command << " command" << std::endl;
+            // // std::cout << "[MemcachedCodec::decodeHeader()] " << command << " command" << std::endl;
             return true;
         }
     }
@@ -332,11 +332,11 @@ MemcachedDecodeStatus MemcachedCodec::decodeTextRequest(char* chunk) {
 
   if (checkCommand("set", 3) || checkCommand("add", 3) || checkCommand("cas", 3) ||
     checkCommand("append", 6) || checkCommand("prepend", 7) || checkCommand("replace", 7)) {
-    // std::cout << "[MemcachedCodec::decodeTextResponse()] Decoding request command done: length " << chunk_length << " | content: " << char_to_ascii(chunk, chunk_length) << std::endl;
+    // // std::cout << "[MemcachedCodec::decodeTextResponse()] Decoding request command done: length " << chunk_length << " | content: " << char_to_ascii(chunk, chunk_length) << std::endl;
     return MemcachedDecodeStatus::WaitForData; // continue decoding
   }
-  // std::cout << "[MemcachedCodec::decodeTextResponse()] Decoding request done: length " << chunk_length << " | content: " << char_to_ascii(chunk, chunk_length) << std::endl;
-  // std::cout << "[MemcachedCodec::decodeTextResponse()] Decoding request done: length " << chunk_length << " | content: " << buffer_to_string(parsed_pos_+1) << std::endl;
+  // // std::cout << "[MemcachedCodec::decodeTextResponse()] Decoding request done: length " << chunk_length << " | content: " << char_to_ascii(chunk, chunk_length) << std::endl;
+  // // std::cout << "[MemcachedCodec::decodeTextResponse()] Decoding request done: length " << chunk_length << " | content: " << buffer_to_string(parsed_pos_+1) << std::endl;
   return MemcachedDecodeStatus::DecodeDone;
 }
 
@@ -346,19 +346,19 @@ MemcachedDecodeStatus MemcachedCodec::decodeTextResponse(char* chunk) {
   size_t chunk_length = std::strlen(chunk);
 
   if (chunk_length < 5) {
-      std::cout << "[MemcachedCodec::decodeTextResponse()] Chunk length < 3, probably other content" << std::endl;
-      std::cout << "[MemcachedCodec::decodeTextResponse()] Decoding response chunk data: " << char_to_ascii(chunk, chunk_length) << std::endl; 
-      // std::cout << "[MemcachedCodec::decodeTextResponse()] Decoding response buffer done: " << buffer_to_string(buffer, buffer.length()) << std::endl;
+      // std::cout << "[MemcachedCodec::decodeTextResponse()] Chunk length < 3, probably other content" << std::endl;
+      // std::cout << "[MemcachedCodec::decodeTextResponse()] Decoding response chunk data: " << char_to_ascii(chunk, chunk_length) << std::endl; 
+      // // std::cout << "[MemcachedCodec::decodeTextResponse()] Decoding response buffer done: " << buffer_to_string(buffer, buffer.length()) << std::endl;
       return MemcachedDecodeStatus::DecodeDone;
   }
 
   auto checkContent = [&](const char* content, size_t length) {
     if (chunk_length >= length && std::memcmp(chunk, content, length) == 0){
-      // std::cout << "[MemcachedCodec::decodeTextResponse()] Finished decoding response content: ";
+      // // std::cout << "[MemcachedCodec::decodeTextResponse()] Finished decoding response content: ";
       // for (size_t i = 0; i < 3; ++i) {
-      //     std::cout << content[i];
+      //     // std::cout << content[i];
       // }
-      // std::cout << std::endl;
+      // // std::cout << std::endl;
       return true;
     }
     return false;
@@ -366,10 +366,10 @@ MemcachedDecodeStatus MemcachedCodec::decodeTextResponse(char* chunk) {
 
   if (checkContent("STORED\r\n", 8) || checkContent("NOT_STORED\r\n", 12) || checkContent("EXISTS\r\n", 8) ||
       checkContent("NOT_FOUND\r\n", 11) || checkContent("ERROR\r\n", 7) || checkContent("END\r\n", 5)) {
-      // std::cout << "[MemcachedCodec::decodeTextResponse()] Decoding response done: length " << chunk_length << " | content: " << buffer_to_string(parsed_pos_+1) << std::endl;
+      // // std::cout << "[MemcachedCodec::decodeTextResponse()] Decoding response done: length " << chunk_length << " | content: " << buffer_to_string(parsed_pos_+1) << std::endl;
       return MemcachedDecodeStatus::DecodeDone; 
   }
-  // std::cout << "[MemcachedCodec::decodeTextResponse()] Decoding response: wait for more data - chunk length " << chunk_length << " | content: " << char_to_ascii(chunk, 3) << std::endl;
+  // // std::cout << "[MemcachedCodec::decodeTextResponse()] Decoding response: wait for more data - chunk length " << chunk_length << " | content: " << char_to_ascii(chunk, 3) << std::endl;
   return MemcachedDecodeStatus::WaitForData;
 }
 
@@ -403,7 +403,7 @@ std::string MemcachedCodec::char_to_ascii(char* chunk, size_t length) {
 MemcachedDecodeStatus MemcachedCodec::decodeBody(Buffer::Instance& buffer) {
   // Check if the buffer has the full body of the message
   if (buffer.length() < MEMCACHED_HEADER_SIZE + memcached_header_.get_total_body_length()) {
-    std::cout << "[MemcachedCodec::decodeBody()] Waiting for more data " << std::endl;
+    // std::cout << "[MemcachedCodec::decodeBody()] Waiting for more data " << std::endl;
     // ENVOY_LOG(warn, "Memcached decodeBody: waiting for more data");
     return MemcachedDecodeStatus::WaitForData;
   }
@@ -412,7 +412,7 @@ MemcachedDecodeStatus MemcachedCodec::decodeBody(Buffer::Instance& buffer) {
 
   origin_msg_ = std::make_unique<Buffer::OwnedImpl>();
   origin_msg_->move(buffer, MEMCACHED_HEADER_SIZE + memcached_header_.get_total_body_length());
-  std::cout << "[MemcachedCodec::decodeBody()] Memcached body decoded " << std::endl;
+  // std::cout << "[MemcachedCodec::decodeBody()] Memcached body decoded " << std::endl;
   return MemcachedDecodeStatus::DecodeDone;
 }
 

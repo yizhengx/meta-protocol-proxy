@@ -68,8 +68,8 @@ FilterStatus Router::onMessageDecoded(MetadataSharedPtr request_metadata,
 
   route_entry_->requestMutation(request_mutation);
 
-  if (true) {
-  // if (decoder_filter_callbacks_->multiplexing()) {
+  // if (true) {
+  if (decoder_filter_callbacks_->multiplexing()) {
     // if multiplexing, send by upstream handler
     auto get_upstream_handler_result =
         decoder_filter_callbacks_->getUpstreamHandler(cluster_name, *this);

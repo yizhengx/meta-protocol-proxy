@@ -236,7 +236,7 @@ MetaProtocolProxy::DecodeStatus MongoDBCodec::decode(Buffer::Instance& buffer, M
     message_type_ = metadata.getMessageType();
     std::string message_type_str = message_type_ == MetaProtocolProxy::MessageType::Request ? "Request" : "Response";
 
-    // std::cout << "[MongoDBCodec::decode()] MongoDB start decoder: " << buffer.length() << " bytes available, msg type: " << message_type_str << std::endl;
+    // // std::cout << "[MongoDBCodec::decode()] MongoDB start decoder: " << buffer.length() << " bytes available, msg type: " << message_type_str << std::endl;
 
     while (decode_status_ != MongoDBDecodeStatus::DecodeDone) {
         decode_status_ = handleState(buffer, metadata);
@@ -265,12 +265,12 @@ MongoDBDecodeStatus MongoDBCodec::handleState(Buffer::Instance& buffer, MetaProt
 }
 
 MongoDBDecodeStatus MongoDBCodec::decodeHeader(Buffer::Instance& buffer, MetaProtocolProxy::Metadata& metadata) {
-    // std::cout << "MongoDB decodeHeader: " << buffer.length() << " bytes available" << std::endl;
+    // // std::cout << "MongoDB decodeHeader: " << buffer.length() << " bytes available" << std::endl;
     // Wait for more data if the header is not complete
-    // std::cout << "MongoDB decodeHeader: " << buffer_to_string(buffer, buffer.length()) << std::endl;
+    // // std::cout << "MongoDB decodeHeader: " << buffer_to_string(buffer, buffer.length()) << std::endl;
     if (buffer.length() < sizeof(MsgHeader)) {
         // ENVOY_LOG(debug, "continue {}", buffer.length());
-        // std::cout << "MongoDB decodeHeader: waiting for more data" << std::endl;
+        // // std::cout << "MongoDB decodeHeader: waiting for more data" << std::endl;
         return MongoDBDecodeStatus::WaitForData;
     }
 
@@ -289,26 +289,26 @@ MongoDBDecodeStatus MongoDBCodec::decodeHeader(Buffer::Instance& buffer, MetaPro
     message_type_ = metadata.getMessageType();
         std::string message_type_str = message_type_ == MetaProtocolProxy::MessageType::Request ? "Request" : "Response";
     std::string message_prefix = message_type_ == MetaProtocolProxy::MessageType::Request ? ">>>>>> " : "<<<<<< ";
-    std::cout << message_prefix + " MongoDB decodeHeader " + message_type_str +" done: " << message_type_str << " RequestID: " << metadata.getRequestId() << " | messageLength: " << mongo_header_.header_.messageLength << " | requestID: " << mongo_header_.header_.requestID << " | responseTo: " << mongo_header_.header_.responseTo << " | opCode: " << mongo_header_.header_.opCode << std::endl;
+    // std::cout << message_prefix + " MongoDB decodeHeader " + message_type_str +" done: " << message_type_str << " RequestID: " << metadata.getRequestId() << " | messageLength: " << mongo_header_.header_.messageLength << " | requestID: " << mongo_header_.header_.requestID << " | responseTo: " << mongo_header_.header_.responseTo << " | opCode: " << mongo_header_.header_.opCode << std::endl;
 
-    // std::cout << "MongoDB decodeHeader: message length: " << mongo_header_.getMessageLength() << std::endl;
+    // // std::cout << "MongoDB decodeHeader: message length: " << mongo_header_.getMessageLength() << std::endl;
 
     return MongoDBDecodeStatus::DecodeBody;
 }
 
 MongoDBDecodeStatus MongoDBCodec::decodeBody(Buffer::Instance& buffer, MetaProtocolProxy::Metadata& metadata) {
     // Wait for more data if the buffer is not a complete message
-    // std::cout << "MongoDB decodeBody: " << buffer_to_string(buffer, buffer.length()) << std::endl;
+    // // std::cout << "MongoDB decodeBody: " << buffer_to_string(buffer, buffer.length()) << std::endl;
     if (buffer.length() < static_cast<uint64_t>(mongo_header_.getMessageLength())) {
-        // std::cout << "MongoDB decodeBody: waiting for more data" << std::endl;
+        // // std::cout << "MongoDB decodeBody: waiting for more data" << std::endl;
         return MongoDBDecodeStatus::WaitForData;
     }
     message_type_ = metadata.getMessageType();
         std::string message_type_str = message_type_ == MetaProtocolProxy::MessageType::Request ? "Request" : "Response";
-    // std::cout << "MongoDB decodeMsg " + message_type_str +" done: " << buffer_to_string(buffer, mongo_header_.getMessageLength()) << std::endl;
+    // // std::cout << "MongoDB decodeMsg " + message_type_str +" done: " << buffer_to_string(buffer, mongo_header_.getMessageLength()) << std::endl;
     // print the message type, metadata requestID, and actual message
     std::string message_prefix = message_type_ == MetaProtocolProxy::MessageType::Request ? ">>>>>> " : "<<<<<< ";
-    std::cout << message_prefix + " MongoDB decodeMsg " + message_type_str +" done: " << message_type_str << " RequestID: " << metadata.getRequestId() << " Message: " << buffer_to_string(buffer, mongo_header_.getMessageLength()) << std::endl;
+    // std::cout << message_prefix + " MongoDB decodeMsg " + message_type_str +" done: " << message_type_str << " RequestID: " << metadata.getRequestId() << " Message: " << buffer_to_string(buffer, mongo_header_.getMessageLength()) << std::endl;
 
     // if (message_type_ == MetaProtocolProxy::MessageType::Response) {
     //     print_buffer_as_bits(buffer, mongo_header_.getMessageLength());
@@ -320,11 +320,11 @@ MongoDBDecodeStatus MongoDBCodec::decodeBody(Buffer::Instance& buffer, MetaProto
     //     // copy the buffer to the shared buffer
     //     buffer.copyOut(0, mongo_header_.getMessageLength(), shared_buffer);
 
-    //     std::cout << "[MongoDBCodec::decodeBody()] - isMaster message copied to shared buffer" << std::endl;
+    //     // std::cout << "[MongoDBCodec::decodeBody()] - isMaster message copied to shared buffer" << std::endl;
     // }
 
     // if (buffer_to_string(buffer, mongo_header_.getMessageLength()).find("The client metadata document may only be sent in the first isMaster") != std::string::npos) {
-    //     std::cout << "[MongoDBCodec::decodeBody()] - The client metadata document may only be sent in the first isMaster && Seen: " << seen_is_master << std::endl;
+    //     // std::cout << "[MongoDBCodec::decodeBody()] - The client metadata document may only be sent in the first isMaster && Seen: " << seen_is_master << std::endl;
     //     // drain the buffer
     //     buffer.drain(mongo_header_.getMessageLength());
     //     // copy data from shared buffer to origin_msg_
@@ -352,7 +352,7 @@ MongoDBDecodeStatus MongoDBCodec::decodeBody(Buffer::Instance& buffer, MetaProto
 //         bsoncxx::document::view doc_view = doc_value.view();
 
 //         // Convert to JSON for output
-//         std::cout << "Parsed BSON as JSON: " << bsoncxx::to_json(doc_view) << std::endl;
+//         // std::cout << "Parsed BSON as JSON: " << bsoncxx::to_json(doc_view) << std::endl;
 //     } catch (const bsoncxx::exception& e) {
 //         std::cerr << "Error parsing BSON: " << e.what() << std::endl;
 //     }
@@ -360,15 +360,15 @@ MongoDBDecodeStatus MongoDBCodec::decodeBody(Buffer::Instance& buffer, MetaProto
 
 void MongoDBCodec::print_buffer_as_bits(const Buffer::Instance& buffer, size_t length) {
     // Print the buffer as bits
-    std::cout << "Buffer as bits: ";
+    // std::cout << "Buffer as bits: ";
     for (size_t i = 0; i < length; i++) {
         char byte = static_cast<char>(buffer.peekInt<uint8_t>(i));
         for (int j = 7; j >= 0; j--) {
-            std::cout << ((byte >> j) & 1);
+            // std::cout << ((byte >> j) & 1);
         }
-        std::cout << " ";
+        // std::cout << " ";
     }
-    std::cout << " " << std::endl;
+    // std::cout << " " << std::endl;
 }
 
 std::string MongoDBCodec::buffer_to_string(Buffer::Instance& buffer, size_t length) {

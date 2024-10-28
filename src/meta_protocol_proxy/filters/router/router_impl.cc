@@ -68,7 +68,15 @@ FilterStatus Router::onMessageDecoded(MetadataSharedPtr request_metadata,
 
   route_entry_->requestMutation(request_mutation);
 
-  std::cout << "[Router::onMessageDecoded] cluster_name: " << cluster_name << std::endl;
+  // std::cout << "[Router::onMessageDecoded] cluster_name: " << cluster_name << std::endl;
+
+  bool condition;
+  // if inbound|27017|| in cluster_name
+  if (cluster_name.find("inbound|27017||") != std::string::npos) {
+    condition = true;
+  } else {
+    condition = decoder_filter_callbacks_->multiplexing();
+  }
 
   if (true) {
   // if (decoder_filter_callbacks_->multiplexing()) {

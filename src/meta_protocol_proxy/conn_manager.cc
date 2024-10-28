@@ -258,22 +258,21 @@ ConnectionManager::getUpstreamHandler(const std::string& cluster_name,
                   fmt::format("meta protocol router: no healthy upstream for '{}'", cluster_name)},
             nullptr, "no_healthy_upstream"};
   }
-  // std::string key = cluster_name + "_" + tcp_pool_data.value().host()->address()->asString();
 
-  // use context downstream connection id as key
-  // std::string key = std::to_string(context->downstreamConnection().);
-  std::vector<uint8_t> hash_key;
-  bool use_downstream_connection_id = false;
-  if (context.downstreamConnection()) {
-    // std::cout << "[ConnectionManager::getUpstreamHandler()] context.downstreamConnection() " << std::endl;
-    context.downstreamConnection()->hashKey(hash_key);
-    use_downstream_connection_id = true;
+  std::string key = cluster_name + "_" + tcp_pool_data.value().host()->address()->asString();
+
+  if (cluster_name.find("inbound|27017||") != std::string::npos) {
+    std::vector<uint8_t> hash_key;
+    bool use_downstream_connection_id = false;
+    if (context.downstreamConnection()) {
+      // std::cout << "[ConnectionManager::getUpstreamHandler()] context.downstreamConnection() " << std::endl;
+      context.downstreamConnection()->hashKey(hash_key);
+      use_downstream_connection_id = true;
+    }
+    key.assign(hash_key.begin(), hash_key.end());
+    std::cout << "[ConnectionManager::getUpstreamHandler()] ClusterName: " << cluster_name << std::endl;
   }
-  std::string key(hash_key.begin(), hash_key.end());
-  if (!use_downstream_connection_id) {
-    key = cluster_name + "_" + tcp_pool_data.value().host()->address()->asString();
-  }
-  std::cout << "[ConnectionManager::getUpstreamHandler()] ClusterName: " << cluster_name << std::endl;
+  
   // ENVOY_LOG(warn, "use key: {}", key);
   // std::cout << "[ConnectionManager::getUpstreamHandler()] key: " << key << std::endl;
   

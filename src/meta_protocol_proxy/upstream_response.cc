@@ -11,9 +11,9 @@ void UpstreamHandlerResponseDecoder::onMessageDecoded(MetadataSharedPtr metadata
 
   complete_ = true;
 
-  ENVOY_LOG(warn,
-            "meta protocol response decoder: complete processing of upstream response messages, id is {}",
-            metadata->getRequestId());
+  // ENVOY_LOG(warn,
+  //           "meta protocol response decoder: complete processing of upstream response messages, id is {}",
+  //           metadata->getRequestId());
   codec_->encode(*metadata, *mutation, metadata->originMessage());
   handler_.onMessageDecoded(metadata, mutation);
 };

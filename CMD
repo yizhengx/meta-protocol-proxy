@@ -1,0 +1,3 @@
+# BUILD in root folder
+
+git pull; sudo make release; cd bazel-bin; sudo docker build -t yizhengx/aeraki-proxy:mongodb-nofix . --push; cd ..
